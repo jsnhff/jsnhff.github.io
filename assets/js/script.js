@@ -7,6 +7,15 @@ $( document ).ready(function() {
 	    auto: true,
 	    random: true
 	});
+	$("#slideshow3").responsiveSlides({
+	    auto: true,
+	    random: true
+	});
+	$("#slideshow4").responsiveSlides({
+	    auto: true,
+	    random: true
+	});
+
 	var myDate = new Date().getHours();
 	if(myDate > 0 && myDate <= 11) {
 		console.log('Good Morning!');
