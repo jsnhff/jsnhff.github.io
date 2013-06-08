@@ -177,12 +177,12 @@ body {
 }
 .icon-heart {
 	position: absolute;
-	right: 23px;
+	right: 0.456em;
 	color: #00ADFF;
 	opacity: 0.5;
 }
 	.icon-heart:first-of-type {
-		left: 23px;
+		left: 0.456em;
 		right: inherit;
 		color: #FF1559;
 		opacity: 0.5;
