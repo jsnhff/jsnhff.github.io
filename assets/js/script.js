@@ -35,7 +35,7 @@ $( document ).ready(function() {
 	if(myDate > 5 && myDate <= 11) {
 		console.log('Good Morning!');
 		$('body').addClass('day');
-	} else if(myDate >= 12 && myDate < 18) {
+	} else if(myDate >= 12 && myDate < 20) {
 		console.log('Good afternoon!');
 		$('body').addClass('day');
 	} else if(myDate >= 20 && myDate <= 5) {
