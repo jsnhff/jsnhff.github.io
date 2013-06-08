@@ -1,7 +1,8 @@
 $( document ).ready(function() {
 	$("#slideshow1").responsiveSlides({
 	    auto: true,
-	    random: true
+	    random: true,
+	    pause: true
 	});
 	$("#slideshow2").responsiveSlides({
 	    auto: true,
