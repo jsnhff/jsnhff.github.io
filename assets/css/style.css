@@ -1,8 +1,9 @@
 @import url(http://fonts.googleapis.com/css?family=Oswald:400,300);
-@import url(http://fonts.googleapis.com/css?family=Vollkorn);
+/*@import url(http://fonts.googleapis.com/css?family=Vollkorn);*/
 
 body {
 	margin: 10px 0 0 0;
+	background: url(../images/foggy_birds.png);
 }
 
 .group:after {
@@ -13,10 +14,14 @@ body {
 
 .container {
 	margin: 0 auto;
+	background: rgba(255,255,255,0.5);
+}
+
+.banner, h1, h2, h3, h4 {
+	font-family: 'Oswald', Arial, sans-serif;
 }
 
 .banner {
-	font-family: 'Oswald', Arial, sans-serif;
 	font-weight: 300;
 	position: relative;
 	text-align: center;
@@ -72,9 +77,6 @@ body {
 
 
 /* Photo Band */
-.photos {
-	/*position: relative;*/
-}
 .photo-band {
 	/*position: absolute;*/
 	background-color: #EEE;
@@ -94,13 +96,13 @@ body {
 
 /* Story of Us */
 .story {
-	/*font-family: 'Vollkorn', serif;*/
 	margin-top: 15px;
 	font-size: 18px;
-	/*letter-spacing: 1;*/
 	line-height: 26px;
 }
-
+.maps {
+	text-align: center;
+}
 .maps ul {
 	margin: 0;
 	padding: 0;
