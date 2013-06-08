@@ -322,11 +322,30 @@ a:active {
 		.travel ul li {
 			list-style: none;
 		}
-
-.travel .map {
-	background: #EEE;
-	height: 200px;
-}
+		.travel .map-mask {
+			position: relative;
+			border-radius: 50%;
+			overflow: hidden;
+			margin: 0 auto;
+		}
+		.travel .map-mask .ceremony {
+			position: absolute;
+			top: 100px;
+			left: 100px;
+			width: 10px;
+			height: 10px;
+			background: #3ec;
+			z-index: 1;
+		}
+		.travel iframe {
+			position: absolute;
+			top: -35px;
+			left: -15px;
+			z-index: -1px;
+		}
+		.travel/* .map img {
+			width: 100%;
+		}*/
 
 .activities {
 	text-align: center;
@@ -363,6 +382,10 @@ a:active {
 		font-size: 40px;
 		line-height: 40px;
 	}
+	.travel .map-mask {
+		width: 350px;
+		height: 350px;
+	}
 }
 
 @media (max-width: 480px) {
@@ -376,10 +399,27 @@ a:active {
 		display: block;
 		width: 100%
 	}
+	.travel .map-mask {
+		width: 300px;
+		height: 300px;
+	}
 }
 
 @media (min-width: 768px) and (max-width: 979px) {
+	.travel .map-mask {
+		width: 350px;
+		height: 350px;
+	}
 }
-
+@media (min-width: 980px) and (max-width: 1999px) {
+	.travel .map-mask {
+		width: 350px;
+		height: 350px;
+	}
+}
 @media (min-width: 1200px) {
+	.travel .map-mask {
+		width: 350px;
+		height: 350px;
+	}
 }
