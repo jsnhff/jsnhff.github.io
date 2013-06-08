@@ -140,58 +140,60 @@ body {
 	text-align: center;
 	text-transform: uppercase;
 }
-.banner .span12:before, .banner .span12:after {
-	content: "";
-	position: absolute;
-	top: 24px;
-	width: 40%;
-	height: 1px;
-	border-top: 1px dotted #DDDDDD;
-}
-.banner .span12:before {
-	right: 0;
-}
-.banner .span12:after {
-	left: 0;
-}
+	.banner .span12:before, .banner .span12:after {
+		content: "";
+		position: absolute;
+		top: 24px;
+		width: 40%;
+		height: 1px;
+		border-top: 1px dotted #DDDDDD;
+	}
+		.banner .span12:before {
+			right: 0;
+		}
+		.banner .span12:after {
+			left: 0;
+		}
 
-.banner h1 {
-	font-weight: 400;
-}
-
-.banner h4 {
-	color: #A8A8A8;
-	font-weight: 300;
-	letter-spacing: 1;
-}
-.banner h4 span:first-of-type {
-	margin-right: 25px;
-}
-.hearts {
-	position: relative;
-	font-size: 50px;
-	display: block;
-	width: 120px;
-	height: 50px;
-	margin: 0 auto;
-}
-.icon-heart {
-	position: absolute;
-	right: 0.456em;
-	color: #00ADFF;
-	opacity: 0.5;
-}
-	.icon-heart:first-of-type {
-		left: 0.456em;
-		right: inherit;
-		color: #FF1559;
-		opacity: 0.5;
+	.banner h1 {
+		font-weight: 400;
+	}
+		.banner h1 span {
+			position: relative;
+			top: -2px;
+		}
+	.banner h4 {
+		color: #A8A8A8;
+		font-weight: 300;
+		letter-spacing: 1;
+	}
+	.banner h4 span:first-of-type {
+		margin-right: 25px;
 	}
 
+	.hearts {
+		position: relative;
+		font-size: 50px;
+		display: block;
+		width: 120px;
+		height: 50px;
+		margin: 0 auto;
+	}
+		.icon-heart {
+			position: absolute;
+			right: 0.456em;
+			color: #FF1559;
+			opacity: 0.5;
+		}
+		.icon-heart:first-of-type {
+			left: 0.456em;
+			right: inherit;
+			color: #00ADFF;
+			opacity: 0.5;
+		}
 
 /* Photo Band */
 .photo-band {
-	/*position: absolute;*/
 	background-color: #EEE;
 	width: 100%;
 	height: 250px;
