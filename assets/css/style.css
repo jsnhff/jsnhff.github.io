@@ -247,6 +247,10 @@ body {
 }
 
 @media (max-width: 480px) {
+	.banner .span12:before, .banner .span12:after {
+		width: 30%;
+	}
+
 }
 
 @media (min-width: 768px) and (max-width: 979px) {
