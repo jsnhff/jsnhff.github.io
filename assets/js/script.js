@@ -1,33 +1,53 @@
 $( document ).ready(function() {
-	var baseTime = 2500;
+	var baseTime = 3500;
+	var fadeTime = 700;
 	var timeArray = [];
 	for (var i = 0; i < 4; i++) {
-		var minusTime = Math.floor(Math.random()*1000);
+		var minusTime = Math.floor(Math.random()*3000);
 		timeArray[i] = (baseTime+ minusTime);
+		console.log(timeArray[i]);
 	};
 
+	$("#slideshow-left").responsiveSlides({
+	    auto: true,
+	    random: true,
+	    pause: true,
+	    speed: fadeTime,
+	    timeout: timeArray[3]
+	});
+	$("#slideshow-right").responsiveSlides({
+	    auto: true,
+	    random: true,
+	    pause: true,
+	    speed: fadeTime,
+	    timeout: timeArray[2]
+	});
 	$("#slideshow1").responsiveSlides({
 	    auto: true,
 	    random: true,
 	    pause: true,
+	    speed: fadeTime,
 	    timeout: timeArray[0]
 	});
 	$("#slideshow2").responsiveSlides({
 	    auto: true,
 	    random: true,
 	    pause: true,
+	    speed: fadeTime,
 	    timeout: timeArray[1]
 	});
 	$("#slideshow3").responsiveSlides({
 	    auto: true,
 	    random: true,
 	    pause: true,
+	    speed: fadeTime,
 	    timeout: timeArray[2]
 	});
 	$("#slideshow4").responsiveSlides({
 	    auto: true,
 	    random: true,
 	    pause: true,
+	    speed: fadeTime,
 	    timeout: timeArray[3]
 	});
 
