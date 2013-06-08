@@ -343,6 +343,11 @@ a:active {
 	.banner .span12:before, .banner .span12:after {
 		width: 30%;
 	}
+	.hero {
+		font-size: 40px;
+		line-height: 40px;
+	}
+
 	.photo-band .span3 {
 		display: none;
 	}
