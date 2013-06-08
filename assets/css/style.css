@@ -117,6 +117,20 @@
 body {
 	margin: 10px 0 0 0;
 	background: url(../images/foggy_birds.png);
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+a, a:visited {
+	text-decoration: none;
+	color: #44c3ff;
+}
+a:hover {
+	text-decoration: none;
+	color: #00adff;
+}
+a:active {
+	text-decoration: none;
+	color: #00a2ee;
 }
 
 .group:after {
@@ -132,6 +146,12 @@ body {
 
 .banner, h1, h2, h3, h4 {
 	font-family: 'Oswald', Arial, sans-serif;
+	text-transform: uppercase;
+}
+
+.hero {
+	font-size: 50px;
+	line-height: 50px;
 }
 
 .banner {
@@ -194,20 +214,68 @@ body {
 
 /* Photo Band */
 .photo-band {
+	position: relative;
 	background-color: #EEE;
 	width: 100%;
-	height: 250px;
+	height: 258px;
 	border-top: 1px solid #DDDDDD;
 	border-bottom: 1px solid #DDDDDD;
 }
-.photo-band:before {
-	content: "";
-	display: block;
-	width: 100%;
-	height: 240px;
-	border-top: 5px solid rgba(68, 68, 68, 0.1);
-	border-bottom: 5px solid rgba(68, 68, 68, 0.1);
-}
+	.photo-band:before {
+		content: "";
+		display: block;
+		width: 100%;
+	}
+	.photo-mask {
+		position: absolute;
+		top: 0;
+		width: 100%;
+		height: 248px;
+		border-top: 5px solid rgba(68, 68, 68, 0.15);
+		border-bottom: 5px solid rgba(68, 68, 68, 0.15);
+		z-index: 1000;
+	}
+	#slideshow1 {
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+	#slideshow2 {
+		position: absolute;
+		top: 0;
+		right: 0;
+	}
+	.rslides {
+		position: relative;
+		list-style: none;
+		overflow: hidden;
+		width: 260px;
+		padding: 0;
+		margin: 0;
+	}
+
+	.rslides li {
+		-webkit-backface-visibility: hidden;
+		position: absolute;
+		display: none;
+		width: 100%;
+		left: 0;
+		top: 0;
+	}
+
+	.rslides li:first-child {
+		position: relative;
+		display: block;
+		float: left;
+	}
+
+	.rslides img {
+		display: block;
+		height: auto;
+		float: left;
+		width: 100%;
+		border: 0;
+	}
 
 /* Story of Us */
 .story {
@@ -215,18 +283,18 @@ body {
 	font-size: 18px;
 	line-height: 26px;
 }
-.maps {
+.travel {
 	text-align: center;
 }
-.maps ul {
-	margin: 0;
-	padding: 0;
-}
-	.maps ul li {
-		list-style: none;
+	.travel ul {
+		margin: 0;
+		padding: 0;
 	}
+		.travel ul li {
+			list-style: none;
+		}
 
-.maps .map {
+.travel .map {
 	background: #EEE;
 	height: 200px;
 }
@@ -234,8 +302,17 @@ body {
 .activities {
 	text-align: center;
 }
+	.activities ul {
+		margin: 0;
+		padding: 0;
+	}
+		.activities ul li {
+			list-style: none;
+		}
+
 .footer {
 	text-align: center;
+	margin-bottom: 50px;
 }
 .footer ul {
 	margin: 0;

@@ -1,4 +1,12 @@
 $( document ).ready(function() {
+	$("#slideshow1").responsiveSlides({
+	    auto: true,
+	    random: true
+	});
+	$("#slideshow2").responsiveSlides({
+	    auto: true,
+	    random: true
+	});
 	var myDate = new Date().getHours();
 	if(myDate > 0 && myDate <= 11) {
 		console.log('Good Morning!');
