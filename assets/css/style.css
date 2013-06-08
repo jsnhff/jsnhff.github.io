@@ -155,7 +155,7 @@ a:active {
 	.night .container {
 		background: rgba(10,10,10,0.01);
 		color: #EEEEEE;
-		text-shadow: 1px 1px 1px #000, -1px -1px -1px #FFF;
+		text-shadow: 1px 1px 1px rgba(0, 0, 0, .4), -1px -1px -1px rgba(255, 255, 255, .4);
 	}
 
 .banner, h1, h2, h3, h4 {
@@ -258,7 +258,7 @@ a:active {
 		text-align: center;
 		color: #EEE;
 		font-size: 12px;
-		text-shadow: 1px 1px 1px #000, -1px -1px -1px #FFF;
+		text-shadow: 1px 1px 1px rgba(0, 0, 0, .4), -1px -1px -1px rgba(255, 255, 255, .4);
 		margin: 0;
 		background: #000;
 		background: rgba(0, 0, 0, .8);
