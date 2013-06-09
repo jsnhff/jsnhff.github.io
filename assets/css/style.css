@@ -566,7 +566,7 @@ p {
 		top: 11%; 
 	}
 	.map-flag2 {
-		left: 65%;
+		left: 64%;
 		top: 39%; 
 	}
 	.container.story .span7 {
@@ -601,7 +601,7 @@ p {
 		top: 11%; 
 	}
 	.map-flag2 {
-		left: 65%;
+		left: 64%;
 		top: 39%; 
 	}
 	.registry h3 {
@@ -669,10 +669,7 @@ p {
 @media
 only screen and (-webkit-min-device-pixel-ratio: 2),
 only screen and (   min--moz-device-pixel-ratio: 2),
-only screen and (     -o-min-device-pixel-ratio: 2/1),
-only screen and (        min-device-pixel-ratio: 2),
-only screen and (                min-resolution: 192dpi),
-only screen and (                min-resolution: 2dppx) { 
+only screen and (     -o-min-device-pixel-ratio: 2/1) { 
   
 	.day {
 		background: url(../images/foggy_birds_@2x.png);
