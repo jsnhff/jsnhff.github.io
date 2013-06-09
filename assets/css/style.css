@@ -161,11 +161,17 @@ a:active {
 .banner, h1, h2, h3, h4 {
 	font-family: 'Oswald', Arial, sans-serif;
 	text-transform: uppercase;
+	margin-bottom: 10px;
+}
+.banner {
+	margin-top: 20px;
 }
 
 p {
-	font-size: 18px;
-	line-height: 24px;
+	font-size: 16px;
+	line-height: 21px;
+	margin-top: 0;
+	color: #777777;
 }
 
 .hero {
@@ -327,12 +333,20 @@ p {
 		width: 100%;
 		border: 0;
 	}
+/* Registry */
+.container.registry {
+	margin-top: 35px;
+	background: #ddf4ff;
+}
 
 /* Story of Us */
-.story {
-	margin-top: 45px;
-	padding-top: 25px;
+.container.story {
+	margin: 0;
+	padding: 25px 10% 40px 10%;
 	border-top: 1px dotted #DDDDDD;
+	border-bottom: 1px dotted #DDDDDD;
+	background: url(../images/wavegrid.png);
+	text-shadow: 1px 1px 1px #FFF;
 }
 .travel {
 	margin-top: 45px;
@@ -347,19 +361,19 @@ p {
 		.travel ul li {
 			list-style: none;
 		}
-		.travel .map-mask {
+		.map-mask {
 			position: relative;
 			margin: 0 auto;
 		}
-		.travel .map a {
+		.map a {
 			display: block;
 		}
-		.travel .map img {
+		.map img {
 			border-radius: 50%;
 			overflow: hidden;
 			width: 100%;
 		}
-		.travel .map-hover {
+		.map-hover {
 			display: block;
 			position: absolute;
 			top: 0;
@@ -371,12 +385,12 @@ p {
 			-ms-transform-origin:center center; /* IE 9 */
 			-webkit-transform-origin:center center; /* Safari and Chrome */
 		}
-		.travel .map:hover .map-hover {
+		.map:hover .map-hover {
 			border-radius: 50%;
 			background: rgba(255, 255, 255, 0.25);
 		}
-		.travel .map-flag1,
-		.travel .map-flag2 {
+		.map-flag1,
+		.map-flag2 {
 			box-sizing: border-box;
 			display: block;
 			position: absolute;
@@ -391,16 +405,16 @@ p {
 			box-shadow:         3px 3px 0px 0 rgba(0,0,0,.15);
 			border-bottom: 1px solid #11b3ff;
 		}
-		.travel .map-flag1 h6,
-		.travel .map-flag2 h6 {
+		.map-flag1 h6,
+		.map-flag2 h6 {
 			font-family: 'Oswald', Arial, sans-serif;
 			margin: 0;
 			font-size: 16px;
 			text-transform: uppercase;
 			line-height: 19px;
 		}
-		.travel .map-flag1 p,
-		.travel .map-flag2 p {
+		.map-flag1 p,
+		.map-flag2 p {
 			margin: 0;
 			padding: 0;
 			font-size: 12px;
@@ -408,8 +422,8 @@ p {
 			text-transform: uppercase;
 			color: #666666;
 		}
-		.travel .map-flag1:before,
-		.travel .map-flag2:before {
+		.map-flag1:before,
+		.map-flag2:before {
 			content: "";
 			position: absolute;
 			bottom: -21px;
@@ -417,30 +431,53 @@ p {
 			height: 0; 
 			border-top: 20px solid #44c3ff;
 		}
-		.travel .map-flag1:before {
+		.map-flag1:before {
 			right: 0;
-			/*border-left: 20px solid transparent;*/
 			border-right: 20px solid transparent;
 		}
-		.travel .map-flag2:before {
+		.map-flag2:before {
 			left: 0;
 			border-left: 20px solid transparent;
-			/*border-right: 20px solid transparent;*/
 		}
 
-.activities {
-	text-align: center;
+.container.activities {
+	padding-top: 25px;
 }
+	.activities h1 {
+		text-align: center;
+	}
+	.activities h2 {
+		text-align: center;
+	}
 	.activities ul {
 		margin: 0;
 		padding: 0;
 	}
 		.activities ul li {
+			margin-bottom: 10px;
+			border: 1px solid #bbe9ff;
+			border-radius: 5px;
+			background: #EEEEEE;
 			list-style: none;
+		}
+		.activities ul li a {
+			color: #666666;
+			background: #ddf4ff;
+			display: block;
+			padding: 10px;
+		}
+		.activities ul li a:hover {
+			background: #bbe9ff;
+		}
+		.activities ul li a:active {
+			background: #99deff;
 		}
 
 .footer {
+	border-top: 1px dotted #DDDDDD;
 	text-align: center;
+	margin-top: 35px;
+	padding-top: 25px;
 	margin-bottom: 50px;
 }
 	.footer ul {
@@ -466,20 +503,20 @@ p {
 		line-height: 40px;
 	}
 	.container {
-		padding: 0 20px;
+		padding: 0 10%;
 	}
 	.container.photos {
 		padding: 0;
 	}
-	.travel .map-mask {
+	.map-mask {
 		width: 270px;
 	}
-	.travel .map-flag1 {
-		left: -9%;
+	.map-flag1 {
+		left: -7.5%;
 		top: 11%; 
 	}
-	.travel .map-flag2 {
-		left: 65%;
+	.map-flag2 {
+		left: 66%;
 		top: 39%; 
 	}
 }
@@ -495,27 +532,27 @@ p {
 		display: block;
 		width: 100%
 	}
-	.travel .map-mask {
+	.map-mask {
 		max-width: 270px;
 	}
-	.travel .map-flag1 {
-		left: -9%;
+	.map-flag1 {
+		left: -7.5%;
 		top: 11%; 
 	}
-	.travel .map-flag2 {
-		left: 65%;
+	.map-flag2 {
+		left: 66%;
 		top: 39%; 
 	}
 }
 @media (min-width: 768px) and (max-width: 979px) {
-	.travel .map-mask {
-		margin: 55px 20px 0 0;
+	.map-mask {
+		margin: 16% 20px 0 0;
 	}
-	.travel .map-flag1 {
+	.map-flag1 {
 		left: -3%;
 		top: 17%; 
 	}
-	.travel .map-flag2 {
+	.map-flag2 {
 		left: 68%;
 		top: 44%; 
 	}
@@ -524,30 +561,33 @@ p {
 	.container {
 		padding: 0 40px;
 	}
-	.travel .map-mask {
+	.map-mask {
 		margin-right: 25px;
 	}
-	.travel .map-flag1 {
+	.travel-details {
+		margin-top: 12px;
+	}
+	.map-flag1 {
 		left: 3%;
 		top: 22%; 
 	}
-	.travel .map-flag2 {
+	.map-flag2 {
 		left: 70%;
 		top: 51%; 
 	}
 }
 @media (min-width: 1200px) {
-	.travel .map-mask {
+	.map-mask {
 		margin-right: 25px;
 	}
-	.travel .travel-details {
+	.travel-details {
 		margin-top: 80px;
 	}
-	.travel .map-flag1 {
+	.map-flag1 {
 		left: 8%;
 		top: 24%; 
 	}
-	.travel .map-flag2 {
+	.map-flag2 {
 		left: 71%;
 		top: 53%; 
 	}

@@ -7,7 +7,6 @@ $( document ).ready(function() {
 	for (var i = 0; i < 4; i++) {
 		var minusTime = Math.floor(Math.random()*3000);
 		timeArray[i] = (baseTime+ minusTime);
-		console.log(timeArray[i]);
 	};
 
 	$("#slideshow1").responsiveSlides({
