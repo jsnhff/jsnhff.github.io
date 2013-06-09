@@ -1,4 +1,6 @@
+//Slide show and nighttime mode
 $( document ).ready(function() {
+
 	var baseTime = 3500;
 	var fadeTime = 700;
 	var timeArray = [];
@@ -22,20 +24,22 @@ $( document ).ready(function() {
 	    speed: fadeTime,
 	    timeout: timeArray[1]
 	});
-	$("#slideshow3").responsiveSlides({
-	    auto: true,
-	    random: true,
-	    pause: true,
-	    speed: fadeTime,
-	    timeout: timeArray[2]
-	});
-	$("#slideshow4").responsiveSlides({
-	    auto: true,
-	    random: true,
-	    pause: true,
-	    speed: fadeTime,
-	    timeout: timeArray[3]
-	});
+	if(!Modernizr.touch){
+		$("#slideshow3").responsiveSlides({
+		    auto: true,
+		    random: true,
+		    pause: true,
+		    speed: fadeTime,
+		    timeout: timeArray[2]
+		});
+		$("#slideshow4").responsiveSlides({
+		    auto: true,
+		    random: true,
+		    pause: true,
+		    speed: fadeTime,
+		    timeout: timeArray[3]
+		});
+	}
 
 	var myDate = new Date().getHours();
 	if(myDate > 4 && myDate < 11) {
