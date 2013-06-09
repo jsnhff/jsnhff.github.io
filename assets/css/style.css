@@ -653,19 +653,18 @@ only screen and (                min-resolution: 192dpi),
 only screen and (                min-resolution: 2dppx) { 
   
 	.day {
-		background: url(../images/foggy_birds@2x.png);
+		background: url(../images/foggy_birds_@2x.png);
 		background-size: 206px 206px;
 	}
-
 	.night {
-		background: url(../images/dark_geometric@2x.png);
+		background: url(../images/dark_geometric_@2x.png);
 		background-size: 70px 70px;
 	}
 	.honeymoon {
 		background: url(../images/honeymoon.jpg) 0 -145px no-repeat;
 	}
 	.container.story {
-		background: url(../images/wavegrid@2x.png);
+		background: url(../images/wavegrid_@2x.png);
 		background-size: 100px 100px;
 	}
 }
