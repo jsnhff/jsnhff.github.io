@@ -335,19 +335,66 @@ p {
 	}
 /* Registry */
 .container.registry {
+	position: relative;
 	margin-top: 35px;
 	background: #ddf4ff;
+	padding: 0;
+	overflow: hidden;
 }
+.container.registry:before {
+	content: "";
+	width: 110%;
+	height: 150%;
+	box-shadow: inset 0 -5px 20px rgba(0, 0, 0, 0.2);
+	position: absolute;
+	bottom: -4px;
+	left: -10%;
+	z-index: 1;
+}
+.registry h3 {
+	margin: 0;
+	padding: 9px 0 9px 15px;
+	font-weight: 300;
+}
+.registry h3 span {
+	font-weight: 400;
+}
+.honeymoon:after {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 0; 
+	height: 0; 
+	border-top: 25px solid transparent;
+	border-left: 25px solid #ddf4ff;
+	border-bottom:  25px solid transparent;
+}
+.honeymoon {
+	position: relative;
+	background: url(../images/honeymoon.jpg) 0 -145px no-repeat;
+	height: 50px;
+}
+/*.container.registry .shadow {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	box-shadow: 5px 5px 5px #000;
+	width: 100%;
+	height: 15px;
+}*/
 
 /* Story of Us */
 .container.story {
-	margin: 0;
-	padding: 25px 10% 40px 10%;
+	width: 100%;
+	position: relative;
+	padding: 25px 0 40px 0;
 	border-top: 1px dotted #DDDDDD;
 	border-bottom: 1px dotted #DDDDDD;
 	background: url(../images/wavegrid.png);
 	text-shadow: 1px 1px 1px #FFF;
 }
+
 .travel {
 	margin-top: 45px;
 	padding-top: 45px;
@@ -519,6 +566,12 @@ p {
 		left: 66%;
 		top: 39%; 
 	}
+	.container.story .span7 {
+		padding: 0 10%;
+	}
+	.honeymoon:after {
+		border: none;
+	}
 }
 @media (max-width: 480px) {
 	.banner .span12:before, .banner .span12:after {
@@ -555,6 +608,12 @@ p {
 	.map-flag2 {
 		left: 68%;
 		top: 44%; 
+	}
+	.container.story .span7 {
+		padding: 0 10%;
+	}
+	.registry h3 {
+		font-size: 17px;
 	}
 }
 @media (min-width: 980px) and (max-width: 1999px) {
