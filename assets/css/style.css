@@ -666,12 +666,25 @@ p {
 		top: 53%; 
 	}
 }
-/* Retina images */
-@media
-only screen and (-webkit-min-device-pixel-ratio: 2),
-only screen and (   min--moz-device-pixel-ratio: 2),
-only screen and (     -o-min-device-pixel-ratio: 2/1) { 
-  
+
+@media (-webkit-min-device-pixel-ratio: 2){
+	.day {
+		background: url(../images/foggy_birds_@2x.png);
+		background-size: 206px 206px;
+	}
+	.night {
+		background: url(../images/dark_geometric_@2x.png);
+		background-size: 70px 70px;
+	}
+	.honeymoon {
+		background: url(../images/honeymoon_2@x.jpg) 0 -145px no-repeat;
+	}
+	.container.story {
+		background: url(../images/wavegrid_@2x.png);
+		background-size: 100px 100px;
+	}
+}
+@media (min-resolution: 192dpi) {
 	.day {
 		background: url(../images/foggy_birds_@2x.png);
 		background-size: 206px 206px;
