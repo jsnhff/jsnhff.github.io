@@ -8,20 +8,6 @@ $( document ).ready(function() {
 		console.log(timeArray[i]);
 	};
 
-	$("#slideshow-left").responsiveSlides({
-	    auto: true,
-	    random: true,
-	    pause: true,
-	    speed: fadeTime,
-	    timeout: timeArray[3]
-	});
-	$("#slideshow-right").responsiveSlides({
-	    auto: true,
-	    random: true,
-	    pause: true,
-	    speed: fadeTime,
-	    timeout: timeArray[2]
-	});
 	$("#slideshow1").responsiveSlides({
 	    auto: true,
 	    random: true,
