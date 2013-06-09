@@ -23,22 +23,20 @@ $( document ).ready(function() {
 	    speed: fadeTime,
 	    timeout: timeArray[1]
 	});
-	if(!Modernizr.touch){
-		$("#slideshow3").responsiveSlides({
-		    auto: true,
-		    random: true,
-		    pause: true,
-		    speed: fadeTime,
-		    timeout: timeArray[2]
-		});
-		$("#slideshow4").responsiveSlides({
-		    auto: true,
-		    random: true,
-		    pause: true,
-		    speed: fadeTime,
-		    timeout: timeArray[3]
-		});
-	}
+	$("#slideshow3").responsiveSlides({
+	    auto: true,
+	    random: true,
+	    pause: true,
+	    speed: fadeTime,
+	    timeout: timeArray[2]
+	});
+	$("#slideshow4").responsiveSlides({
+	    auto: true,
+	    random: true,
+	    pause: true,
+	    speed: fadeTime,
+	    timeout: timeArray[3]
+	});
 
 	var myDate = new Date().getHours();
 	if(myDate > 4 && myDate < 11) {
