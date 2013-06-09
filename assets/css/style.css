@@ -667,7 +667,7 @@ p {
 	}
 }
 
-@media (-webkit-min-device-pixel-ratio: 2){
+/*@media (-webkit-min-device-pixel-ratio: 2){
 	.day {
 		background: url(../images/foggy_birds_@2x.png);
 		background-size: 206px 206px;
@@ -700,4 +700,4 @@ p {
 		background: url(../images/wavegrid_@2x.png);
 		background-size: 100px 100px;
 	}
-}
+}*/
