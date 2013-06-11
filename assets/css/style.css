@@ -342,7 +342,6 @@ p {
 	overflow: hidden;
 }
 .container.registry:hover {
-	cursor: pointer;
 	background-color: #bbe9ff;
 }
 .container.registry:hover .honeymoon:after {
@@ -362,12 +361,19 @@ p {
 	margin: 0;
 	padding: 9px 0 9px 15px;
 	font-weight: 300;
+	color: #666666;
 }
 .registry h3 span {
 	font-weight: 400;
 }
 .registry a {
-	color: #333;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 50px;
+	z-index: 10;
+	display: block;
 }
 .honeymoon:after {
 	content: "";
@@ -397,7 +403,16 @@ p {
 	background: url(../images/wavegrid.png);
 	text-shadow: 1px 1px 1px #FFF;
 }
-
+.night .container.story {
+	text-shadow: 1px 1px 1px #000000;
+	color: #EEEEEE;
+	border-top: 1px dotted #666666;
+	border-bottom: 1px dotted #666666;
+	background: url(../images/grey_wash_wall.png);
+}
+	.night .story p {
+		color: #EEEEEE;
+	}
 .travel {
 	margin-top: 45px;
 	padding-top: 45px;
@@ -414,6 +429,7 @@ p {
 		.map-mask {
 			position: relative;
 			margin: 0 auto;
+			transition: margin .5s;
 		}
 		.map a {
 			display: block;
@@ -613,7 +629,7 @@ p {
 }
 @media (min-width: 768px) and (max-width: 979px) {
 	.map-mask {
-		margin: 16% 20px 0 0;
+		margin: 23% 20px 0 0;
 	}
 	.map-flag1 {
 		left: -3%;
@@ -639,7 +655,7 @@ p {
 		margin-right: 25px;
 	}
 	.travel-details {
-		margin-top: 12px;
+		margin-top: -8px;
 	}
 	.map-flag1 {
 		left: 3%;
@@ -655,7 +671,7 @@ p {
 		margin-right: 25px;
 	}
 	.travel-details {
-		margin-top: 80px;
+		margin-top: 65px;
 	}
 	.map-flag1 {
 		left: 8%;
