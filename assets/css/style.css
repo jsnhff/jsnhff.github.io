@@ -124,6 +124,11 @@ body {
 	background: #999999 url(../images/dark_geometric.png);
 }
 
+body.iphone #slideshow3,
+body.iphone #slideshow4 {
+	display: none;
+}
+
 a, a:visited {
 	text-decoration: none;
 	color: #44c3ff;
@@ -707,6 +712,6 @@ p {
 	.honeymoon {
 		background: url(../images/honeymoon@2X.jpg) no-repeat;
 		background-size: 765px 50px;
-		background-position: right;
+		background-position: right;git
 	}
 }
