@@ -121,7 +121,7 @@ body {
 }
 
 .night {
-	background: url(../images/dark_geometric.png);
+	background: #999999 url(../images/dark_geometric.png);
 }
 
 a, a:visited {
@@ -147,10 +147,10 @@ a:active {
 	margin: 0 auto;
 }
 	.day .container {
-		background: rgba(255,255,255,0.5);
+		background-color: rgba(255,255,255,0.5);
 	}
 	.night .container {
-		background: rgba(10,10,10,0.01);
+		background-color: rgba(10,10,10,0.01);
 		color: #EEEEEE;
 		text-shadow: 1px 1px 1px rgba(255,255,255, .4);
 	}
