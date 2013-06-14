@@ -395,7 +395,7 @@ p {
 }
 
 /* Story of Us */
-.container.story {
+.day .container.story {
 	width: 100%;
 	position: relative;
 	padding: 25px 0 40px 0;
@@ -697,11 +697,11 @@ p {
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio:1.5),only screen and (-moz-min-device-pixel-ratio:1.5),only screen and (-o-min-device-pixel-ratio:3/2),only screen and (min-device-pixel-ratio:1.5) { 
-    body.day {
+    .day {
 		background: url(../images/foggy_birds@2X.png);
 		background-size: 206px 206px;
     }
-	body.night {
+	.night {
 		background: url(../images/dark_geometric@2X.png);
 		background-size: 70px 70px;
 	}
