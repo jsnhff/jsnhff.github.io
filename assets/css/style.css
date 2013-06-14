@@ -242,9 +242,6 @@ p {
 		}
 
 /* Photo Band */
-.photos {
-	min-height: 237px;
-}
 .photo-band {
 	position: relative;
 	width: 100%;
@@ -320,6 +317,7 @@ p {
 		width: 100%;
 		left: 0;
 		top: 0;
+		min-height: 237px;
 	}
 
 	.rslides li:first-child {
