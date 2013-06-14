@@ -384,7 +384,7 @@ p {
 }
 .honeymoon {
 	position: relative;
-	background: url(../images/honeymoon.jpg) 0 -145px no-repeat;
+	background: url(../images/honeymoon.jpg) no-repeat;
 	background-position: right;
 	height: 50px;
 }
@@ -598,7 +598,7 @@ p {
 		border: none;
 	}
 	.registry h3 {
-		font-size: 16px;
+		font-size: 14px;
 		text-align: center;
 		padding-left: 0;
 	}
@@ -627,7 +627,7 @@ p {
 		top: 39%; 
 	}
 	.registry h3 {
-		font-size: 16px;
+		font-size: 14px;
 		text-align: center;
 		padding-left: 0;
 	}
@@ -702,7 +702,7 @@ p {
 		background-size: 100px 100px;
 	}
 	.registry .honeymoon {
-		background: url(../images/honeymoon@2X.jpg) 0 -145px no-repeat;
+		background: url(../images/honeymoon@2X.jpg) no-repeat;
 		background-size: 765px 50px;
 	}
 }
