@@ -308,6 +308,7 @@ p {
 		width: 100%;
 		padding: 0;
 		margin: 0;
+		background-color: #999;
 	}
 	.rslides li {
 		-webkit-backface-visibility: hidden;
