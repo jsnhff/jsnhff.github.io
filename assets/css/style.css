@@ -690,19 +690,19 @@ p {
 
 @media only screen and (-webkit-min-device-pixel-ratio:1.5),only screen and (-moz-min-device-pixel-ratio:1.5),only screen and (-o-min-device-pixel-ratio:3/2),only screen and (min-device-pixel-ratio:1.5) { 
     body.day {
-		background: url(../images/foggy_birds@2x.png);
+		background: url(../images/foggy_birds@2X.png);
 		background-size: 206px 206px;
     }
 	body.night {
-		background: url(../images/dark_geometric@2x.png);
+		background: url(../images/dark_geometric@2X.png);
 		background-size: 70px 70px;
 	}
 	.container.story {
-		background: url(../images/wavegrid@2x.png);
+		background: url(../images/wavegrid@2X.png);
 		background-size: 100px 100px;
 	}
 	.registry .honeymoon {
-		background: url(../images/honeymoon@2x.jpg) 0 -145px no-repeat;
+		background: url(../images/honeymoon@2X.jpg) 0 -145px no-repeat;
 		background-size: 765px 50px;
 	}
 }
