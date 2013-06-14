@@ -688,11 +688,11 @@ p {
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio:1.5),only screen and (-moz-min-device-pixel-ratio:1.5),only screen and (-o-min-device-pixel-ratio:3/2),only screen and (min-device-pixel-ratio:1.5) { 
-    .day {
+    body.day {
 		background-image: url(../images/foggy_birds@2x.png);
 		background-size: 206px 206px;
     }
-	.night {
+	body.night {
 		background-image: url(../images/dark_geometric@2x.png);
 		background-size: 70px 70px;
 	}
@@ -700,8 +700,8 @@ p {
 		background-image: url(../images/wavegrid@2x.png);
 		background-size: 100px 100px;
 	}
-	.honeymoon {
-		background: url(../images/honeymoon@2x.jpg) 0 -145px no-repeat;
+	.registry .honeymoon {
+		background: url(../images/honeymoon@2x.jpg) no-repeat;
 		background-size: 765px 50px;
 	}
 }
