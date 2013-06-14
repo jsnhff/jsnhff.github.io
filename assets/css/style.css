@@ -418,6 +418,9 @@ p {
 .day .travel {
 	background-color: rgba(255,255,255,0.5);
 }
+.night .travel p {
+	color: #EFEFEF;
+}
 	.travel ul {
 		margin: 0;
 		padding: 0;
