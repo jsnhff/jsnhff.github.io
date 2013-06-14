@@ -512,6 +512,12 @@ p {
 	.activities h1 {
 		text-align: center;
 	}
+	.activities .activities-link {
+		text-align: center;
+		width: 75px;
+		display: block;
+		margin: 0 auto;
+	}
 	.activities h2 {
 		text-align: center;
 	}
