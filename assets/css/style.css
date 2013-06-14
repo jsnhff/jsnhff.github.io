@@ -146,11 +146,7 @@ a:active {
 .container {
 	margin: 0 auto;
 }
-	.day .container {
-		background-color: rgba(255,255,255,0.5);
-	}
 	.night .container {
-		background-color: rgba(10,10,10,0.01);
 		color: #EEEEEE;
 		text-shadow: 1px 1px 1px rgba(255,255,255, .4);
 	}
@@ -418,6 +414,9 @@ p {
 	padding-top: 45px;
 	border-top: 1px dotted #DDDDDD;
 	text-align: left;
+}
+.day .travel {
+	background-color: rgba(255,255,255,0.5);
 }
 	.travel ul {
 		margin: 0;
