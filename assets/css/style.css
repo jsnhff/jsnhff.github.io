@@ -641,6 +641,9 @@ p {
 	}
 }
 @media (min-width: 768px) and (max-width: 979px) {
+	.rslides li {
+		min-height: 181px;
+	}
 	.map-mask {
 		margin: 23% 20px 0 0;
 	}
