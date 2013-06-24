@@ -436,7 +436,6 @@ p {
 		.map-mask {
 			position: relative;
 			margin: 0 auto;
-			transition: margin .5s;
 		}
 		.map a {
 			display: block;
@@ -566,6 +565,13 @@ p {
 	}
 	.footer ul li {
 		list-style: none;
+	}
+	.footer h1 {
+		margin-bottom: 0;
+	}
+	.footer h4 {
+		margin-top: 0;
+		color: #999;
 	}
 
 @media (max-width: 767px) {
