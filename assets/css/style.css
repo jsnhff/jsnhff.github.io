@@ -416,7 +416,7 @@ p {
 	}
 .travel {
 	margin-top: 45px;
-	padding-top: 45px;
+	padding: 45px 0 55px 0;
 	border-top: 1px dotted #DDDDDD;
 	text-align: left;
 }
@@ -611,6 +611,9 @@ p {
 	.honeymoon:after {
 		border: none;
 	}
+	.travel {
+		padding: 45px 0 30px 0;
+	}
 	.registry h3 {
 		font-size: 14px;
 		text-align: center;
@@ -674,7 +677,7 @@ p {
 		padding: 0 40px;
 	}
 	.map-mask {
-		margin-right: 25px;
+		margin: 3% 25px 0 0;
 	}
 	.travel-details {
 		margin-top: -8px;
