@@ -1,4 +1,5 @@
-jsnhff.github.io
+Welcome
 ================
 
-A site for Carly and Jason's wedding.
+Have a question?
+jsnhff@gmail.com
