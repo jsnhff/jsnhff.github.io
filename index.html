@@ -1,3 +1,42 @@
 <html lang="en">
-    <h1>It doesn't get any better than this.</h1>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Jason Huff</title>
+        <meta name="description" content="Jason Huff is a designer, artist, and writer living in Brooklyn.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/ico" href="favicon.ico">
+
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/basscss.min.css">
+        <link rel="stylesheet" href="css/main.css">
+    </head>
+    <body class="container m3 rainbow">
+        <div class="col-3 mx-auto">
+            <img class="center circle" src="img/jason-huff-portrait.jpg">
+        </div>
+        <div class="col-11 mx-auto">
+            <h1 class="center"><span id="js-time">Hello time</span>, I'm Jason.</h1>
+            <h1 class="center">I'm a design lead at <a href="http://www.etsy.com">Etsy</a>. I've taught courses on art at <a href="http://www.risd.edu">RISD</a> and design at <a href="http://www.parsons.edu">Parsons</a>. I make <a href="http://www.jason-huff.com">art</a> and write for <a href="http://www.rhizome.org/profiles/jasonhuff/">Rhizome</a> and <a href="http://thenewinquiry.com/author/jason-huff/">The New Inquiry</a>. I live in Brooklyn with <a href="http://www.carlygaebe.com/">Carly</a>.</h1>
+        </div>
+    </body>
+    <script src="js/vendor/modernizr-2.6.2.min.js"></script>
+    <script src="js/vendor/jquery-1.10.2.min.js"></script>
+    <script>
+        var currentTime = new Date();
+        var time = currentTime.getTime();
+        var hours = currentTime.getHours();
+        var time = $("#js-time");
+
+        if (hours >= 19) {
+            $(time).text("Good evening");
+        } else if (hours >= 12) {
+            $(time).text("Good afternoon");
+        } else if (hours <= 10) {
+            $(time).text("Good morning");
+        } else {
+            $(time).text("Good day");
+        }
+    </script>
 </html>
