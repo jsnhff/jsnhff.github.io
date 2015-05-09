@@ -7,8 +7,8 @@ image_path: "/images/endless-opportunities/jhuff-endless-opportunities-"
 description: "Custom Software, Photocopier, Mirrored Acrylic Text"
 ---
 
-
+{% for num in (1...2) %}
 <div>
-    <img class="mb3" src="{{ file.url }}" />
+    <img class="mb3" src="{{ page.image_path }}{{ num }}.jpg" />
 </div>
-
+{% endfor %}

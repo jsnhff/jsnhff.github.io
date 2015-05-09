@@ -8,8 +8,8 @@ description: "This book was made by sending the entire text of Bret Easton Ellis
 <a title='Available at TRAUMAWEIN Publishing' href='http://traumawien.at/prints/american-psycho/'>Available at TRAUMAWEIN Publishing</a>"
 ---
 
-
+{% for num in (1...4) %}
 <div>
-    <img class="mb3" src="{{ file.url }}" />
+    <img class="mb3" src="{{ page.image_path }}{{ num }}.jpg" />
 </div>
-
+{% endfor %}

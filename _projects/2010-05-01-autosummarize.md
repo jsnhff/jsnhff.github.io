@@ -13,9 +13,9 @@ description: "The top 100 most downloaded copyright free books summarized using 
 <a href='http://therumpus.net/2010/08/autosummarize-applied-to-popular-works/'>Mentioned on <em>The Rumpus</em></a>"
 ---
 
-
+{% for num in (1...5) %}
 <div>
-    <img class="mb3" src="{{ file.url }}" />
+    <img class="mb3" src="{{ page.image_path }}{{ num }}.jpg" />
 </div>
-
+{% endfor %}
 
