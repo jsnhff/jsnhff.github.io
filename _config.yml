@@ -17,7 +17,7 @@ markdown: kramdown
 collections:
     projects:
         output: true
-        permalink: /projects/:path/
+        permalink: /projects/:title/
     updates:
         output: true
 
@@ -25,4 +25,7 @@ collections:
 include:      ['_pages']
 encoding:     "utf-8"
 markdown_ext: "markdown,mkdown,mkdn,mkd,md"
+
+# Permalinks for blog posts
+permalink: /writing/:title/
 
