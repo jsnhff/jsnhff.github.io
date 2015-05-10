@@ -8,19 +8,20 @@ layout: default
     </header>
     <article>
         {{ content }}
-        </article>
-        <div class="clearfix">
-            {% if page.previous.url %} 
-            <a class="prev teal" href="{{page.previous.url}}">
-                <svg class="icon" data-icon="chevron-left" viewBox="0 0 32 32" style="fill:currentcolor"><path d="M20 1 L24 5 L14 16 L24 27 L20 31 L6 16 z "></path></svg>
-                {{page.previous.title}}
-            </a> 
-            {% endif %} 
-            {% if page.next.url %} 
-            <a class="next teal" href="{{page.next.url}}">
-                {{page.next.title}}
-                <svg class="icon" data-icon="chevron-right" viewBox="0 0 32 32" style="fill:currentcolor"><path d="M12 1 L26 16 L12 31 L8 27 L18 16 L8 5 z "></path></svg>
-            </a> 
-            {% endif %} 
-        </div>
+    </article>
+    <div class="clearfix">
+        <h6 class="gray caps border-top py2 mt3">Keep reading</h6>
+        {% if page.previous.url %} 
+        <a class="left teal" href="{{page.previous.url}}">
+            <svg class="icon" data-icon="chevron-left" viewBox="0 0 32 32" style="fill:currentcolor"><path d="M20 1 L24 5 L14 16 L24 27 L20 31 L6 16 z "></path></svg>
+            {{page.previous.title}}
+        </a> 
+        {% endif %} 
+        {% if page.next.url %} 
+        <a class="right teal" href="{{page.next.url}}">
+            {{page.next.title}}
+            <svg class="icon" data-icon="chevron-right" viewBox="0 0 32 32" style="fill:currentcolor"><path d="M12 1 L26 16 L12 31 L8 27 L18 16 L8 5 z "></path></svg>
+        </a> 
+        {% endif %} 
+    </div>
 </div>

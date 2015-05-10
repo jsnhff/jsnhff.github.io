@@ -69,4 +69,4 @@ To answer this, The Guardian started a series profiling writers and their deskto
 
 When I asked Cruces over email to describe his own desktop image on the about page of Desktop Views he replied, “I think it's quite reflective of how I utilize my physical spaces (apartment and studio). I prefer to keep things tidy and organized - concealing personal items, tools, materials, works in progress, and final products.”
 
-Desktops are the new studio. In the 1930s people were captivated by photographs of Francis Bacon’s London studio – a dark cluttered mess of half-used paint tubes, gnarled brushes, and stained walls. Now we can look at these desktop images with the same memorializing curiosity – all the while trying to decode who created them.
+Desktops are the new studio. In the 1930s people were captivated by photographs of Francis Bacon’s London studio – a dark cluttered mess of half-used paint tubes, gnarled brushes, and stained walls. Now we can look at these desktop images with the same memorializing curiosity – all the while trying to decode who created them. &#9786;
