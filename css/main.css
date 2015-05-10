@@ -13,9 +13,6 @@
 .icon {
     width: 1em;
     height: 1em;
-    position: relative;
-    top: -.125em;
-    vertical-align: middle;
     fill: currentcolor;
 }
 
