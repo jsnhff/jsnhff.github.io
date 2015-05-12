@@ -29,3 +29,5 @@ markdown_ext: "markdown,mkdown,mkdn,mkd,md"
 # Permalinks for blog posts
 permalink: /writing/:title/
 
+gems:
+- jekyll-sitemap
