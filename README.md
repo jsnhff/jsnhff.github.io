@@ -1,4 +1,4 @@
-Welcome
+Art Life™
 ================
 
 Have a question?
