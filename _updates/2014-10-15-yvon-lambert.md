@@ -1,6 +1,6 @@
 ---
 layout: update
-update-type: Panel
+update-type: Book
 date: October 15, 2014
 ---
 
