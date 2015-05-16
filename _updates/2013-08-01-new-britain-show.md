@@ -1,6 +1,6 @@
 ---
 layout: update
-update-type: Exhbition
+update-type: Exhibition
 date: August 1st, 2013
 ---
 
