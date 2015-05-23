@@ -19,6 +19,14 @@
     fill: currentcolor;
 }
 
+/* Making articles more readable */
+article p {
+    font-size: 1.25em;
+    line-height: 1.75em;
+    letter-spacing: .01rem;
+    font-weight: 200;
+}
+
 /* Responsive video iframes */
 .video-container {
     position: relative;
