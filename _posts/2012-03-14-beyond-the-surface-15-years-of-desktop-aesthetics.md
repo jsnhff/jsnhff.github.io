@@ -8,12 +8,12 @@ note: "This piece originally appeared on <a href='http://rhizome.org/editorial/2
 excerpt: A desktop is a changing record of visual decisions. It speaks to the aesthetics of a particular work-flow and personal space. A desktop exhibits a diagram of your organizational habits and a screenshot of it captures a brief moment of its functional evolution. The image of your desktop becomes an intimate self-portrait and the impulse to decode an unfamiliar desktop is unavoidable.
 ---
 
-A desktop is a changing record of visual decisions. It speaks to the aesthetics of a particular work-flow and personal space. A desktop exhibits a diagram of your organizational habits and a screenshot of it captures a brief moment of its functional evolution. The image of your desktop becomes an intimate self-portrait and the impulse to decode an unfamiliar desktop is unavoidable.
-
 <figure class="mx-auto">
     <img class="full-width" src="http://media.rhizome.org/blog/8587/desktop-7.jpeg">
     <figcaption class="h6 gray">Xerox Star 8010 Workstation - Image via <a href="http://plyojump.com/classes/workstation_era.php">plyojump.com</a></figcaption>
 </figure>
+
+A desktop is a changing record of visual decisions. It speaks to the aesthetics of a particular work-flow and personal space. A desktop exhibits a diagram of your organizational habits and a screenshot of it captures a brief moment of its functional evolution. The image of your desktop becomes an intimate self-portrait and the impulse to decode an unfamiliar desktop is unavoidable.
 
 In January, Adam Cruces wrapped up his Desktop Views project. Cruces collected 51 images of artists’ desktops including a number of artists he worked with in his earlier project STATE.
 
