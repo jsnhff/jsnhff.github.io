@@ -9,6 +9,6 @@ description: "Visit <a title='work-life.tips' href='http://www.work-life.tips'>w
 
 {% for num in (1...4) %}
 <div>
-    <img class="mb3" src="{{ page.image_path }}{{ num }}.jpg" />
+    <img class="mb3" src="{{ page.image_path }}{{ num }}.jpg" srcset="{{ page.image_path }}{{ num }}.jpg 1x, {{ page.image_path }}{{ num }}-2x.jpg 2x"/>
 </div>
 {% endfor %}
