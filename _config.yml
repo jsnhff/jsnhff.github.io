@@ -1,7 +1,7 @@
 # Site settings
 title: Jason Huff
 email: jsnhff@gmail.com
-description: > Art Life.
+description: "Art Life."
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://jason-huff.com" # the base hostname & protocol for your site
 twitter_username: jsnhff
