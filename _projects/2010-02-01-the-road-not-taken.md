@@ -9,7 +9,7 @@ description: "This project takes Robert Frost's seminal 1916 poem, The Road Not 
 Printed in a limited edition of 50."
 ---
 
-{% for num in (1...1) %}
+{% for num in (1..1) %}
 <div>
     <img class="mb3" src="{{ page.image_path }}{{ num }}.jpg" />
 </div>

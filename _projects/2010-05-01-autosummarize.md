@@ -11,7 +11,7 @@ description: |
   <a href='http://www.mcnallyjackson.com/bookmachine/autosummarize-jason-huff'>Available at McNally Jackson</a>
 ---
 
-{% for num in (1...5) %}
+{% for num in (1..5) %}
 <div>
     <img class="mb3" src="{{ page.image_path }}{{ num }}.jpg" />
 </div>

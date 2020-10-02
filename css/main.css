@@ -1,6 +1,16 @@
 /* Base */
 /* ----------------------------------------------------------*/
 
+/* Color overrides */
+.bg-black {
+    background-color: #070707;
+}
+
+body {
+    background-color: #070707;
+    color: #EEE;
+}
+
 .rainbow {
     background: -webkit-linear-gradient(90deg, #B3FFAB 10%, #12FFF7 90%); /* Chrome 10+, Saf5.1+ */
     background:    -moz-linear-gradient(90deg, #B3FFAB 10%, #12FFF7 90%); /* FF3.6+ */
