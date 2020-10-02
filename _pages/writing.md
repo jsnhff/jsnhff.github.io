@@ -2,7 +2,6 @@
 layout: page
 title: Writing
 permalink: /writing/
-exclude: true
 ---
 
 {% for post in site.posts %}

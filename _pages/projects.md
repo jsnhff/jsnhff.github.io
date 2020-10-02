@@ -2,7 +2,6 @@
 layout: default
 title: Projects
 permalink: /projects/
-exclude: true
 ---
 
 <div class="flex flex-wrap mxn2 p1 mt2">
