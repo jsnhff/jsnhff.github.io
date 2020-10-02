@@ -1,7 +1,7 @@
 ---
 layout: page
-title: News
-permalink: /news/
+title: Index
+permalink: /index/
 ---
 <div>
 {% for update in site.updates reversed %}
