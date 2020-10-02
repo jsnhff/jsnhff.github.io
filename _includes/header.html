@@ -16,7 +16,9 @@
             <nav class="inline-block p1">
                 <div class="sm-show">
                     {% for page in site.pages %}
-                        {% if page.title %}<a class="site-header-nav-link px1 white" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>{% endif %}
+                        {% unless page.exclude %}
+                            {% if page.title %}<a class="site-header-nav-link px1 white" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>{% endif %}
+                        {% endunless %}
                     {% endfor %}
                 </div>
             </nav>
@@ -25,7 +27,9 @@
             <div id="js-mobile-nav" class="block px1 hide">
                 <div class="">
                     {% for page in site.pages %}
-                        {% if page.title %}<a class="block p1 white" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>{% endif %}
+                        {% unless page.exclude %}
+                            {% if page.title %}<a class="block p1 white" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>{% endif %}
+                        {% endunless %}
                     {% endfor %}
                 </div>
     </div>
