@@ -8,7 +8,12 @@
     {% include header.html %}
 
     <div class="container px2 py4">
-      <div class="clearfix bg-black py3 px4 mt3">
+      <!-- Large page -->
+      <div class="clearfix bg-black py3 px4 mt3 md-show">
+      {{ content }}
+      </div>
+      <!-- Small page -->
+      <div class="clearfix bg-black py2 px3 mt2 md-hide">
       {{ content }}
       </div>
     </div>
