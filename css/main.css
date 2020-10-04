@@ -13,6 +13,9 @@
 
 /* Fonts and colors just for me */
 body {
+    background-image: url(../images/background_static_small.png);
+    background-size: 400px 400px;
+    background-repeat: repeat;
     background-color: #070707;
     color: #EEE;
     font-family: 'Tenor Sans', sans-serif;
@@ -22,7 +25,7 @@ h1, h2, h3, h4, h5, h6 {
     font-family: 'Tenor Sans', sans-serif;   
 }
 
-/* Annoying override of BASSCSS default no underline for a links */
+/* Overrides of BASSCSS default */
 .underline {
 	text-decoration: underline; !important
 }
