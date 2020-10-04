@@ -2,21 +2,22 @@
     <!-- Large nav -->
     <div class="md-show">
         <nav class="flex flex-center py2 px2">
-                <a class="site-header-title mr3 bold white" href="{{ site.baseurl }}/">
+                <a class="mr3 bold white" href="{{ site.baseurl }}/">
                     <img class="block" height="50px" width="50px" src="/images/smiley_mark.svg" alt="Smile™">
                 </a>
                {% for item in site.data.navigation_list.docs %}
-                  <a class="site-header-nav-link px1 mr3 white h3" href="{{ item.url }}">{{ item.title }}</a>
+                  <a class="mr3 white h3 {% if item.title == page.title %}underline{% endif %}" href="{{ item.url }}">{{ item.title }}</a>
                {% endfor %}
         </nav>
     </div>
     <!-- Small nav -->
     <nav class="flex flex-center py2 px2 md-hide">
-        <a class="flex-auto site-header-title inline-block bold white" href="{{ site.baseurl }}/">
+        <a class="flex-auto inline-block bold white" href="{{ site.baseurl }}/">
             <img class="block" height="35px" width="35px" src="/images/smiley_mark.svg" alt="Smile™">
         </a>
        {% for item in site.data.navigation_list.docs %}
-          <a class="site-header-nav-link ml3 white h4" href="{{ item.url }}">{{ item.title }}</a>
+          <a class="ml3 white h4 {% if item.title == page.title %}underline{% endif %}" href="{{ item.url }}">{{ item.title }}</a>
        {% endfor %}
+
     </nav>
 </header>
