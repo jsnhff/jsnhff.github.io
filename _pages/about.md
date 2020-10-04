@@ -4,7 +4,7 @@ title: About
 permalink: /about/
 ---
 
-Jason Huff is a designer and leader by trade, with years of experience building effective teams and powerful products. He focuses on developing design strategies to best support artists around the world starting with work at <a hreff="http://www.etsy.com/" alt="Etsy">Etsy</a> in 2012 and now <a href="http://www.netflix.com/" alt="Netflix">Netflix’s</a> global studio. Beyond this, he’s also an artist, teacher, collaborator, and friend-from-the-internet who’s most excited when he’s helping to make awesome things real.
+<p class="h3">Jason Huff is a designer and leader by trade, with years of experience building effective teams and powerful products. He focuses on developing design strategies to best support artists around the world starting with work at <a hreff="http://www.etsy.com/" alt="Etsy">Etsy</a> in 2012 and now <a href="http://www.netflix.com/" alt="Netflix">Netflix’s</a> global studio. Beyond this, he’s also an artist, teacher, collaborator, and friend-from-the-internet who’s most excited when he’s helping to make awesome things real.</p>
 
 In his creative work, Jason cohabitates between the realms of art, theory, and technology. He has been a NEW INC mentor, a Rhizome contributor, a host of <a href="http://www.livingroomlightexchange.com/lrlxny/" alt="LRLX">Living Room Light Exchange</a>, an adjunct faculty member at Parsons/The New School, and a visiting critic at <a href="https://www.risd.edu/" alt="RISD" title="risd.edu">RISD</a>—where he also earned his MFA in Digital Media.
 
