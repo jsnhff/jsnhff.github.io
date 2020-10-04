@@ -6,11 +6,15 @@
     background-color: #070707;
 }
 
+/* Fonts and colors just for me */
 body {
     background-color: #070707;
     color: #EEE;
-    /* Font just for me */
     font-family: 'Tenor Sans', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Tenor Sans', sans-serif;   
 }
 
 .rainbow {
