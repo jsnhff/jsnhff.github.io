@@ -24,11 +24,9 @@
         </div>
             <div id="js-mobile-nav" class="block px1 hide">
                 <div class="">
-                    {% for page in site.pages %}
-                        {% unless page.exclude %}
-                            {% if page.title %}<a class="block p1 white" href="{{ page.url | prepend: site.relative_url }}">{{ page.title }}</a>{% endif %}
-                        {% endunless %}
-                    {% endfor %}
+                   {% for item in site.data.navigation_list.docs %}
+                      <a class="site-header-nav-link px1 white" href="{{ item.url }}">{{ item.title }}</a>
+                   {% endfor %}
                 </div>
     </div>
 </header>
