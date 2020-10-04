@@ -1,6 +1,11 @@
 /* Base */
 /* ----------------------------------------------------------*/
 
+/* Border for testing dom */ 
+.border {
+    border: 2px solid rgba(255,255,255,.5);
+}
+
 /* Color overrides */
 .bg-black {
     background-color: #070707;
