@@ -25,6 +25,10 @@ h1, h2, h3, h4, h5, h6 {
     font-family: 'Tenor Sans', sans-serif;   
 }
 
+.bh1 {
+    font-size: 3.5rem;
+}
+
 /* Overrides of BASSCSS default */
 .underline {
 	text-decoration: underline; !important
@@ -79,7 +83,9 @@ article p {
 /* ----------------------------------------------------------*/
 @media (max-width:52em) {
     .h1, h1 { font-size: 1.5rem; }
+    .bh1 { font-size: 2rem; }
 }
 @media (max-width:40em) {
     .h1, h1 { font-size: 1.25rem; }
+    .bh1 { font-size: 2rem; }
 }
