@@ -29,6 +29,14 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 3.5rem;
 }
 
+.rotate-5r {
+  transform: rotate(5deg);
+}
+
+.rotate-5l {
+  transform: rotate(-5deg);
+}
+
 /* Overrides of BASSCSS default */
 .underline {
 	text-decoration: underline; !important
