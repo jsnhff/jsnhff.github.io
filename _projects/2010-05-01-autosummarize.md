@@ -2,7 +2,7 @@
 layout: project
 title:  "AutoSummarize"
 date:   2010-05-01
-categories: book 
+category: book 
 image_path: "/images/autosummarize/jhuff-autosummarize-"
 description: |
   The top 100 most downloaded copyright free books summarized using Microsoft Word 2008’s AutoSummarize 10-sentence function and organized alphabetically. "Word has examined the document and picked the sentences most relevant to the main theme." ~ Word 2008<br>
