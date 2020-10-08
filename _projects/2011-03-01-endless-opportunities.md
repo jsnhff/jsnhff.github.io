@@ -2,7 +2,7 @@
 layout: project
 title:  "Endless Opportunties"
 date:   2011-05-01
-categories: risd 
+categories: installation 
 image_path: "/images/endless-opportunities/jhuff-endless-opportunities-"
 description: "Searching for changes in image results algorithms. Printing the results onto paper. Looping. Searching. Finding. Printing. Endless opportunities."
 ---
