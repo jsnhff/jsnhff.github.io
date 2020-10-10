@@ -94,6 +94,6 @@ article p {
     .bh1 { font-size: 2rem; }
 }
 @media (max-width:40em) {
-    .h1, h1 { font-size: 1.25rem; }
+    .h1, h1 { font-size: 1.5rem; }
     .bh1 { font-size: 2rem; }
 }
