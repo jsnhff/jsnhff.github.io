@@ -11,6 +11,10 @@
     background-color: #070707;
 }
 
+.bw-filter {
+	filter: grayscale(100%);
+}
+
 /* Fonts and colors just for me */
 body {
     background-image: url(../images/background_static_small.png);
