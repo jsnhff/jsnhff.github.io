@@ -4,6 +4,8 @@ title: Projects
 permalink: /projects/
 ---
 
+<h1>A selection of my projects.</h1>
+
 <h2 class="h3 col-12">Books</h2>
 <div class="flex flex-wrap mxn2 p1 mt2">
     {% for project in site.projects reversed %}
