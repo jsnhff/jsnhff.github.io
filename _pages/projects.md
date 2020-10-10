@@ -4,7 +4,8 @@ title: Projects
 permalink: /projects/
 ---
 
-<h1>A selection of my projects.</h1>
+<h5 class="mb0"><a href="/" alt="Go home.">&larr; Head back to the homepage</a></h5>
+<h1 class="mt1 mb4">A selection of my projects by category.</h1>
 
 <h2 class="h3 col-12">Books</h2>
 <div class="flex flex-wrap mxn2 p1 mt2">
