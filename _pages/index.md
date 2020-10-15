@@ -6,7 +6,6 @@ permalink: /index/
 <div>
 {% for update in site.updates reversed %}
     <div class="">
-        <p class="inline-block mid-gray mb0 caps h6">{{ update.update-type }} /</p>
         <p class="update-time inline-block mid-gray mb0 caps h6">
             <!-- Whitespace added for readability -->
             {% assign d = update.date | date: "%-d"  %}
@@ -19,6 +18,7 @@ permalink: /index/
               {% endcase %} 
             {{ update.date | date: "%Y" }}
         </p>
+        <p class="inline-block mid-gray mb0 caps h6">/ {{ update.update-type }}</p>
         {{ update.content }}
     </div>
 {% endfor %}
