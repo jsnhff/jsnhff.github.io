@@ -63,13 +63,27 @@ article p {
     font-weight: 200;
 }
 
+hr {
+ border-bottom-color: #EEE;
+}
+
+.columns {
+	column-count: 2;
+}
+
 /* Mobile Styles */
 /* ----------------------------------------------------------*/
 @media (max-width:52em) {
     .h1, h1 { font-size: 1.5rem; }
     .bh1 { font-size: 2rem; }
+	.columns {
+		column-count: 1;
+	}
 }
 @media (max-width:40em) {
     .h1, h1 { font-size: 1.5rem; }
     .bh1 { font-size: 2rem; }
+	.columns {
+		column-count: 1;
+	}
 }
