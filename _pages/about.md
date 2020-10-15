@@ -20,7 +20,7 @@ While at RISD, Jason worked on two projects that are now archived in MoMA’s li
 <h2 class="h3">Learning & Making</h2>
 <p>Following interests on topics of technology, contemporary art, design history, economics, and the future:</p>
 <ul>
-<li>Studying the intersection of technology, economics, and anothropology.</li>
+<li>Studying the intersection of technology, economics, and anthropology.</li>
 <li>Scheming more radical ways to fund artists with <a href="http://kelaninichole.com/" alt="Kelani Nichole">Kelani Nichole</a>. If you have ideas, <a href="mailto:jsnhff+radical@gmail.com">please reach out</a>.</li>
 <li>Collaborating with freelancers on a new sculpture and software for books.</li>
 </ul>
