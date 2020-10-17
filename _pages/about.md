@@ -28,6 +28,10 @@ While at RISD, I worked on two projects that are now archived in MoMA’s librar
 <li>Scheming more radical ways to fund artists with <a href="http://kelaninichole.com/" alt="Kelani Nichole">Kelani Nichole</a>. If you have ideas, <a href="mailto:jsnhff+radical@gmail.com">please reach out</a>.</li>
 <li>Collaborating with freelancers on a new sculpture and software for books.</li>
 </ul>
+
 <p class="mt3">@jsnhff on <a href="https://www.instagram.com/jsnhff/" alt="This site steals your indentity for money">Instagram</a> and <a href="https://twitter.com/jsnhff" alt="Beware, trolls lurk on this site">Twitter</a> posting every once and awhile.</p>
+
 <h6 class="grey mt4">This website is a lightly edited and occasionally updated archive built on <a href="https://pages.github.com/" alt="Github pages">github pages</a> with <a href="https://jekyllrb.com/" alt="Jekyll static site creator">Jekyll</a>. View the <a href="https://github.com/jsnhff/jsnhff.github.io/commits/master" alt="Changelog">changelog</a>.</h6>
+
+<h6 class="grey mt2">Special thanks to <a href="https://willakoerner.com/" alt="Willa Köerner is cool">Willa Köerner</a> for helping create this thing.</h6>
 
