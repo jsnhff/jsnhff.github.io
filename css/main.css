@@ -15,6 +15,10 @@
 	filter: grayscale(100%);
 }
 
+a {
+	color: #0082f3;
+}
+
 /* Fonts and colors just for me */
 body {
     background-image: url(../images/background_static_small.png);
