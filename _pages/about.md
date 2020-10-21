@@ -19,7 +19,7 @@ While at RISD, I worked on two projects that are now archived in MoMA’s librar
 <p>I'm advising two friends' companies:</p>
 <ol class="mb3">
 	<li><a href="https://naominomi.com/" alt="Naomi Nomi">Naomi Nomi</a> &mdash; a brilliant new women's workwear, direct-to-consumer fashion shop in NYC that believes clothes should change to fit womens' bodies and not the other way around.</li>
-	<li><a href="https://weft.design/" alt="Weft">Weft</a> &mdash; a company he helped get off the ground at RISD that now uses new technology to help artists create and order custom, high-quality woven textiles online.</li>
+	<li><a href="https://weft.design/" alt="Weft">Weft</a> &mdash; a company I helped get off the ground at RISD that now uses new technology to help artists create and order custom, high-quality woven textiles online.</li>
 </ol>
 <h2 class="h3">Learning & Making</h2>
 <p>I'm following interests on topics of technology, contemporary art, design history, economics, and the future:</p>
