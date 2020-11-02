@@ -14,7 +14,7 @@ While at RISD, I worked on two projects that are now archived in MoMA’s librar
 
 <h1 class="mt4">Now?</h1>
 <h2 class="h3">Helping Storytellers at Scale</h2>
-<p class="mb3">I'm at <a href="https://www.netflix.com/browse" alt="Netflix">Netflix</a> leading a team of stunning designers who help the world's largest studio produce local-language stories in multiple formats for distribution across the globe.</p>
+<p class="mb3">I'm at <a href="https://www.netflix.com/browse" alt="Netflix">Netflix</a> leading a team of talented designers who help the world's largest studio produce local-language stories in multiple formats for distribution across the globe.</p>
 <h2 class="h3">Advising Talented Friends</h2>
 <p>I'm advising two friends' companies:</p>
 <ol class="mb3">
