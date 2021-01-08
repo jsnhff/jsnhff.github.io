@@ -4,7 +4,7 @@ title: Mission
 permalink: /mission/
 ---
 
-<p class="h1">I'm a designer and leader by trade, with years of experience building effective teams and powerful products. I focus on developing design strategies to best support artists around the world, starting with work at <a href="http://www.etsy.com/" alt="Etsy">Etsy</a> in 2012 and now as part of <a href="http://www.netflix.com/" alt="Netflix">Netflix’s</a> global studio. Beyond this, I'm also an artist, teacher, collaborator, and friend-from-the-internet who’s most excited when I'm helping to make awesome things real.</p>
+<p class="h1">I'm a designer and manager by trade, with years of experience leading and building effective teams and powerful products. I focus on developing design strategies to best support artists around the world, starting with work at <a href="http://www.etsy.com/" alt="Etsy">Etsy</a> in 2012 and now as part of <a href="http://www.netflix.com/" alt="Netflix">Netflix’s</a> global studio. Beyond this, I'm also an artist, teacher, collaborator, and friend-from-the-internet who’s most excited when I'm helping to make awesome things real.</p>
 
 <p class="sm-col-12 md-col-10 lg-col-11 columns py3">In my creative work, I cohabitate between the realms of art, theory, and technology. I've been a NEW INC mentor, a Rhizome contributor, a host of <a href="http://www.livingroomlightexchange.com/lrlxny/" alt="LRLX">Living Room Light Exchange NY</a>, an adjunct faculty member at Parsons/The New School, and a visiting critic at <a href="https://www.risd.edu/" alt="RISD" title="risd.edu">RISD</a>—where I also earned my MFA in Digital Media.
 <br><br>
