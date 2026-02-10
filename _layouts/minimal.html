@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+  {% include head.html %}
+
+    <body{% if page.url == '/' %} class="home"{% endif %}>
+      
+      <div class="nav-container">
+        <nav class="main-nav">
+          {% for item in site.data.navigation_list.docs %}
+            <a href="{{ item.url }}" class="nav-link{% if page.url == item.url %} active{% endif %}">{{ item.title }}</a>
+          {% endfor %}
+        </nav>
+      </div>
+
+      <div class="main-content">
+        {{ content }}
+      </div>
+
+      {% if page.url == '/' %}
+      <script src="/js/mesh-gradient.js"></script>
+      {% endif %}
+
+      <script src="/js/animated-stars.js"></script>
+    </body>
+</html>
