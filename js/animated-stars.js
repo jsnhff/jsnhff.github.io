@@ -8,20 +8,25 @@ class AnimatedStarfield {
   init() {
     // Create canvas element
     this.canvas = document.createElement('canvas');
+    this.canvas.id = 'starfield-canvas';
     this.canvas.style.position = 'fixed';
     this.canvas.style.top = '0';
     this.canvas.style.left = '0';
-    this.canvas.style.width = '100%';
-    this.canvas.style.height = '100%';
-    this.canvas.style.zIndex = '-1';
+    this.canvas.style.width = '100vw';
+    this.canvas.style.height = '100vh';
+    this.canvas.style.zIndex = '-999';
     this.canvas.style.pointerEvents = 'none';
+    this.canvas.style.backgroundColor = '#000000';
     this.ctx = this.canvas.getContext('2d', { alpha: false });
 
     // Insert canvas as first child of body
     document.body.insertBefore(this.canvas, document.body.firstChild);
 
-    // Set body background to black
+    // Set body and html background to black
     document.body.style.backgroundColor = '#000000';
+    document.documentElement.style.backgroundColor = '#000000';
+
+    console.log('Starfield initialized:', this.canvas.width, 'x', this.canvas.height);
 
     // Initialize stars
     this.stars = [];
@@ -43,8 +48,8 @@ class AnimatedStarfield {
   }
 
   createStars() {
-    // Create ~200 stars for performance
-    const starCount = 200;
+    // Create more visible stars
+    const starCount = 300;
     this.stars = [];
 
     for (let i = 0; i < starCount; i++) {
@@ -52,13 +57,13 @@ class AnimatedStarfield {
         x: Math.random() * this.width,
         y: Math.random() * this.height,
         // Varied sizes for depth
-        radius: Math.random() * 1.5 + 0.5,
+        radius: Math.random() * 2 + 0.5,
         // Random twinkle speed
         twinkleSpeed: Math.random() * 0.02 + 0.01,
         // Random phase offset for varied twinkling
         phase: Math.random() * Math.PI * 2,
-        // Base opacity
-        baseOpacity: Math.random() * 0.5 + 0.5
+        // Base opacity - brighter
+        baseOpacity: Math.random() * 0.4 + 0.7
       });
     }
   }
