@@ -1,8 +1,17 @@
 docs_list_title: Jason Huff
 docs:
 
-- title: Index
-  url: /index/
+- title: HOME
+  url: /
 
-- title: Mission
-  url: /mission/
+- title: ARCHIVE  
+  url: /archive/
+
+- title: ABOUT
+  url: /about/
+
+- title: NOW
+  url: /now/
+
+- title: WORK
+  url: /work/
