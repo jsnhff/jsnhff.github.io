@@ -4,7 +4,59 @@
     <title>{% if page.title %}Jason Huff - {{ page.title }}{% else %}{{ site.title }}{% endif %}</title>
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="{{ site.description }}">
+    <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
+
+    <!-- Open Graph / social sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta property="og:title" content="{% if page.title %}Jason Huff - {{ page.title }}{% else %}{{ site.title }}{% endif %}">
+    <meta property="og:description" content="{{ site.description }}">
+    <meta property="og:url" content="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:creator" content="@{{ site.twitter_username }}">
+
+    {% if page.url == "/" %}
+    <!-- Structured data so search engines and AI crawlers can parse who I am and what I've made -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Jason Huff",
+      "url": "{{ site.url }}",
+      "jobTitle": "Design Director",
+      "description": "{{ site.description }}",
+      "sameAs": [
+        "https://twitter.com/{{ site.twitter_username }}",
+        "https://github.com/{{ site.github_username }}"
+      ],
+      "hasCreativeWork": [
+        {
+          "@type": "CreativeWork",
+          "name": "How to make a website for your creative work",
+          "datePublished": "2019",
+          "publisher": { "@type": "Organization", "name": "The Creative Independent" },
+          "url": "https://thecreativeindependent.com/guides/how-to-make-a-website-for-your-creative-work/",
+          "description": "A guide to getting your work on the internet so you can share it with others."
+        },
+        {
+          "@type": "Book",
+          "name": "American Psycho",
+          "datePublished": "2010",
+          "url": "http://p-dpa.net/work/american-psycho/",
+          "description": "An appropriated copy of the Bret Easton Ellis novel, transformed into a series of emails and relational ads, then reformatted back into a book. Created with Mimi Cabell."
+        },
+        {
+          "@type": "Book",
+          "name": "AutoSummarize",
+          "datePublished": "2010",
+          "url": "http://p-dpa.net/work/autosummarize/",
+          "description": "A publication cataloguing algorithmically generated summaries of the top 100 most-downloaded copyright-free books."
+        }
+      ]
+    }
+    </script>
+    {% endif %}
 
     <!-- Google Analytics -->
     <meta name="google-site-verification" content="_rNdIVPRw7f3ibcOc5yoS2fzX58e262KYE00r4o1wbM" />
