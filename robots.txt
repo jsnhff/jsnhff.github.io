@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: http://jason-huff.com/sitemap.xml
+Sitemap: https://jason-huff.com/sitemap.xml

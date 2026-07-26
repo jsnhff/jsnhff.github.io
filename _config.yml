@@ -1,9 +1,9 @@
 # Site settings
 title: Jason Huff
 email: jsnhff@gmail.com
-description: "Jason Huff is an LA-based design manager and web worker on a mission to support artists."
+description: "Jason Huff is an LA-based design director and web worker on a mission to support artists."
 baseurl: "" # the subpath of your site, e.g. /blog/
-url: "http://jason-huff.com" # the base hostname & protocol for your site
+url: "https://jason-huff.com" # the base hostname & protocol for your site
 twitter_username: jsnhff
 github_username:  jsnhff
 
