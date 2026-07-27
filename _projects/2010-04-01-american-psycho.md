@@ -2,6 +2,8 @@
 layout: project
 title:  "American Psycho"
 date:   2010-04-01
+redirect_from:
+  - /projects/american-pyscho/
 category: book 
 image_path: "/images/american-psycho/jhuff-american-psycho-"
 description: |

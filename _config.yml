@@ -29,3 +29,4 @@ permalink: /writing/:title/
 # This will require each of these plugins automatically.
 plugins:
 - jekyll-sitemap
+- jekyll-redirect-from
