@@ -257,6 +257,8 @@
    * opts.motes    — paper only: fleck strength, default 1
    * opts.mottle   — paper only: fibre mottle strength, default 1
    * opts.warm     — paper only: warmth off neutral, default 1
+   * opts.speed    — time multiplier, default 1; 0 freezes drift
+   * opts.animateGrain — re-seed grain each frame for filmic flicker, default true
    * opts.zoom     — magnification, default 1 (the loupe uses 4)
    * opts.source   — controller whose size/time this one mirrors (for the loupe)
    */
@@ -304,6 +306,11 @@
       dpr: 1,
       seed: 0,
       time: 0,
+      // Time multiplier. 0 freezes drift entirely.
+      speed: opts.speed == null ? 1 : opts.speed,
+      // Re-seeding the grain every frame is the filmic flicker. Paper wants
+      // it pinned: real fibre does not shimmer.
+      animateGrain: opts.animateGrain !== false,
       running: false
     };
 
@@ -345,21 +352,28 @@
 
     var raf = 0;
     var last = 0;
-    var start = 0;
     var interval = 1000 / FPS;
 
     function frame(now) {
       raf = requestAnimationFrame(frame);
       if (now - last < interval) return;
+      // Accumulate rather than derive from a start stamp, so changing speed
+      // mid-run eases into the new rate instead of jumping the clock.
+      var dt = last ? (now - last) / 1000 : 0;
       last = now;
-      if (!start) start = now;
-      ctl.time = (now - start) / 1000;
-      ctl.seed = (ctl.seed + 1) % 1024;
+      ctl.time += dt * ctl.speed;
+      if (ctl.animateGrain) ctl.seed = (ctl.seed + 1) % 1024;
       draw();
     }
 
+    // Nothing to animate when the clock is stopped and the grain is pinned.
+    ctl.isStatic = function () {
+      return ctl.speed === 0 && !ctl.animateGrain;
+    };
+
     ctl.play = function () {
       if (ctl.running || reduceMotion) return;
+      if (ctl.isStatic()) { draw(); return; }
       ctl.running = true;
       last = 0;
       raf = requestAnimationFrame(frame);
