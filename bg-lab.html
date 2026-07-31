@@ -2,7 +2,6 @@
 layout: null
 title: Background lab
 permalink: /bg-lab/
-bg: darkroom
 sitemap: false
 ---
 <!DOCTYPE html>
@@ -32,7 +31,7 @@ sitemap: false
 		<div class="bg-lab-controls mt3 mb4">
 			<div class="bg-lab-row" role="group" aria-label="Texture">
 				<span class="bg-lab-label">Texture</span>
-				<button type="button" class="bg-lab-btn" data-variant="darkroom" aria-pressed="true">Darkroom</button>
+				<button type="button" class="bg-lab-btn" data-variant="darkroom" aria-pressed="false">Darkroom</button>
 				<button type="button" class="bg-lab-btn" data-variant="nightfield" aria-pressed="false">Night Field</button>
 				<button type="button" class="bg-lab-btn" data-variant="gallery" aria-pressed="false">Gallery</button>
 			</div>
@@ -44,7 +43,7 @@ sitemap: false
 			<div class="bg-lab-row" role="group" aria-label="Grain">
 				<span class="bg-lab-label">Grain</span>
 				<button type="button" class="bg-lab-btn" data-grain="0.5" aria-pressed="false">Half</button>
-				<button type="button" class="bg-lab-btn" data-grain="1" aria-pressed="true">As tuned</button>
+				<button type="button" class="bg-lab-btn" data-grain="1" aria-pressed="false">As tuned</button>
 				<button type="button" class="bg-lab-btn" data-grain="1.8" aria-pressed="false">Heavy</button>
 			</div>
 		</div>
@@ -92,16 +91,29 @@ sitemap: false
 // bg-shader.js is deferred, so it has not run yet while this inline script is
 // being parsed. Wait for DOMContentLoaded, which deferred scripts precede.
 document.addEventListener('DOMContentLoaded', function () {
-	if (!window.BGShader) return;
+	if (!window.BGShader || !window.BGShader.current) return;
 
-	var state = { variant: 'darkroom', grain: 1 };
+	// Start from whatever is actually live, so the lab always opens on the
+	// shipped settings rather than on a hardcoded guess.
+	var live = window.BGShader.current;
+	var state = { variant: live.variant, grain: live.grain };
+
+	var controls = document.querySelector('.bg-lab-controls');
+
+	function press(sel, value) {
+		controls.querySelectorAll(sel).forEach(function (b) {
+			b.setAttribute('aria-pressed', String(parseFloat(b.dataset.grain) === value || b.dataset.variant === value));
+		});
+	}
+	press('[data-variant]', state.variant);
+	press('[data-grain]', state.grain);
 
 	function remount() {
 		if (window.BGShader.current) window.BGShader.current.destroy();
 		window.BGShader.current = window.BGShader.mount(state);
 	}
 
-	document.querySelector('.bg-lab-controls').addEventListener('click', function (e) {
+	controls.addEventListener('click', function (e) {
 		var btn = e.target.closest('.bg-lab-btn');
 		if (!btn) return;
 

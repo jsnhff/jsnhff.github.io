@@ -85,10 +85,11 @@
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&display=swap" rel="stylesheet">
 
-    <!-- Background shader. Set `background_shader: darkroom` in _config.yml to turn
-         it on site-wide, or `bg: darkroom` in a page's front matter for one page. -->
+    <!-- Background shader. `background_shader` in _config.yml sets it site-wide;
+         `bg:` / `grain:` in a page's front matter override it for that page. -->
     {% assign bg = page.bg | default: site.background_shader %}
+    {% assign bg_grain = page.grain | default: site.background_grain | default: 1 %}
     {% if bg %}
-    <script src="{{ "/js/bg-shader.js" | prepend: site.baseurl }}" data-variant="{{ bg }}" defer></script>
+    <script src="{{ "/js/bg-shader.js" | prepend: site.baseurl }}" data-variant="{{ bg }}" data-grain="{{ bg_grain }}" defer></script>
     {% endif %}
 </head>

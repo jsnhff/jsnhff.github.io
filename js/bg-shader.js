@@ -9,17 +9,24 @@
  *   gallery   — a black wall lit by one soft key and a cool fill, under grain
  *
  * Pick one with any of these, in order of precedence:
- *   ?bg=nightfield in the URL          (handy for side-by-side comparison)
- *   a data-variant="nightfield" attribute on this file's script tag
- *   window.BG_VARIANT = 'nightfield'   (set before this file loads)
+ *   ?bg=nightfield&grain=0.5 in the URL   (handy for side-by-side comparison)
+ *   data-variant / data-grain attributes on this file's script tag
+ *   window.BG_VARIANT / window.BG_GRAIN   (set before this file loads)
  *
  * If WebGL is unavailable the script does nothing and the PNG stays put.
  */
 (function () {
   'use strict';
 
+  // Some pages end up with head.html in the output more than once (404.html
+  // includes it itself and is then wrapped in a layout that renders the page
+  // body twice). Each copy would execute this file again and open its own
+  // WebGL context, so only the first one through does any work.
+  if (window.BGShader) return;
+
   var VARIANTS = { darkroom: 0, nightfield: 1, gallery: 2 };
   var DEFAULT_VARIANT = 'darkroom';
+  var DEFAULT_GRAIN = 1;
 
   var FPS = 30;          // filmic, and a third of the GPU work of 90fps
   var DPR_CAP = 1.5;     // grain is sized in CSS px, so more DPR only buys crispness
@@ -197,6 +204,14 @@
     return VARIANTS.hasOwnProperty(name) ? name : DEFAULT_VARIANT;
   }
 
+  function resolveGrain(script) {
+    var q = /[?&]grain=([0-9.]+)/i.exec(window.location.search);
+    var n = parseFloat((q && q[1]) ||
+      (script && script.getAttribute('data-grain')) ||
+      window.BG_GRAIN);
+    return (isFinite(n) && n >= 0) ? n : DEFAULT_GRAIN;
+  }
+
   /**
    * Mounts a shader background. Returns a controller, or null if WebGL is out.
    *
@@ -239,7 +254,7 @@
     var ctl = {
       canvas: canvas,
       variant: variant,
-      grain: opts.grain == null ? 1 : opts.grain,
+      grain: opts.grain == null ? resolveGrain(opts.script) : opts.grain,
       zoom: opts.zoom || 1,
       origin: null,          // null = centre of the field
       logical: [1, 1],       // uRes: the field the shader thinks it is filling
