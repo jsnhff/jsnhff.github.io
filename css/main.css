@@ -29,6 +29,20 @@ body {
     font-family: 'Tenor Sans', sans-serif;
 }
 
+/* Shader background. The PNG above stays as the no-WebGL fallback; once
+   bg-shader.js has a live context it sets this class and takes over. */
+.bg-shader-on body {
+    background-image: none;
+    background-color: #050505;
+}
+
+/* The content panels are all but the same black as the background, so the
+   texture only ever shows in the gutters. Letting a little through is what
+   makes the whole page feel like one surface instead of a slab on a wall. */
+.bg-shader-on .bg-black {
+    background-color: rgba(7, 7, 7, 0.72);
+}
+
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Tenor Sans', sans-serif;   
 }

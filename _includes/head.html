@@ -84,4 +84,11 @@
 
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&display=swap" rel="stylesheet">
+
+    <!-- Background shader. Set `background_shader: darkroom` in _config.yml to turn
+         it on site-wide, or `bg: darkroom` in a page's front matter for one page. -->
+    {% assign bg = page.bg | default: site.background_shader %}
+    {% if bg %}
+    <script src="{{ "/js/bg-shader.js" | prepend: site.baseurl }}" data-variant="{{ bg }}" defer></script>
+    {% endif %}
 </head>
