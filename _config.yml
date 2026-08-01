@@ -9,6 +9,7 @@ github_username:  jsnhff
 
 # Build settings
 markdown: kramdown
+future: true
 
 # Collections
 collections:
