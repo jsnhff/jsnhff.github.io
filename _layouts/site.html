@@ -106,7 +106,11 @@
 </div>
 
 <div class="shell">
-  <main class="stage {% if page.home %}is-centred{% else %}is-flow{% endif %}" id="stage">
+  {%- comment -%}
+    Home centres because it is one statement. 404 does too, for the same
+    reason — but it is not home, and must keep the button back to it.
+  {%- endcomment -%}
+  <main class="stage {% if page.home or page.centred %}is-centred{% else %}is-flow{% endif %}" id="stage">
     {{ content }}
   </main>
 

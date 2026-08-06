@@ -26,7 +26,7 @@ body {
     background-repeat: repeat;
     background-color: #070707;
     color: #EEE;
-    font-family: 'Tenor Sans', sans-serif;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 /* Shader background. The PNG above stays as the no-WebGL fallback; once
@@ -44,7 +44,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Tenor Sans', sans-serif;   
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .bh1 {

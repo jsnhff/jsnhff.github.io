@@ -1248,3 +1248,18 @@
    entry it should start on the margin, flush with the note beneath it. */
 .rec-body > .pill:first-child { margin-left: 0; }
 .rec-note { display: block; margin-top: 0.25rem; font-size: 0.88rem; color: var(--dim); }
+
+  /* ---- not found -------------------------------------------------------- */
+  /* One statement, centred like home, with the three places to go next
+     underneath. The way back is the same house button every interior page
+     carries — a lost visitor should not need a fourth link to find it. */
+
+  .lost { display: grid; gap: 1.4rem; justify-items: center; text-align: center; }
+  .lost-nav {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--dim);
+    transition: color var(--invert) ease;
+  }
+  .lost-nav a { color: var(--ink); transition: color var(--invert) ease; }
+
