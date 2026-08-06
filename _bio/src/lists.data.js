@@ -18,7 +18,7 @@ export const COLLECTIONS = [
     href:"https://docs.google.com/spreadsheets/d/1kk7dYKk12ON7RgtZ-wg7Vmp44Fqv7OEi6Z90nu7WNpU/edit?gid=0#gid=0" },
   { name:"Whitney Museum of American Art, Special Collections",
     note:"AutoSummarize. Call no. N6537.H8251 A8 2010",
-    href:"https://library.whitney.org" },
+    href:"http://library.whitney.org/cgi-bin/koha/opac-detail.pl?biblionumber=46618" },
   { name:"Bayerische Staatsbibliothek, Munich",
     note:"Three works in the Library of Artistic Print on Demand collection",
     href:"https://apod.li/auto-summarize" },

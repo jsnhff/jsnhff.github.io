@@ -113,7 +113,7 @@ export const DOC = [
       ", every title of which he lists in a public ",
       { l:"index", h:"https://docs.google.com/spreadsheets/d/1kk7dYKk12ON7RgtZ-wg7Vmp44Fqv7OEi6Z90nu7WNpU/edit?gid=0#gid=0" },
       "; the Whitney Museum's ",
-      { l:"Special Collections", h:"https://library.whitney.org" },
+      { l:"Special Collections", h:"http://library.whitney.org/cgi-bin/koha/opac-detail.pl?biblionumber=46618" },
       "; and the Bavarian State Library in ",
       { w:"Munich", m:"shelf", add:[
           ", which holds three of them in the ",
