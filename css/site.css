@@ -215,10 +215,13 @@
     top: clamp(1rem, 3vh, 1.75rem);
     left: 50%;
     z-index: 5;
-    /* Both ends of the morph are pinned in pixels by JS. Without it the capsule
-       is simply its own content, shut — which is the whole of the no-JS state. */
-    width: var(--shut-w, max-content);
-    height: var(--shut-h, auto);
+    /* The open size is CSS's, because CSS can know it: it is the column the
+       page gives the capsule. Only the shut size needs measuring — the header
+       is as wide as its own label — and it carries a fallback near enough to
+       hold the shape if the measurement never lands. Nothing about the layout
+       inside waits on a script. */
+    width: var(--shut-w, 12rem);
+    height: var(--shut-h, 2.4rem);
     max-width: calc(100vw - 2rem);
     border-radius: 999px;
     background-color: var(--glass);
@@ -245,9 +248,20 @@
   }
   /* The capsule squares off as it grows, the way the island does. */
   .island.open {
-    width: var(--open-w);
-    height: var(--open-h);
+    width: min(28rem, calc(100vw - 2rem));
+    height: var(--open-h, auto);
     border-radius: 1.35rem;
+  }
+  /* More entries than the screen has room for: the capsule stops at the
+     viewport and the list scrolls inside it, rather than running off the
+     bottom edge with no way to reach the rest. */
+  .island.open .island-frame {
+    max-height: 100%;
+    /* Stated, not left to the shorthand: setting only overflow-y turns
+       overflow-x from visible into auto behind your back. */
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
   /* Re-measuring must not be a second animation. */
   .island.no-anim { transition: background-color var(--invert) ease, color var(--invert) ease; }
@@ -256,7 +270,7 @@
      the capsule is doing, so growing the capsule uncovers type that is already
      set instead of re-wrapping every line on every frame — the reflow was the
      glitch. The capsule is a window; this is the picture behind it. */
-  .island-frame { width: var(--open-w, max-content); }
+  .island-frame { width: min(28rem, calc(100vw - 2rem)); }
 
   @keyframes island-in {
     from { opacity: 0; transform: translate(-50%, -0.5rem); }

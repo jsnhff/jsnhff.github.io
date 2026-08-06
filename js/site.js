@@ -478,18 +478,28 @@
     var panel = island.querySelector('.island-panel');
     var queued = false;
 
+    // A measurement that came out as nothing, or as a number CSS cannot use, is
+    // dropped rather than written: the stylesheet's own fallback is a better
+    // capsule than one sized NaN.
+    function pin(name, value) {
+      if (isFinite(value) && value > 0) island.style.setProperty(name, value + 'px');
+    }
+
     function measure() {
-      var rem = parseFloat(getComputedStyle(root).fontSize) || 16;
+      // Only the shut size: the open one is the column CSS already gives the
+      // capsule, and a width the script has to supply is a width the script can
+      // get wrong.
       var head = pill.getBoundingClientRect();
       // Sub-pixel widths round down to a clipped final letter; always up.
-      island.style.setProperty('--shut-w', Math.ceil(head.width) + 'px');
-      island.style.setProperty('--shut-h', Math.ceil(head.height) + 'px');
-      island.style.setProperty('--open-w',
-        Math.max(Math.ceil(head.width), Math.min(28 * rem, window.innerWidth - 32)) + 'px');
-      // Read after the frame has been given its width, or the height belongs to
-      // the previous one.
+      pin('--shut-w', Math.ceil(head.width));
+      pin('--shut-h', Math.ceil(head.height));
+      // Read after the frame has settled, or the height belongs to the previous
+      // layout. Capped at what is on screen: enough entries and the list is
+      // taller than the viewport, and an uncapped capsule would put the last of
+      // them below the bottom edge with no way to reach them.
       requestAnimationFrame(function () {
-        island.style.setProperty('--open-h', Math.ceil(frame.scrollHeight) + 'px');
+        var room = window.innerHeight - island.getBoundingClientRect().top - 16;
+        pin('--open-h', Math.min(Math.ceil(frame.scrollHeight), Math.floor(room)));
       });
     }
 
