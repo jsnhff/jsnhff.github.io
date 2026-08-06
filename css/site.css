@@ -929,3 +929,192 @@
   border-left: 1px solid var(--glass-edge);
   color: var(--dim);
 }
+
+/* ---- the bio ------------------------------------------------------------ */
+/* Adapted from _bio/src/bio.css. Two things changed on the way in:
+   the type is the site's, not Newsreader and IBM Plex Mono; and the palette is
+   derived from the page's own tokens rather than the light paper the block was
+   drawn on. Its variables are namespaced — the source defined --ink on :root,
+   which would have clobbered the site's. */
+.bio-block {
+  --bio-spent:      rgba(237, 237, 237, 0.42);
+  --bio-chip:       rgba(255, 255, 255, 0.10);
+  --bio-chip-hover: rgba(255, 255, 255, 0.18);
+  --bio-flash:      rgba(255, 255, 255, 0.15);
+  --bio-rule:       rgba(255, 255, 255, 0.13);
+  --bio-pill-line:  rgba(255, 255, 255, 0.24);
+}
+.bio-block * { box-sizing: border-box; }
+.bio-block .wrap { max-width: 44rem; margin: 0 auto; }
+
+.bio-block .bio {
+  font-size: clamp(1.05rem, 2.1vw, 1.35rem);
+  line-height: 1.62;
+  letter-spacing: -0.008em;
+  text-wrap: pretty;
+}
+.bio-block .bio p { margin: 0 0 0.9em; }
+.bio-block .bio p:last-child { margin-bottom: 0; }
+
+/* a chip: opens in place, one way */
+.bio-block .chip {
+  display: inline;
+  margin: 0;
+  padding: 0.1em 0.16em 0.12em 0.26em;
+  border: 0;
+  border-radius: 3px;
+  background: var(--bio-chip);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.86em;
+  cursor: pointer;
+  transition: background 160ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.bio-block .chip:hover { background: var(--bio-chip-hover); }
+.bio-block .chip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* a spent chip stays where it was, but stops being a target */
+.bio-block .spent {
+  font-size: 0.86em;
+  color: var(--bio-spent);
+  background: transparent;
+  padding: 0.1em 0.16em 0.12em 0.26em;
+  transition: color var(--invert) ease;
+}
+
+/* an outbound link, in the site's face rather than a mono one */
+.bio-block .pill,
+.rec .pill {
+  display: inline;
+  margin: 0 0.12em;
+  padding: 0.34em 0.72em 0.32em;
+  border: 1px solid var(--bio-pill-line);
+  border-radius: 100px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  color: var(--dim);
+  font-size: 0.66em;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-decoration: none;
+  line-height: 1;
+  vertical-align: 0.12em;
+  transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+}
+.bio-block .pill:hover,
+.rec .pill:hover { border-color: var(--ink); color: var(--ink); background: var(--bio-chip); }
+.bio-block .pill:focus-visible,
+.rec .pill:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.pill .arw { display: inline-block; margin-left: 0.5em; font-size: 0.9em; }
+
+.bio-block .mark {
+  display: inline-block;
+  width: 0.82em; height: 0.82em;
+  margin: 0 0.1em 0 0.32em;
+  position: relative; top: 0.01em;
+  vertical-align: baseline;
+}
+.bio-block .mark svg { display: block; width: 100%; height: 100%; }
+
+/* the run that just opened */
+.bio-block .fresh {
+  display: inline;
+  border-radius: 3px;
+  background: var(--bio-flash);
+  box-shadow: 0 0 0 0.18em var(--bio-flash);
+  animation: cool 1.5s ease-out 0.35s forwards;
+}
+@keyframes cool { to { background: transparent; box-shadow: 0 0 0 0.18em transparent; } }
+
+.bio-block .colophon {
+  margin: 2.75rem 0 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.01em;
+  color: var(--dim);
+  transition: color var(--invert) ease;
+}
+.bio-block .foot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 3.5rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--bio-rule);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.bio-block .dot {
+  width: 7px; height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--dim);
+  transition: background 400ms ease;
+}
+.bio-block .tally { font-variant-numeric: tabular-nums; transition: color 400ms ease; }
+.bio-block .tally.done { color: var(--ink); }
+.bio-block .reset {
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease, color 160ms ease;
+}
+.bio-block .reset.on { opacity: 1; pointer-events: auto; }
+.bio-block .reset:hover { color: var(--ink); }
+.bio-block .reset:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bio-block .fresh { animation: none; background: transparent; box-shadow: none; }
+  .bio-block .chip { transition: none; }
+}
+
+/* ---- the record --------------------------------------------------------- */
+/* Lists, not prose: the bio above is the readable version, these are the
+   crawlable one. Year in its own column, tabular so the digits line up. */
+.rec { margin: clamp(3rem, 7vh, 4.5rem) 0 0; }
+.rec-head {
+  margin: 0 0 1.25rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dim);
+  transition: color var(--invert) ease;
+}
+.rec-list { margin: 0; padding: 0; list-style: none; }
+.rec-item {
+  display: grid;
+  grid-template-columns: 3.4rem 1fr;
+  gap: 0 1rem;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--bio-rule);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.rec-item:first-child { border-top: 0; }
+.rec-year {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.82rem;
+  color: var(--dim);
+  padding-top: 0.15em;
+  transition: color var(--invert) ease;
+}
+.rec-body > .rec-title { color: var(--ink); }
+.rec-note { display: block; margin-top: 0.25rem; font-size: 0.88rem; color: var(--dim); }
+
+@media (max-width: 34rem) {
+  .rec-item { grid-template-columns: 1fr; gap: 0.15rem; }
+  .rec-year { padding-top: 0; }
+}

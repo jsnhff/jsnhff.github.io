@@ -13,7 +13,7 @@ description: |
 
     <p>We were most curious how Google would handle the violence, racism and graphic language in <em>American Psycho</em>. In some instances the ads related to the content of the email, in others they were completely irrelevant, either out of time or out of place. In one scene, where first a dog and then a man are brutally murdered with a knife, Google supplied ample ads regarding knives and knife sharpeners. In another scene the ads disappeared altogether when the narrator makes a racial slur. Google's choice and use of standard ads unrelated to the content next to which they appeared offered an alternate window into how Google ads function — the ad for Crest Whitestrips Coupons appeared the highest number of times, next to both the most graphic and the most mundane sections of the book, leaving no clear logic as to how it was selected to appear. This "misreading" ultimately echoes the hollowness at the center of advertising and consumer culture, a theme explored in excess in <em>American Psycho</em>.</p>
 
-    <p>In collaboration with <a hreff="https://www.mimicabell.com/#/american-psycho/" alt="Mimi Cabell, my friend.">Mimi Cabell</a>.</p>
+    <p>In collaboration with <a href="https://www.mimicabell.com/#/american-psycho/">Mimi Cabell</a>.</p>
 plate: "/images/plates/american-psycho.webp"
 plate_w: 800
 plate_h: 1078

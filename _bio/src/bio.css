@@ -1,0 +1,120 @@
+/* Scoped to .bio-block so it can drop into an existing page
+   without colliding with site styles. */
+
+  :root{
+    --paper:#FCFCFA;
+    --ink:#15140F;
+    --spent:#B5B2A8;
+    --faint:#A9A69C;
+    --chip:#F0EFE9;
+    --chip-hover:#E4E2D9;
+    --flash:#EDEBE2;
+    --rule:#E2E0D7;
+    --pill-line:#CFCCC2;
+    --pill-ink:#6C695F;
+  }
+  .bio-block *{box-sizing:border-box}
+  html,.bio-block{margin:0;background:var(--paper);color:var(--ink)}
+  .bio-block{
+    font-family:"Newsreader",Georgia,serif;font-weight:300;
+    -webkit-font-smoothing:antialiased;
+    padding:clamp(36px,7vw,96px) clamp(20px,6vw,64px) 120px;
+  }
+  .bio-block .wrap{max-width:44rem;margin:0 auto}
+
+  .bio-block .bio{
+    font-size:clamp(20px,2.6vw,26px);
+    line-height:1.6;
+    letter-spacing:-.005em;
+    text-wrap:pretty;
+  }
+  .bio-block .bio p{margin:0 0 .9em}
+  .bio-block .bio p:last-child{margin-bottom:0}
+
+  /* live chip */
+  .chip{
+    font-family:"Inter",system-ui,sans-serif;font-weight:600;
+    font-size:.8em;letter-spacing:-.012em;
+    display:inline;background:var(--chip);border:0;
+    padding:.1em .16em .12em .26em;margin:0;
+    color:var(--ink);border-radius:3px;cursor:pointer;
+    transition:background .16s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .chip:hover{background:var(--chip-hover)}
+  .chip:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+  /* spent chip: grays out, stays in place, no longer a target */
+  .spent{
+    font-family:"Inter",system-ui,sans-serif;font-weight:600;
+    font-size:.8em;letter-spacing:-.012em;
+    color:var(--spent);background:transparent;
+    padding:.1em .16em .12em .26em;
+  }
+
+
+  /* outbound link: outlined mono pill, leaves the page */
+  .pill{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:500;
+    font-size:.6em;letter-spacing:.06em;text-transform:uppercase;
+    display:inline;
+    padding:.32em .72em .3em;margin:0 .12em;
+    box-decoration-break:clone;-webkit-box-decoration-break:clone;
+    border:1px solid var(--pill-line);border-radius:100px;
+    color:var(--pill-ink);text-decoration:none;
+    vertical-align:.12em;line-height:1;
+    transition:border-color .16s ease,color .16s ease,background .16s ease;
+  }
+  .pill:hover{border-color:var(--ink);color:var(--ink);background:var(--chip)}
+  .pill:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .pill .arw{display:inline-block;margin-left:.5em;font-size:.9em}
+
+  .mark{
+    display:inline-block;width:.82em;height:.82em;
+    margin:0 .1em 0 .32em;vertical-align:baseline;
+    position:relative;top:.01em;
+  }
+  .mark svg{display:block;width:100%;height:100%}
+
+  /* the run that just appeared */
+  .fresh{
+    display:inline;border-radius:3px;
+    box-shadow:0 0 0 .18em var(--flash);
+    background:var(--flash);
+    animation:cool 1.5s ease-out .35s forwards;
+  }
+  @keyframes cool{
+    to{background:transparent;box-shadow:0 0 0 .18em transparent}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .fresh{animation:none;background:transparent;box-shadow:none}
+    .chip{transition:none}
+  }
+
+  .colophon{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:12px;color:var(--faint);letter-spacing:.01em;
+    margin:44px 0 0;
+  }
+  .foot{
+    display:flex;align-items:center;gap:14px;
+    margin:56px 0 0;padding-top:20px;border-top:1px solid var(--rule);
+    font-family:"Inter",system-ui,sans-serif;font-size:11px;font-weight:600;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--faint);
+  }
+  .dot{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--faint);transition:background .4s ease;flex:none;
+  }
+  .tally{font-variant-numeric:tabular-nums;transition:color .4s ease}
+  .tally.done{color:var(--ink)}
+  .reset{
+    margin-left:auto;font:inherit;color:var(--faint);
+    background:none;border:0;padding:0;cursor:pointer;
+    text-transform:uppercase;letter-spacing:.1em;
+    opacity:0;pointer-events:none;transition:opacity .3s ease,color .16s ease;
+  }
+  .reset.on{opacity:1;pointer-events:auto}
+  .reset:hover{color:var(--ink)}
+  .reset:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
