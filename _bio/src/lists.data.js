@@ -76,7 +76,8 @@ export const PRESS = [
   { year:"2010", outlet:"The New Yorker", author:"Madeleine Schwartz",
     note:"Rise of the Literature Machines",
     href:"https://www.newyorker.com/books/page-turner/rise-of-the-literature-machines" },
-  { year:"2010", outlet:"The Rumpus", author:"Jeremy Hatch", note:"AutoSummarize" },
+  { year:"2010", outlet:"The Rumpus", author:"Jeremy Hatch", note:"AutoSummarize",
+    href:"https://therumpus.net/2010/08/02/autosummarize-applied-to-popular-works/" },
   { year:"2010", outlet:"Hyperallergic", author:"Liz Hall", note:"Black Sheep Projects",
     href:"https://hyperallergic.com/risd-black-sheep-projects/" },
 ];
