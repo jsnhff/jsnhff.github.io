@@ -81,6 +81,9 @@
   :root.scheme-dark { color-scheme: dark; }
 
   html, body {
+    /* The UA's own 8px on the body was making every page 16px taller than the
+       screen it was on, so a view that fits still offered a scroll. */
+    margin: 0;
     background: var(--ground);
     transition: background-color var(--invert) ease;
   }
