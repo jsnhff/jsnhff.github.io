@@ -180,7 +180,9 @@
       r.classList.add('in');
     });
     restoreFocus = document.activeElement;
-    document.getElementById('sheet-close').focus({ preventScroll: true });
+    // Focus the panel, not the close button: moving focus to a control draws a
+    // focus ring on open, which reads as a mistake when nobody pressed a key.
+    sheetPanel.focus({ preventScroll: true });
   }
 
   function openSheet(href, push) {
@@ -198,9 +200,56 @@
     if (!openHref) return;
     openHref = null;
     sheet.classList.remove('open');
+    sheetPanel.style.transform = '';
     setTimeout(function () { if (!openHref) sheetBody.innerHTML = ''; }, reduce ? 0 : 480);
     if (restoreFocus && restoreFocus.focus) restoreFocus.focus({ preventScroll: true });
     restoreFocus = null;
+  }
+
+  // ---- pull the sheet down to dismiss -------------------------------------
+  // The grip is always a handle; the panel itself only becomes one when it is
+  // already scrolled to the top, so dragging never fights the content's scroll.
+
+  function initDrag() {
+    var grip = sheetPanel.querySelector('.sheet-grip');
+    var startY = 0, startScroll = 0, dy = 0, dragging = false, id = null;
+
+    function from(e) {
+      // A pull that begins on the grip always drags. Elsewhere it only drags
+      // once there is nothing left to scroll up into.
+      if (e.target.closest('.sheet-close')) return false;
+      if (grip && grip.contains(e.target)) return true;
+      return sheetPanel.scrollTop <= 0;
+    }
+
+    sheetPanel.addEventListener('pointerdown', function (e) {
+      if (!openHref || e.button !== 0 || !from(e)) return;
+      dragging = true; id = e.pointerId;
+      startY = e.clientY; startScroll = sheetPanel.scrollTop; dy = 0;
+      sheetPanel.classList.add('dragging');
+    });
+
+    sheetPanel.addEventListener('pointermove', function (e) {
+      if (!dragging || e.pointerId !== id) return;
+      dy = e.clientY - startY;
+      // Upward drags do nothing; the panel does not travel past its own top.
+      if (dy < 0 || startScroll > 0) { dy = 0; return; }
+      e.preventDefault();
+      sheetPanel.setPointerCapture(id);
+      sheetPanel.style.transform = 'translate(-50%, ' + dy + 'px)';
+    });
+
+    function release() {
+      if (!dragging) return;
+      dragging = false;
+      sheetPanel.classList.remove('dragging');
+      sheetPanel.style.transform = '';
+      // Far enough, or flicked hard enough, and it goes.
+      if (dy > Math.min(160, sheetPanel.offsetHeight * 0.22)) history.back();
+      dy = 0;
+    }
+    sheetPanel.addEventListener('pointerup', release);
+    sheetPanel.addEventListener('pointercancel', release);
   }
 
   if (sheet) {
@@ -222,6 +271,7 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && openHref) history.back();
     });
+    initDrag();
     window.addEventListener('popstate', function () {
       if (history.state && history.state.sheet) openSheet(history.state.sheet, false);
       else closeSheet();
