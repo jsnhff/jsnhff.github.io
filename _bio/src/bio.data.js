@@ -179,7 +179,9 @@ export const DOC = [
           { w:"Etsy", m:"tag", add:[
               ", where he was one of the first dozen designers and led design through the 2015 public offering. Before that, straight out of RISD, he was on the early team at ",
               { w:"a startup", m:"sprout", add:[
-                  " called Weft, a textile design platform founded by Brooks Hagan and Steve Marschner"
+                  " called ",
+                  { l:"Weft", h:"https://www.risd.edu/news/stories/textiles-revolution-looms-large" },
+                  ", a textile design platform founded by Brooks Hagan and Steve Marschner"
               ]}
           ]}
       ]}
