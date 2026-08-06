@@ -121,7 +121,12 @@
     margin: 0;
     text-align: center;
     text-wrap: balance;
-    font-size: clamp(1.05rem, min(3.4vw, 4.6vh), 2.2rem);
+    /* The width term is what a phone actually gets — 3.4vw put the statement on
+       its floor at 16.8px with a third of the screen empty above it and another
+       third below. The height term is the guard: on a laptop, and on a phone
+       held sideways, it is the short axis that decides whether the sentence
+       still fits without scrolling. */
+    font-size: clamp(1.35rem, min(6vw, 5.2vh), 2.6rem);
     line-height: 1.25;
     letter-spacing: -0.012em;
     font-weight: 400;
