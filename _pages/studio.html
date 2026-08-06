@@ -12,6 +12,8 @@ redirect_from:
 
 <h1 class="sr-only">Studio</h1>
 
+<div class="col is-gallery">
+
 {% assign order = "book,website,diagrams,prints,installation" | split: "," %}
 {% for cat in order %}
   {% assign group = site.projects | where: "category", cat | sort: "date" | reverse %}
@@ -39,3 +41,4 @@ redirect_from:
     </div>
   {% endif %}
 {% endfor %}
+</div>
