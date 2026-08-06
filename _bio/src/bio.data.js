@@ -64,9 +64,7 @@ export const DOC = [
       ]},
       ". And then ",
       { w:"Endless Opportunities", m:"lens", add:[
-          " (2012), which queries Google image search on a loop and prints the results, watching for the ranking to change. It ran live for the length of an exhibition at ",
-          { l:"Artspace", h:"https://www.artspacenewhaven.org" },
-          " in New Haven"
+          " (2012), which queries Google image search on a loop and prints the results, watching for the ranking to change. It ran live for the length of Toonskin, Kenya Robinson's exhibition at Artspace in New Haven"
       ]}
   ]},
   ". He builds ",
@@ -137,9 +135,7 @@ export const DOC = [
   ]},
   ". It has been written about in ",
   { w:"academic journals", m:"asterisk", add:[
-      " by Karl Wolfgang Flender in ",
-      { l:"Interface Critique", h:"https://journals.ub.uni-heidelberg.de/index.php/ic/article/view/66992" },
-      " and Kaja Marczewska in ",
+      " by Karl Wolfgang Flender in Interface Critique and Kaja Marczewska in ",
       { l:"Media-N", h:"https://median.newmediacaucus.org" },
       ", discussed by Hannes Bajohr, Silvio Lorusso, and Scott Rettberg, and catalogued in the ",
       { l:"ELMCIP", h:"https://elmcip.net/person/jason-huff" },
@@ -183,9 +179,7 @@ export const DOC = [
           { w:"Etsy", m:"tag", add:[
               ", where he was one of the first dozen designers and led design through the 2015 public offering. Before that, straight out of RISD, he was on the early team at ",
               { w:"a startup", m:"sprout", add:[
-                  " called ",
-                  { l:"Weft", h:"https://www.risd.edu/news/stories/breakthrough-tool-wins-nsf-funding" },
-                  ", a textile design platform founded by Brooks Hagan and Steve Marschner"
+                  " called Weft, a textile design platform founded by Brooks Hagan and Steve Marschner"
               ]}
           ]}
       ]}
