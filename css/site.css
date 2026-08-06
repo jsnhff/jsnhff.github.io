@@ -896,6 +896,14 @@
 
   @media (max-width: 30rem) {
     .navwrap { padding-left: 0.6rem; padding-right: 0.6rem; }
+    /* On a phone the bar should sit near the bottom edge, not float a third of
+       an inch above it. 5vh of a tall screen was reading as a gap between the
+       bar and the browser's own chrome. The inset keeps it clear of the home
+       indicator on hardware that has one, and resolves to 0 where there is
+       none — so this is close to the edge without ever being under it. */
+    .navwrap {
+      padding-bottom: max(0.55rem, env(safe-area-inset-bottom, 0px));
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
