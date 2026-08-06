@@ -214,12 +214,15 @@
     var grip = sheetPanel.querySelector('.sheet-grip');
     var startY = 0, startScroll = 0, dy = 0, dragging = false, id = null;
 
+    var fromGrip = false;
+
     function from(e) {
-      // A pull that begins on the grip always drags. Elsewhere it only drags
-      // once there is nothing left to scroll up into.
+      // A pull that begins on the grip always drags, wherever the panel happens
+      // to be scrolled to. Elsewhere it only drags once there is nothing left
+      // to scroll up into, so the gesture never fights the content.
       if (e.target.closest('.sheet-close')) return false;
-      if (grip && grip.contains(e.target)) return true;
-      return sheetPanel.scrollTop <= 0;
+      fromGrip = !!(grip && grip.contains(e.target));
+      return fromGrip || sheetPanel.scrollTop <= 0;
     }
 
     sheetPanel.addEventListener('pointerdown', function (e) {
@@ -232,8 +235,9 @@
     sheetPanel.addEventListener('pointermove', function (e) {
       if (!dragging || e.pointerId !== id) return;
       dy = e.clientY - startY;
-      // Upward drags do nothing; the panel does not travel past its own top.
-      if (dy < 0 || startScroll > 0) { dy = 0; return; }
+      // Upward drags do nothing. A pull from the body is also ignored if it
+      // began part-way down — but a pull from the grip is always a pull.
+      if (dy < 0 || (!fromGrip && startScroll > 0)) { dy = 0; return; }
       e.preventDefault();
       sheetPanel.setPointerCapture(id);
       sheetPanel.style.transform = 'translate(-50%, ' + dy + 'px)';

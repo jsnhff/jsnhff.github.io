@@ -414,23 +414,42 @@
   .sheet-panel.dragging { transition: none; }
 
   /* The grip reads as "this pulls down". */
+  /* The header is a fade, not a lid. A solid bar cut whatever line of text
+     happened to be passing under it clean in half; this lets the text dissolve
+     into the top edge the way it does at the top of a page. The veil carries
+     the gradient, the blur and its own mask, so the handle and the close mark
+     stay sharp on top of it. */
   .sheet-grip {
     position: sticky;
+    top: 0;
+    z-index: 3;
+    height: 3.6rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 0.75rem;
     cursor: grab;
     touch-action: none;
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 2.1rem;
-    background: var(--ground);
-    transition: background-color var(--invert) ease;
+    /* Sits over the first 3.6rem of content rather than pushing it down. */
+    margin-bottom: -3.6rem;
+  }
+  .sheet-veil {
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 5.2rem;
+    pointer-events: none;
+    background: linear-gradient(to bottom, var(--ground) 34%, transparent);
+    -webkit-backdrop-filter: blur(7px);
+            backdrop-filter: blur(7px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 46%, transparent);
+            mask-image: linear-gradient(to bottom, #000 46%, transparent);
+    transition: background var(--invert) ease;
   }
   .sheet-grip:active { cursor: grabbing; }
   .sheet-grip::before {
     content: '';
+    position: relative;
+    z-index: 1;
     width: 2.4rem;
     height: 4px;
     border-radius: 999px;
@@ -439,7 +458,8 @@
   /* The same mark as on the home picture: two crossing lines, no chip. */
   .sheet-close {
     position: absolute;
-    top: 0.1rem;
+    z-index: 1;
+    top: 0.35rem;
     right: 0.6rem;
     display: inline-flex;
     align-items: center;
@@ -461,7 +481,10 @@
   /* The panel is its own scroll container, so its edges need the same courtesy
      the page's do: a plate scrolling under the grip used to stop dead against
      it. Both bands are sticky, so they ride along when the sheet is dragged. */
-  .sheet-grip::after,
+  .sheet-foot {
+    content: '';
+    pointer-events: none;
+  }
   .sheet-foot {
     content: '';
     pointer-events: none;
@@ -493,7 +516,7 @@
   .sheet-close:hover { opacity: 1; transform: scale(1.06); }
   .sheet-close:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
-  .sheet-body { padding: 1rem 1.5rem clamp(3rem, 8vh, 5rem); }
+  .sheet-body { padding: 4.2rem 1.5rem clamp(3rem, 8vh, 5rem); }
 
   @media (prefers-reduced-motion: reduce) {
     .sheet-panel, .sheet-scrim { transition: none !important; }
