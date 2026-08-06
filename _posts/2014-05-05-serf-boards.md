@@ -4,7 +4,7 @@ title:  "Serf Boards"
 date:   2014-05-05
 thumbnail: "/images/posts/serf-boards-thumb.jpg"
 categories: writing the new inquiry 
-note: "This piece originally appeared in <a href='http://thenewinquiry.com/essays/serf-boards/'>The New Inquiry</a>"
+note: "This piece originally appeared in <a href='https://thenewinquiry.com/serf-boards/'>The New Inquiry</a>"
 excerpt: "In the summer of 2009, the U.S. economy lost 9 million jobs: between April and October of that year, the national unemployment rate would rise to 10 percent as the stock market plummeted to nearly half its value. Money stood at the forefront of collective anxiety: every day seemed to generate new tales of friends getting laid off or of more companies' having closed up shop. That summer, I discovered people were resorting to making money online using a service called Amazon Mechanical Turk, or 'MTurk' as it's colloquially known."
 ---
 

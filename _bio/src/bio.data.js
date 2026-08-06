@@ -89,7 +89,7 @@ export const DOC = [
       ". Also for ",
       { w:"The New Inquiry", m:"quote", add:[
           ", where ",
-          { l:"Serf Boards", h:"https://jason-huff.com/writing/serf-boards/" },
+          { l:"Serf Boards", h:"https://thenewinquiry.com/serf-boards/" },
           " took apart Amazon Mechanical Turk and crowdsourced labor"
       ]},
       ". And once for ",

@@ -47,7 +47,7 @@ export const WRITING = [
   { year:"2016", title:"Artist Profile: Damon Zucconi", outlet:"Rhizome",
     href:"https://rhizome.org/editorial/2016/nov/01/artist-profile-damon-zucconi/" },
   { year:"2014", title:"Serf Boards", outlet:"The New Inquiry",
-    href:"https://jason-huff.com/writing/serf-boards/" },
+    href:"https://thenewinquiry.com/serf-boards/" },
   { year:"2012", title:"Beyond the Surface: 15 Years of Desktop Aesthetics", outlet:"Rhizome",
     href:"https://rhizome.org/editorial/2012/mar/14/beyond-surface-15-years-desktop-aesthetics/" },
   { year:"2012", title:"Interface Aesthetics: An Introduction", outlet:"Rhizome",
