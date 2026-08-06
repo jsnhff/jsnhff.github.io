@@ -1,6 +1,7 @@
 ---
 layout: update
 update-type: Event
+short: "A booth at the Cleveland Art Book Fair, 78th Street Studios, Cleveland — 12–6pm."
 date: 2026-10-24
 ---
 
