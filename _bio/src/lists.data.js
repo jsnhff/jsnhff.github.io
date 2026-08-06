@@ -63,7 +63,6 @@ export const WRITING = [
     href:"https://elmcip.net/event/elmcip-conference-remediating-social" },
   { year:"2011", title:"Technology is Not Enough: The Story of NYU\u2019s ITP", outlet:"Rhizome",
     href:"https://rhizome.org/editorial/2011/dec/15/technology-not-enough-story-nyus-interactive-telec/" },
-  { year:"2010", title:"Required Reading", outlet:"Rhizome" },
 ];
 
 export const PRESS = [
