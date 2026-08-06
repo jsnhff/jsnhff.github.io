@@ -16,6 +16,7 @@ background_grain: 0.5
 
 # Build settings
 markdown: kramdown
+future: true
 
 # Collections
 collections:
