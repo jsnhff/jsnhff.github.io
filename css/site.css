@@ -1146,6 +1146,30 @@
 .bio-block .bio p { margin: 0 0 0.9em; }
 .bio-block .bio p:last-child { margin-bottom: 0; }
 
+/* The bio ships fully open — that is what a crawler and a reader without
+   JavaScript get — and enhance() collapses it on load. Between first paint and
+   that swap the page was showing all 3,000px of it against the 490px it settles
+   at, which is the flicker: a wall of text, then a page rearranging itself.
+
+   Clamped to the collapsed bio's shape, first paint already looks like the
+   answer. Same four paragraphs, same opening words, near enough the same
+   height — so when the swap lands it changes words rather than the layout.
+
+   Only where scripting is on. With JS off no swap is coming and the whole bio
+   is the page, which is the point of shipping it open. */
+@media (scripting: enabled) {
+  .bio-block:not(.is-ready) .bio p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    overflow: hidden;
+  }
+  /* The collapsed paragraphs run a line shorter once the measure widens. */
+  @media (min-width: 38rem) {
+    .bio-block:not(.is-ready) .bio p { -webkit-line-clamp: 3; }
+  }
+}
+
 /* a chip: opens in place, one way */
 .bio-block .chip {
   display: inline;
