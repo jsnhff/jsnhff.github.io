@@ -351,6 +351,11 @@
     font-size: 1rem;
     line-height: 1.6;
   }
+  /* Rendered markdown arrives wrapped in its own paragraphs; they should sit
+     flush with the card rather than adding a browser margin on top of the
+     padding. */
+  .up-body > p, .row-body > p { margin: 0; }
+  .up-body > p + p, .row-body > p + p { margin-top: 1rem; }
   /* Inside a card the ink is dark whichever way the page has gone, so links
      cannot inherit the page's colour. */
   .up-item a { color: #101010; }
@@ -410,6 +415,7 @@
 
   /* The grip reads as "this pulls down". */
   .sheet-grip {
+    position: sticky;
     cursor: grab;
     touch-action: none;
     position: sticky;
@@ -451,6 +457,39 @@
     transition: opacity 180ms ease, transform 180ms ease, color var(--invert) ease;
   }
   .sheet-close svg { display: block; }
+
+  /* The panel is its own scroll container, so its edges need the same courtesy
+     the page's do: a plate scrolling under the grip used to stop dead against
+     it. Both bands are sticky, so they ride along when the sheet is dragged. */
+  .sheet-grip::after,
+  .sheet-foot {
+    content: '';
+    pointer-events: none;
+  }
+  .sheet-grip::after {
+    position: absolute;
+    left: 0; right: 0; top: 100%;
+    height: 2.4rem;
+    background: linear-gradient(to bottom, var(--ground) 18%, transparent);
+    -webkit-backdrop-filter: blur(3px);
+            backdrop-filter: blur(3px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent);
+            mask-image: linear-gradient(to bottom, #000 30%, transparent);
+  }
+  .sheet-foot {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    display: block;
+    height: 3rem;
+    /* Sticks to the bottom edge without adding to the panel's length. */
+    margin-top: -3rem;
+    background: linear-gradient(to top, var(--ground) 28%, transparent);
+    -webkit-backdrop-filter: blur(3px);
+            backdrop-filter: blur(3px);
+    -webkit-mask-image: linear-gradient(to top, #000 40%, transparent);
+            mask-image: linear-gradient(to top, #000 40%, transparent);
+  }
   .sheet-close:hover { opacity: 1; transform: scale(1.06); }
   .sheet-close:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
