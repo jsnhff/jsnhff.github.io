@@ -461,32 +461,61 @@
   // Rendered only when something is actually coming up, so its absence here is
   // the normal case.
   //
-  // Height is CSS's job (0fr to 1fr); width is not — there is no animating
-  // from a capsule's max-content width to the open one, so both ends are
-  // pinned here in pixels and the capsule travels between them.
+  // Nothing inside the capsule is animated. The frame is laid out once at the
+  // open width and stays there; the capsule is a window over it, and opening is
+  // that window travelling between two measured sizes. Animating the layout
+  // instead — a width the text reflows into, rows going 0fr to 1fr — meant
+  // every line re-wrapped on every frame, which is what the judder was.
+  //
+  // Which makes the measurements load-bearing, so they are taken from the
+  // header itself (sized to its own label, independent of the frame around it)
+  // and retaken whenever anything that feeds them moves: the viewport, and the
+  // fonts, which settle after first paint and shift the label's width with them.
 
   function initIsland(island) {
     var pill = island.querySelector('.island-pill');
-    var shut = 0;
+    var frame = island.querySelector('.island-frame');
+    var panel = island.querySelector('.island-panel');
+    var queued = false;
 
     function measure() {
-      island.style.width = '';
-      shut = island.getBoundingClientRect().width;
-      if (!island.classList.contains('open')) island.style.width = shut + 'px';
+      var rem = parseFloat(getComputedStyle(root).fontSize) || 16;
+      var head = pill.getBoundingClientRect();
+      // Sub-pixel widths round down to a clipped final letter; always up.
+      island.style.setProperty('--shut-w', Math.ceil(head.width) + 'px');
+      island.style.setProperty('--shut-h', Math.ceil(head.height) + 'px');
+      island.style.setProperty('--open-w',
+        Math.max(Math.ceil(head.width), Math.min(28 * rem, window.innerWidth - 32)) + 'px');
+      // Read after the frame has been given its width, or the height belongs to
+      // the previous one.
+      requestAnimationFrame(function () {
+        island.style.setProperty('--open-h', Math.ceil(frame.scrollHeight) + 'px');
+      });
     }
 
-    function grown() {
-      var rem = parseFloat(getComputedStyle(root).fontSize) || 16;
-      return Math.max(shut, Math.min(28 * rem, window.innerWidth - 32));
+    // Re-measuring is not a state change, so it must not look like one: the
+    // capsule would otherwise animate itself every time the window moved.
+    function remeasure() {
+      if (queued) return;
+      queued = true;
+      island.classList.add('no-anim');
+      requestAnimationFrame(function () {
+        measure();
+        requestAnimationFrame(function () {
+          queued = false;
+          island.classList.remove('no-anim');
+        });
+      });
     }
 
     function set(open) {
       island.classList.toggle('open', open);
       pill.setAttribute('aria-expanded', open ? 'true' : 'false');
-      island.style.width = (open ? grown() : shut) + 'px';
+      panel.toggleAttribute('inert', !open);
     }
 
     measure();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(remeasure);
 
     pill.addEventListener('click', function () {
       set(!island.classList.contains('open'));
@@ -503,10 +532,7 @@
       }
     });
 
-    window.addEventListener('resize', function () {
-      if (island.classList.contains('open')) island.style.width = grown() + 'px';
-      else measure();
-    });
+    window.addEventListener('resize', remeasure);
   }
 
   // ---- go -----------------------------------------------------------------

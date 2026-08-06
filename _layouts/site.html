@@ -68,13 +68,18 @@
   {% assign ahead = ahead | sort: "date" %}
   {% if ahead.size > 0 %}
 <div class="island" id="island">
-  <button class="island-pill" id="island-pill" type="button"
-          aria-expanded="false" aria-controls="island-panel">
-    <span class="island-dot" aria-hidden="true"></span>
-    <span class="island-label">{{ ahead.size }} upcoming event{% if ahead.size > 1 %}s{% endif %}</span>
-  </button>
-  <div class="island-panel" id="island-panel">
-    <div class="island-inner">
+  {%- comment -%}
+    The frame is laid out at the open width and never changes; the capsule is
+    a window over it. Shut, the entries are clipped, so they are inert as well
+    — clipped out of sight should mean clipped out of the tab order.
+  {%- endcomment -%}
+  <div class="island-frame" id="island-frame">
+    <button class="island-pill" id="island-pill" type="button"
+            aria-expanded="false" aria-controls="island-panel">
+      <span class="island-dot" aria-hidden="true"></span>
+      <span class="island-label">{{ ahead.size }} upcoming event{% if ahead.size > 1 %}s{% endif %}</span>
+    </button>
+    <div class="island-panel" id="island-panel" inert>
       {%- for u in ahead %}
       <article class="island-event">
         <p class="island-when">{{ u.update-type | default: "Update" }} &middot; {{ u.date | date: "%B %-d, %Y" }}</p>
