@@ -21,24 +21,18 @@ description: "Jason Huff (b. 1981) is an artist, writer, and designer living and
     <div class="bio">{% include bio-static.html %}</div>
 
     <div class="foot">
-      <span class="dot" data-dot></span>
-      <span class="tally" data-tally></span>
       <button class="reset" data-reset type="button">Start over</button>
     </div>
 
     {% include bio-lists.html %}
-
-    <p class="colophon" data-colophon></p>
   </div>
 </section>
 
 <script type="module">
-  import { enhance, colophon } from '/js/bio/bio.js?v={{ site.time | date: "%s" }}';
+  import { enhance } from '/js/bio/bio.js?v={{ site.time | date: "%s" }}';
   const root = document.querySelector('.bio-block');
   if (root) {
     enhance(root);
-    // The site sets no webfonts, so the colophon says what is actually true.
-    colophon(root.querySelector('[data-colophon]'), "whatever your system serves");
 
     // enhance() rewrites the bio's paragraphs, and rewrites them again on every
     // tap, which drops the non-breaking spaces site.js bound at load. Re-bind

@@ -1028,37 +1028,18 @@
 }
 @keyframes cool { to { background: transparent; box-shadow: 0 0 0 0.18em transparent; } }
 
-.bio-block .colophon {
-  margin: 2.75rem 0 0;
-  font-size: 0.78rem;
-  letter-spacing: 0.01em;
-  color: var(--dim);
-  transition: color var(--invert) ease;
-}
+/* No rule and no counter — the bio does not need to announce how much of
+   itself is left. Only the way back, and only once there is one. */
 .bio-block .foot {
   display: flex;
-  align-items: center;
-  gap: 14px;
-  margin: 3.5rem 0 0;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--bio-rule);
+  margin: 2rem 0 0;
   font-size: 0.7rem;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--dim);
 }
-.bio-block .dot {
-  width: 7px; height: 7px;
-  flex: none;
-  border-radius: 50%;
-  background: var(--dim);
-  transition: background 400ms ease;
-}
-.bio-block .tally { font-variant-numeric: tabular-nums; transition: color 400ms ease; }
-.bio-block .tally.done { color: var(--ink); }
 .bio-block .reset {
-  margin-left: auto;
   padding: 0;
   border: 0;
   background: none;
@@ -1095,26 +1076,24 @@
 }
 .rec-list { margin: 0; padding: 0; list-style: none; }
 .rec-item {
-  display: grid;
-  grid-template-columns: 3.4rem 1fr;
-  gap: 0 1rem;
-  padding: 0.7rem 0;
+  padding: 0.9rem 0;
   border-top: 1px solid var(--bio-rule);
   font-size: 0.95rem;
   line-height: 1.5;
 }
 .rec-item:first-child { border-top: 0; }
+/* The year sits over its entry, the way a date sits over an entry on the
+   Index — same size, same dim, same drop to the line below. */
 .rec-year {
+  display: block;
+  margin: 0 0 0.5rem;
   font-variant-numeric: tabular-nums;
   font-size: 0.82rem;
   color: var(--dim);
-  padding-top: 0.15em;
   transition: color var(--invert) ease;
 }
 .rec-body > .rec-title { color: var(--ink); }
+/* A pill carries side margin so it can sit inside a sentence. Leading an
+   entry it should start on the margin, flush with the note beneath it. */
+.rec-body > .pill:first-child { margin-left: 0; }
 .rec-note { display: block; margin-top: 0.25rem; font-size: 0.88rem; color: var(--dim); }
-
-@media (max-width: 34rem) {
-  .rec-item { grid-template-columns: 1fr; gap: 0.15rem; }
-  .rec-year { padding-top: 0; }
-}

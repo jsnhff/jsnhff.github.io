@@ -48,9 +48,11 @@ const pill = (label, href) =>
 // never a link to a URL we do not have.
 const titled = (label, href) => href ? pill(label, href) : `<span class="rec-title">${esc(label)}</span>`;
 
+// A year only gets a line of its own when there is one. Collections carry no
+// date, and an empty span would still hold the space open above the entry.
 const item = (year, lead, tail) =>
   `    <li class="rec-item">`
-  + `<span class="rec-year">${year ? esc(year) : ""}</span>`
+  + (year ? `<span class="rec-year">${esc(year)}</span>` : "")
   + `<span class="rec-body">${lead}${tail ? `<span class="rec-note">${tail}</span>` : ""}</span>`
   + `</li>`;
 
@@ -82,7 +84,18 @@ const parts = [
 
 fs.writeFileSync(out("bio-lists.html"), banner("lists.data.js") + parts.join("\n\n") + "\n");
 
-/* ---- 3. say what happened ------------------------------------------ */
+/* ---- 3. the browser's copy ------------------------------------------ */
+/* The page imports these as modules at runtime. Copying them here means
+   there is one source of truth: edit src/, run the build, and the static
+   HTML and the interactive version cannot disagree. */
+
+const runtime = path.join(here, "..", "js", "bio");
+fs.mkdirSync(runtime, { recursive: true });
+for (const f of ["bio.js", "bio.data.js", "glyphs.js"]) {
+  fs.copyFileSync(path.join(here, "src", f), path.join(runtime, f));
+}
+
+/* ---- 4. say what happened ------------------------------------------ */
 
 const links = (renderStatic().match(/<a class="pill"/g) || []).length;
 console.log(`bio-static.html  ${TOTAL} chips expanded, ${links} links`);

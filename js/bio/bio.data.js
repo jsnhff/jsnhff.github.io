@@ -72,10 +72,8 @@ export const DOC = [
   ". He builds ",
   { w:"software", m:"code", add:[
       ", most recently ",
-      { l:"regender.xyz", h:"https://regender.xyz" },
-      ", free and open source, which transforms the gendered structure of English texts. Its first publication is Pride & Prejudice in four volumes, and the ",
-      { l:"source", h:"https://github.com/jsnhff/regender-xyz" },
-      " is on GitHub"
+      { l:"regender-xyz", h:"https://github.com/jsnhff/regender-xyz" },
+      ", free and open source, which transforms the gendered structure of English texts. Its first publication is Pride & Prejudice in four volumes"
   ]},
   ". And he ",
   { w:"writes", m:"pen", add:[
