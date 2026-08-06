@@ -1198,9 +1198,16 @@
 }
 
 /* an outbound link, in the site's face rather than a mono one */
+/* A bubble is one object, so it is one box: inline, it fragmented at the line
+   end and drew a second bubble around whatever was left over — usually the
+   arrow on its own. Inline-block cannot fragment. A pill that does not fit
+   moves down whole; a title too long for any line wraps inside its own border
+   instead of being cut in half by one, and max-width keeps the longest of them
+   inside the column on the narrowest phone. */
 .bio-block .pill,
 .rec .pill {
-  display: inline;
+  display: inline-block;
+  max-width: 100%;
   margin: 0 0.12em;
   padding: 0.34em 0.72em 0.32em;
   border: 1px solid var(--bio-pill-line);
@@ -1221,7 +1228,13 @@
 .rec .pill:hover { border-color: var(--ink); color: var(--ink); background: var(--bio-chip); }
 .bio-block .pill:focus-visible,
 .rec .pill:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-.pill .arw { display: inline-block; margin-left: 0.5em; font-size: 0.9em; }
+/* The arrow was an inline-block, and a line is allowed to break before one of
+   those: at the end of a line the label stayed put and the arrow went to the
+   next line inside a second bubble of its own, which is what
+   box-decoration-break: clone draws for a fragment. Inline, there is no break
+   opportunity in front of it, so it cannot be left behind — in the prose or in
+   the lists, whatever the measure. */
+.pill .arw { display: inline; margin-left: 0.5em; font-size: 0.9em; }
 
 .bio-block .mark {
   display: inline-block;
