@@ -1,0 +1,34 @@
+---
+layout: site
+title: Studio
+section: studio
+dark: true
+permalink: /studio/
+description: "Books, websites, drawings, prints and installations by Jason Huff."
+---
+
+<h1 class="sr-only">Studio</h1>
+
+{% assign order = "book,website,diagrams,prints,installation" | split: "," %}
+{% for cat in order %}
+  {% assign group = site.projects | where: "category", cat | sort: "date" | reverse %}
+  {% if group.size > 0 %}
+    {% assign label = cat %}
+    {% if cat == "diagrams" %}{% assign label = "diagrams" %}
+    {% elsif cat == "prints" %}{% assign label = "prints" %}
+    {% else %}{% assign label = cat | append: "s" %}{% endif %}
+    <h2 class="row gal-head">{{ label }}</h2>
+    <div class="gallery">
+      {% for p in group %}
+        <article class="row gal-cell">
+          <a class="gal-link" href="{{ p.url }}">
+            <div class="plate">
+              <img src="{{ p.plate }}" width="{{ p.plate_w }}" height="{{ p.plate_h }}"
+                   alt="{{ p.title }}" loading="lazy" decoding="async">
+            </div>
+          </a>
+        </article>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endfor %}
