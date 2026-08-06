@@ -1,27 +1,15 @@
 ---
-layout: default
+layout: site
 ---
-<div class="sm-col-12 md-col-10 lg-col-8 mx-auto">
-    <header class="mt3">
-        <h1 class="m0">{{ page.title }}</h1>
-        <p class="mid-gray mb3 caps h6">{{ page.date | date: "%b %-d, %Y" }}{% if page.author %} • {{ page.author }}{% endif %}{% if page.meta %} • {{ page.meta }}{% endif %}{% if page.note %} • {{ page.note }}{% endif %}</p>
-    </header>
-    <article>
-        {{ content }}
-    </article>
-    <div class="clearfix">
-        <h6 class="gray caps border-top py2 mt3">Keep reading</h6>
-        {% if page.previous.url %} 
-        <a class="left teal" href="{{page.previous.url}}">
-            <svg class="icon" data-icon="chevron-left" viewBox="0 0 32 32" style="fill:currentcolor"><path d="M20 1 L24 5 L14 16 L24 27 L20 31 L6 16 z "></path></svg>
-            {{page.previous.title}}
-        </a> 
-        {% endif %} 
-        {% if page.next.url %} 
-        <a class="right teal" href="{{page.next.url}}">
-            {{page.next.title}}
-            <svg class="icon" data-icon="chevron-right" viewBox="0 0 32 32" style="fill:currentcolor"><path d="M12 1 L26 16 L12 31 L8 27 L18 16 L8 5 z "></path></svg>
-        </a> 
-        {% endif %} 
-    </div>
-</div>
+{%- comment -%}
+  An essay. Writing is gathered on Mission, so that is what stays lit in the bar
+  while you are reading one.
+{%- endcomment -%}
+<article class="col is-prose">
+  <p class="row row-meta">{{ page.date | date: "%B %-d, %Y" }}</p>
+  <h1 class="row m-h2 post-title">{{ page.title }}</h1>
+  {% if page.note %}<p class="row w-meta post-note">{{ page.note }}</p>{% endif %}
+  <div class="post-body">
+    {{ content }}
+  </div>
+</article>

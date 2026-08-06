@@ -243,7 +243,10 @@
     var credit = el('p', 'egg-credit', canvas.getAttribute('data-credit') || '');
     wrap.appendChild(credit);
 
-    var clear = el('button', 'egg-clear', '&times;');
+    var clear = el('button', 'egg-clear',
+      '<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" ' +
+      'stroke="currentColor" stroke-width="1.5" stroke-linecap="square">' +
+      '<path d="M4.5 4.5 19.5 19.5"/><path d="M19.5 4.5 4.5 19.5"/></svg>');
     clear.type = 'button';
     clear.setAttribute('aria-label', 'Cover the picture again');
     wrap.appendChild(clear);
@@ -272,8 +275,12 @@
     function placeClear() {
       var w = parseFloat(canvas.style.width) || 0;
       var h = parseFloat(canvas.style.height) || 0;
-      clear.style.left = 'calc(50% + ' + (w / 2 - 34) + 'px)';
-      clear.style.top = 'calc(50% - ' + (h / 2 - 10) + 'px)';
+      // Equal inset from the top and right edges of the plate, measured from
+      // the button's own box rather than guessed.
+      var pad = 10;
+      var side = clear.offsetWidth || 42;
+      clear.style.left = 'calc(50% + ' + (w / 2 - side - pad) + 'px)';
+      clear.style.top = 'calc(50% - ' + (h / 2 - pad) + 'px)';
     }
 
     // Draw the photo, then keep only the parts that have been scratched.

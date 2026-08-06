@@ -5,6 +5,9 @@ section: studio
 dark: true
 permalink: /studio/
 description: "Books, websites, drawings, prints and installations by Jason Huff."
+redirect_from:
+  - /work/
+  - /projects/
 ---
 
 <h1 class="sr-only">Studio</h1>
@@ -21,7 +24,11 @@ description: "Books, websites, drawings, prints and installations by Jason Huff.
     <div class="gallery">
       {% for p in group %}
         <article class="row gal-cell">
+          {%- if p.live_url -%}
+          <a class="gal-link" href="{{ p.live_url }}" target="_blank" rel="noopener">
+          {%- else -%}
           <a class="gal-link" href="{{ p.url }}">
+          {%- endif -%}
             <div class="plate">
               <img src="{{ p.plate }}" width="{{ p.plate_w }}" height="{{ p.plate_h }}"
                    alt="{{ p.title }}" loading="lazy" decoding="async">

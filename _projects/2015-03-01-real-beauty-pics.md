@@ -10,6 +10,7 @@ plate_w: 640
 plate_h: 550
 section: studio
 dark: true
+live_url: "http://www.real-beauty.pics"
 ---
 {% for num in (1..6) %}
 <div class="row pj-shot">

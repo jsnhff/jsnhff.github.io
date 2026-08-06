@@ -10,6 +10,7 @@ plate_w: 640
 plate_h: 550
 section: studio
 dark: true
+live_url: "http://themechanicalturkdiaries.com/"
 ---
 {% for num in (1..5) %}
 <div class="row pj-shot">

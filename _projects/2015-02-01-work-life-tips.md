@@ -10,6 +10,7 @@ plate_w: 640
 plate_h: 550
 section: studio
 dark: true
+live_url: "http://www.work-life.tips"
 ---
 {% for num in (1..4) %}
 <div class="row pj-shot">

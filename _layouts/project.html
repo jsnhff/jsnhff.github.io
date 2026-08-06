@@ -10,9 +10,9 @@ layout: site
     <p class="pj-year">{{ page.date | date: "%Y" }}</p>
     <h1 class="pj-title">{{ page.title }}</h1>
     <div class="pj-desc">{{ page.description | markdownify }}</div>
-    {% if page.url_external or page.link %}
+    {% if page.live_url %}
       <p class="pj-visit">
-        <a href="{{ page.url_external | default: page.link }}" target="_blank" rel="noopener">Visit {{ page.title }} &rarr;</a>
+        <a href="{{ page.live_url }}" target="_blank" rel="noopener">Visit {{ page.title }} &rarr;</a>
       </p>
     {% endif %}
   </div>

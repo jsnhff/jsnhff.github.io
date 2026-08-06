@@ -37,3 +37,20 @@ permalink: /writing/:title/
 plugins:
 - jekyll-sitemap
 - jekyll-redirect-from
+
+# Front matter set on a layout is only visible as `layout.*`, never `page.*`,
+# so anything the shell reads off the page (ground colour, which nav item is
+# lit) has to be declared here instead.
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      dark: true
+      section: "mission"
+  - scope:
+      path: ""
+      type: "projects"
+    values:
+      dark: true
+      section: "studio"
