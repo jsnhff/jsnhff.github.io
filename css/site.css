@@ -761,11 +761,23 @@
   .gal-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 6px; border-radius: 4px; }
 
   @media (max-width: 62rem) { .gallery { grid-template-columns: repeat(2, 1fr); } }
-  /* Stays two up on a phone. The band comes down with it so the cells are not
-     mostly empty air, and the titles tighten to survive a ~9rem column. */
+  /* One up on a phone. Two columns put every plate in a ~9rem box — a
+     screenshot at that size is a smudge — and a phone only ever has one
+     column's worth of width to give, so the wall gives all of it to one plate
+     at a time.
+     The shared band goes with the second column. Its job was to hold a set at
+     its true relative scale side by side, and there is no side by side here:
+     the column sets the width, the screen caps the height, and each plate comes
+     up as large as the phone can show it. */
   @media (max-width: 38rem) {
-    .gallery { gap: clamp(1.75rem, 6vw, 2.5rem) clamp(0.9rem, 4vw, 1.5rem); }
-    .plate { height: clamp(9rem, 34vh, 15rem); margin-bottom: 0; }
+    .gallery {
+      grid-template-columns: 1fr;
+      gap: clamp(2.5rem, 9vw, 3.5rem);
+    }
+    .plate { height: auto; margin-bottom: 0; }
+    /* A tall picture would otherwise run past the screen it is meant to fit. */
+    .plate img { max-height: 62vh; }
+    .plate.is-empty { height: 9rem; max-width: none; }
   }
 
   .row-title {
