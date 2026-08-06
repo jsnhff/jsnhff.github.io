@@ -36,6 +36,9 @@
        caps how bright the backdrop can push it while leaving the shift itself
        plainly visible. */
     --glass-veil:   transparent;
+    /* The island carries more veil than the bar: it opens over the statement,
+       and the type under it has to stop reading through. */
+    --island-veil:  rgba(255, 255, 255, 0.74);
     /* Corner is ~0.2 of the bar's height, per the reference — a soft rounded
        rectangle, well short of a capsule. */
     --bar-radius:   0.55rem;
@@ -65,6 +68,7 @@
     --glass-on-edge: rgba(0, 0, 0, 0.16);
     --glass-on-ink: #0A0A0A;
     --glass-veil:   rgba(7, 7, 7, 0.34);
+    --island-veil:  rgba(7, 7, 7, 0.66);
   }
 
   /* color-scheme cannot be transitioned — it snaps. Left on .is-dark it flipped
@@ -198,6 +202,142 @@
   .egg-clear.on { opacity: 0.92; pointer-events: auto; }
   .egg-clear.on:hover { opacity: 1; transform: scale(1.06); }
   .egg-clear:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+  /* ---- the upcoming island ---------------------------------------------- */
+  /* Home's one piece of news. It only exists when something is actually
+     coming up, so its presence is the message and the count is the detail;
+     tapping it opens the entries in place rather than sending you to the
+     Index. Same glass as the nav and the back button, so it reads as another
+     piece of the site's furniture rather than a banner laid over it. */
+
+  .island {
+    position: fixed;
+    top: clamp(1rem, 3vh, 1.75rem);
+    left: 50%;
+    z-index: 5;
+    /* Auto while closed; JS pins both states in px so the open and shut can be
+       a single travelling width rather than a snap. */
+    width: max-content;
+    max-width: min(28rem, calc(100vw - 2rem));
+    border-radius: 999px;
+    background-color: var(--glass);
+    /* Its own veil, heavier than the nav's: open, the capsule lands over the
+       statement, and the blur alone leaves the sentence legible through the
+       entries. This holds the ghost back without going opaque. */
+    background-image: linear-gradient(var(--island-veil), var(--island-veil));
+    box-shadow: inset 0 0 0 1px var(--glass-edge);
+    -webkit-backdrop-filter: var(--glass-blur);
+            backdrop-filter: var(--glass-blur);
+    color: var(--glass-ink);
+    font-family: var(--face);
+    overflow: hidden;
+    opacity: 0;
+    transform: translate(-50%, 0);
+    animation: island-in 520ms var(--rise) 300ms forwards;
+    transition: width 460ms var(--rise), border-radius 380ms var(--rise),
+                background-color var(--invert) ease, color var(--invert) ease,
+                box-shadow var(--invert) ease;
+  }
+  /* The capsule squares off as it grows, the way the island does. */
+  .island.open { border-radius: 1.35rem; }
+
+  @keyframes island-in {
+    from { opacity: 0; transform: translate(-50%, -0.5rem); }
+    to   { opacity: 1; transform: translate(-50%, 0); }
+  }
+
+  .island-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    /* Tall enough to be a thumb target, not just a label. */
+    padding: 0.6rem 0.95rem;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-align: left;
+    cursor: pointer;
+  }
+  /* The ring belongs around the whole capsule, not around the header inside it
+     — on the open island an inset ring cut a line across the middle. Where
+     :has is unavailable it falls back to ringing the button. */
+  .island-pill:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+  @supports selector(:has(*)) {
+    .island:has(.island-pill:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }
+    .island:has(.island-pill:focus-visible) .island-pill:focus-visible { outline: none; }
+  }
+  .island-label { flex: 1 1 auto; }
+
+  /* A live indicator, not a bullet: it breathes so the pill reads as current. */
+  .island-dot {
+    flex: 0 0 auto;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 999px;
+    background: currentColor;
+    opacity: 0.55;
+    animation: island-pulse 2.6s ease-in-out infinite;
+  }
+  @keyframes island-pulse {
+    0%, 100% { opacity: 0.3; transform: scale(0.9); }
+    50%      { opacity: 0.75; transform: scale(1.1); }
+  }
+
+  /* Rows collapse to nothing and open to their own height — no measuring, and
+     no fixed height to keep in step with the copy. */
+  .island-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 460ms var(--rise);
+  }
+  .island.open .island-panel { grid-template-rows: 1fr; }
+  /* Collapsed, the entries must not widen the capsule: rows at 0fr take away
+     their height but not their width, and the shut pill would otherwise be as
+     wide as its longest event. */
+  .island:not(.open) .island-panel { width: 0; }
+  .island-inner {
+    min-height: 0;
+    overflow: hidden;
+    padding: 0 0.95rem;
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+  .island.open .island-inner {
+    padding-bottom: 0.9rem;
+    opacity: 1;
+    transition: opacity 320ms ease 140ms;
+  }
+
+  .island-event { margin: 0; padding: 0.7rem 0; }
+  .island-event + .island-event { border-top: 1px solid var(--glass-edge); }
+  .island-when {
+    margin: 0 0 0.2rem;
+    font-size: 0.74rem;
+    letter-spacing: 0.01em;
+    opacity: 0.62;
+  }
+  .island-what { margin: 0; font-size: 0.88rem; line-height: 1.5; }
+  .island-more {
+    display: inline-block;
+    margin-top: 0.15rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--glass-edge);
+    width: 100%;
+    font-size: 0.78rem;
+    color: inherit;
+    opacity: 0.72;
+    text-decoration: none;
+  }
+  .island-more:hover { opacity: 1; }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .island { background: var(--pill); color: var(--pill-ink); box-shadow: none; }
+  }
 
   /* ---- reading views --------------------------------------------------- */
 
@@ -905,6 +1045,9 @@
       animation: none !important; opacity: 1 !important; transform: none !important;
     }
     :root.is-leaving .egg-canvas { opacity: 0 !important; animation: none !important; }
+    .island { animation: none !important; opacity: 1 !important; transition: none !important; }
+    .island-dot { animation: none !important; opacity: 0.55 !important; transform: none !important; }
+    .island-panel, .island-inner { transition: none !important; }
     :root.is-leaving .row,
     :root.is-leaving .rise-in,
     :root.is-leaving .statement .w { opacity: 0 !important; }

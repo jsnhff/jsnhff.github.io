@@ -457,6 +457,58 @@
     window.addEventListener('resize', size);
   }
 
+  // ---- the upcoming island ------------------------------------------------
+  // Rendered only when something is actually coming up, so its absence here is
+  // the normal case.
+  //
+  // Height is CSS's job (0fr to 1fr); width is not — there is no animating
+  // from a capsule's max-content width to the open one, so both ends are
+  // pinned here in pixels and the capsule travels between them.
+
+  function initIsland(island) {
+    var pill = island.querySelector('.island-pill');
+    var shut = 0;
+
+    function measure() {
+      island.style.width = '';
+      shut = island.getBoundingClientRect().width;
+      if (!island.classList.contains('open')) island.style.width = shut + 'px';
+    }
+
+    function grown() {
+      var rem = parseFloat(getComputedStyle(root).fontSize) || 16;
+      return Math.max(shut, Math.min(28 * rem, window.innerWidth - 32));
+    }
+
+    function set(open) {
+      island.classList.toggle('open', open);
+      pill.setAttribute('aria-expanded', open ? 'true' : 'false');
+      island.style.width = (open ? grown() : shut) + 'px';
+    }
+
+    measure();
+
+    pill.addEventListener('click', function () {
+      set(!island.classList.contains('open'));
+    });
+
+    // Open, it is the thing in front of you: anywhere else, and Escape, shuts it.
+    document.addEventListener('pointerdown', function (e) {
+      if (island.classList.contains('open') && !island.contains(e.target)) set(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && island.classList.contains('open')) {
+        set(false);
+        pill.focus();
+      }
+    });
+
+    window.addEventListener('resize', function () {
+      if (island.classList.contains('open')) island.style.width = grown() + 'px';
+      else measure();
+    });
+  }
+
   // ---- go -----------------------------------------------------------------
 
   // Shared so anything that writes its own prose after load — the bio on the
@@ -466,6 +518,9 @@
   noOrphans(document.body);
   collect(document.body);
   placeThumb(false);
+
+  var island = document.getElementById('island');
+  if (island) initIsland(island);
 
   // A project URL loaded cold renders as its own page; arriving at one from the
   // wall is what opens the sheet, so nothing to do here on first paint.

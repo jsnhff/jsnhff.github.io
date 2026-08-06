@@ -1,6 +1,7 @@
 ---
 layout: update
 update-type: Interview
+short: "Mimi Cabell and I are interviewed about American Psycho on Preserving Disorder, Lumpen Radio, Chicago — 10:30am Central."
 date: 2026-09-20
 ---
 
