@@ -1,0 +1,1170 @@
+<title>Link review — jason-huff.com</title>
+<style>
+  :root {
+    --ground:   #FAFAFB;
+    --raise:    #FFFFFF;
+    --ink:      #14161A;
+    --dim:      #6B7079;
+    --hair:     #E3E5EA;
+    --hair-firm:#CFD3DA;
+    --live:     #2F8D5B;
+    --gone:     #C24730;
+    --weak:     #A9761F;
+    --accent:   #0082F3;
+    --shadow:   0 1px 2px rgba(16,18,22,.06), 0 8px 24px rgba(16,18,22,.05);
+
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground:   #0E0F12;
+      --raise:    #16181D;
+      --ink:      #E8E9ED;
+      --dim:      #868C97;
+      --hair:     #24272E;
+      --hair-firm:#343943;
+      --live:     #4FB57A;
+      --gone:     #E2705A;
+      --weak:     #D6A143;
+      --accent:   #4BA6F7;
+      --shadow:   0 1px 2px rgba(0,0,0,.4), 0 8px 28px rgba(0,0,0,.32);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#0E0F12; --raise:#16181D; --ink:#E8E9ED; --dim:#868C97;
+    --hair:#24272E; --hair-firm:#343943;
+    --live:#4FB57A; --gone:#E2705A; --weak:#D6A143; --accent:#4BA6F7;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 28px rgba(0,0,0,.32);
+  }
+  :root[data-theme="light"] {
+    --ground:#FAFAFB; --raise:#FFFFFF; --ink:#14161A; --dim:#6B7079;
+    --hair:#E3E5EA; --hair-firm:#CFD3DA;
+    --live:#2F8D5B; --gone:#C24730; --weak:#A9761F; --accent:#0082F3;
+    --shadow: 0 1px 2px rgba(16,18,22,.06), 0 8px 24px rgba(16,18,22,.05);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .sr {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  .wrap { max-width: 62rem; margin: 0 auto; padding: 0 1.25rem 6rem; }
+
+  /* ---- the bar that never leaves ------------------------------------- */
+  header {
+    position: sticky; top: 0; z-index: 10;
+    /* Near-opaque, not a tint: rows scrolling underneath were reading
+       through the bar and turning the counts to mush. */
+    background: color-mix(in srgb, var(--ground) 97%, transparent);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--hair);
+  }
+  .bar { max-width: 62rem; margin: 0 auto; padding: .9rem 1.25rem; display: grid; gap: .75rem; }
+  .bar-top { display: flex; align-items: baseline; gap: .75rem; flex-wrap: wrap; }
+  h1 { margin: 0; font-size: 1rem; font-weight: 620; letter-spacing: -.01em; }
+  .sub { color: var(--dim); font-size: .82rem; }
+  .spacer { margin-left: auto; }
+
+  .meter { display: flex; height: 6px; border-radius: 99px; overflow: hidden; background: var(--hair); }
+  .meter i { display: block; transition: width 260ms ease; }
+  .meter .m-ok   { background: var(--live); }
+  .meter .m-gone { background: var(--gone); }
+  .meter .m-weak { background: var(--weak); }
+
+  .legend { display: flex; gap: 1.1rem; flex-wrap: wrap; font-family: var(--mono); font-size: .76rem; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .legend b { color: var(--ink); font-weight: 600; }
+  .key { display: inline-flex; align-items: center; gap: .4rem; }
+  .dot { width: 8px; height: 8px; border-radius: 2px; flex: none; }
+  .d-ok { background: var(--live); } .d-gone { background: var(--gone); }
+  .d-weak { background: var(--weak); } .d-todo { background: var(--hair-firm); }
+
+  button { font: inherit; cursor: pointer; }
+  .btn {
+    padding: .4rem .8rem; border-radius: 7px;
+    border: 1px solid var(--hair-firm); background: var(--raise); color: var(--ink);
+    font-size: .82rem; font-weight: 550;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-go { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-go:hover { color: #fff; filter: brightness(1.08); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---- how-to ---------------------------------------------------------- */
+  /* Shown only when the page finds itself somewhere it cannot open a tab or
+     keep a mark — which is exactly what a sandboxed frame is. */
+  .warn {
+    margin: 1.6rem 0 0; padding: .85rem 1.1rem;
+    border: 1px solid var(--weak); border-left-width: 3px; border-radius: 10px;
+    background: color-mix(in srgb, var(--weak) 9%, var(--raise));
+    font-size: .86rem;
+  }
+  .warn[hidden] { display: none; }
+  .warn p { margin: 0 0 .4rem; max-width: 62ch; }
+  .warn p:last-child { margin-bottom: 0; }
+  .warn strong { font-weight: 620; }
+
+  .intro { margin: 1.6rem 0 0; padding: 1rem 1.1rem; border: 1px solid var(--hair); border-radius: 10px; background: var(--raise); }
+  .intro p { margin: 0 0 .5rem; max-width: 60ch; }
+  .intro p:last-child { margin-bottom: 0; }
+  .intro strong { font-weight: 620; }
+  kbd {
+    font-family: var(--mono); font-size: .78rem;
+    padding: .08em .38em; border: 1px solid var(--hair-firm);
+    border-bottom-width: 2px; border-radius: 4px; background: var(--ground);
+  }
+
+  /* ---- bands ----------------------------------------------------------- */
+  .band { margin: 2.4rem 0 0; }
+  .band-head { display: flex; align-items: baseline; gap: .6rem; border-bottom: 1px solid var(--hair-firm); padding-bottom: .35rem; }
+  .band h2 { margin: 0; font-size: .74rem; font-weight: 620; letter-spacing: .14em; text-transform: uppercase; }
+  .band-count { font-family: var(--mono); font-size: .74rem; color: var(--dim); font-variant-numeric: tabular-nums; margin-left: auto; }
+  .band-note { margin: .55rem 0 .9rem; color: var(--dim); font-size: .82rem; max-width: 68ch; }
+
+  .rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .row {
+    display: grid; grid-template-columns: auto 1fr auto; gap: .8rem; align-items: center;
+    padding: .6rem .75rem; border-radius: 8px;
+    border: 1px solid var(--hair); background: var(--raise);
+    border-left: 3px solid var(--hair-firm);
+  }
+  .row[data-v="ok"]   { border-left-color: var(--live); }
+  .row[data-v="gone"] { border-left-color: var(--gone); }
+  .row[data-v="weak"] { border-left-color: var(--weak); }
+  .row[data-v="ok"] .meat { opacity: .55; }
+  .row.cursor { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .verdict { display: flex; gap: 3px; }
+  .v {
+    width: 30px; height: 30px; display: grid; place-items: center;
+    border: 1px solid var(--hair-firm); border-radius: 6px;
+    background: var(--ground); color: var(--dim);
+    font-family: var(--mono); font-size: .9rem; line-height: 1;
+    transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  }
+  .v:hover { border-color: var(--accent); color: var(--accent); }
+  .row[data-v="ok"]   .v-ok   { background: var(--live); border-color: var(--live); color: #fff; }
+  .row[data-v="gone"] .v-gone { background: var(--gone); border-color: var(--gone); color: #fff; }
+  .row[data-v="weak"] .v-weak { background: var(--weak); border-color: var(--weak); color: #fff; }
+
+    /* The open control is the thing this page exists to make fast, so it is a
+     real button at a fixed place in every row rather than an underlined word
+     you have to find. */
+  .open {
+    display: inline-flex; align-items: center; gap: .35rem;
+    padding: .35rem .7rem; border-radius: 7px;
+    border: 1px solid var(--hair-firm); background: var(--ground); color: var(--dim);
+    font-family: var(--mono); font-size: .74rem; white-space: nowrap;
+  }
+  .open:hover { border-color: var(--accent); color: var(--accent); background: var(--raise); }
+  .row[data-v] .open { opacity: .5; }
+  .row[data-v] .open:hover { opacity: 1; }
+  .row.cursor .open { border-color: var(--accent); color: var(--accent); }
+
+  .meat { min-width: 0; display: grid; gap: .1rem; }
+  .line { display: flex; align-items: baseline; gap: .55rem; flex-wrap: wrap; }
+  .lbl { color: var(--ink); text-decoration: none; font-weight: 550; border-bottom: 1px solid var(--hair-firm); }
+  .also {
+    font-family: var(--mono); font-size: .68rem; color: var(--dim);
+    padding: .1em .45em; border: 1px solid var(--hair); border-radius: 99px; cursor: help;
+  }
+  .lbl:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .host { font-family: var(--mono); font-size: .74rem; color: var(--dim); }
+  .url { font-family: var(--mono); font-size: .72rem; color: var(--dim); word-break: break-all; opacity: .72; }
+
+  /* ---- the handoff ------------------------------------------------------ */
+  dialog {
+    width: min(52rem, 92vw); max-height: 84vh; padding: 0;
+    border: 1px solid var(--hair-firm); border-radius: 12px;
+    background: var(--raise); color: var(--ink); box-shadow: var(--shadow);
+  }
+  dialog::backdrop { background: rgba(0,0,0,.5); }
+  .dlg-head { display: flex; align-items: center; gap: .75rem; padding: 1rem 1.15rem; border-bottom: 1px solid var(--hair); }
+  .dlg-head h2 { margin: 0; font-size: .95rem; font-weight: 620; }
+  .dlg-body { padding: 1.15rem; overflow: auto; max-height: 64vh; }
+  pre {
+    margin: 0; padding: .9rem 1rem; overflow-x: auto;
+    background: var(--ground); border: 1px solid var(--hair); border-radius: 8px;
+    font-family: var(--mono); font-size: .78rem; line-height: 1.6; white-space: pre-wrap;
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  .band-open {
+    margin-left: .5rem; padding: .18rem .55rem;
+    border: 1px solid var(--hair-firm); border-radius: 99px;
+    background: var(--ground); color: var(--dim);
+    font-family: var(--mono); font-size: .68rem;
+  }
+  .band-open:hover { border-color: var(--accent); color: var(--accent); }
+  .band-open[hidden] { display: none; }
+
+  @media (max-width: 34rem) {
+    .row { grid-template-columns: auto 1fr; }
+    .open { grid-column: 2; justify-self: start; }
+    .url { display: none; }
+  }
+</style>
+<header>
+  <div class="bar">
+    <div class="bar-top">
+      <h1>Link review</h1>
+      <span class="sub">46 URLs across 60 link positions on jason-huff.com</span>
+      <span class="spacer"></span>
+      <button class="btn btn-go" id="opennext" type="button">Open next unchecked</button>
+      <button class="btn" id="copyall" type="button">Copy unchecked URLs</button>
+      <button class="btn" id="reset" type="button">Clear marks</button>
+      <button class="btn" id="export" type="button">What to change</button>
+    </div>
+    <div class="meter" aria-hidden="true">
+      <i class="m-ok"   id="m-ok"   style="width:0%"></i>
+      <i class="m-gone" id="m-gone" style="width:0%"></i>
+      <i class="m-weak" id="m-weak" style="width:0%"></i>
+    </div>
+    <div class="legend" role="status">
+      <span class="key"><i class="dot d-ok"></i>works <b id="c-ok">0</b></span>
+      <span class="key"><i class="dot d-gone"></i>gone <b id="c-gone">0</b></span>
+      <span class="key"><i class="dot d-weak"></i>weak <b id="c-weak">0</b></span>
+      <span class="key"><i class="dot d-todo"></i>left <b id="c-todo">46</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="warn" id="warn" hidden></div>
+  <div class="intro">
+    <p><strong>Nothing here has been checked.</strong> The build server's egress proxy answers 403 for every host, so all 60 probes came back identical — that measured the network, not the web. These need a human to open them.</p>
+    <p>The 60 link positions resolve to <strong>46 distinct URLs</strong>, so that is how many you actually have to open. A URL used in more than one entry is one decision; marking it here marks every entry that points at it. Hover <em>also…</em> to see where else it appears.</p>
+    <p>The rule the list lives by: <strong>if a URL 404s, the entry keeps its text and loses its link.</strong> An unlinked credential is fine; a dead link is not. Mark <em>weak</em> for a URL that resolves but should point somewhere better — a library homepage where a catalog record exists.</p>
+    <p>The loop: hit <strong>Open next unchecked</strong>, glance at the tab, then press <kbd>1</kbd> works, <kbd>2</kbd> gone, or <kbd>3</kbd> weak. Marking jumps the cursor forward, so it is open-look-key, open-look-key. Every row also has its own <strong>Open</strong>, and each section can throw its next five into tabs at once.</p>
+    <p>Keys: <kbd>o</kbd> or <kbd>Enter</kbd> opens, <kbd>j</kbd>/<kbd>k</kbd> move, <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> mark, <kbd>0</kbd> clears one. Marks save in this browser as you go, so you can stop and come back.</p>
+  </div>
+  <section class="band" aria-labelledby="h-Bio">
+  <div class="band-head">
+    <h2 id="h-Bio">Bio</h2>
+    <span class="band-count" data-band-count="Bio">33</span>
+    <button class="band-open" data-band-open="Bio" type="button">open next 5</button>
+  </div>
+  <p class="band-note">Links inside the running bio. They open from a chip, so a dead one stays invisible until someone taps it.</p>
+  <ul class="rows">
+    <li class="row" data-i="0" data-sec="Bio" data-href="https://www.risd.edu" data-label="RISD" data-where="Bio · RISD ; Bio · RISD ; Bio · RISD">
+      <div class="verdict" role="group" aria-label="Verdict for RISD">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://www.risd.edu" target="_blank" rel="noopener">RISD</a><span class="also" title="Bio · RISD  |  Bio · RISD  |  Bio · RISD">also 2 other entries</span></span>
+        <span class="host">risd.edu</span>
+        <span class="url">https://www.risd.edu</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="1" data-sec="Bio" data-href="https://www.newyorker.com/books/page-turner/rise-of-the-literature-machines" data-label="The New Yorker" data-where="Bio · The New Yorker ; Press · 2010 The New Yorker — Rise of the Literature Machines">
+      <div class="verdict" role="group" aria-label="Verdict for The New Yorker">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://www.newyorker.com/books/page-turner/rise-of-the-literature-machines" target="_blank" rel="noopener">The New Yorker</a><span class="also" title="Bio · The New Yorker  |  Press · 2010 The New Yorker — Rise of the Literature Machines">also 1 other entry</span></span>
+        <span class="host">newyorker.com</span>
+        <span class="url">https://www.newyorker.com/books/page-turner/rise-of-the-literature-machines</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="2" data-sec="Bio" data-href="https://p-dpa.net/work/autosummarize/" data-label="edition" data-where="Bio · edition">
+      <div class="verdict" role="group" aria-label="Verdict for edition">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://p-dpa.net/work/autosummarize/" target="_blank" rel="noopener">edition</a></span>
+        <span class="host">p-dpa.net</span>
+        <span class="url">https://p-dpa.net/work/autosummarize/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="3" data-sec="Bio" data-href="https://www.mimicabell.com/" data-label="Mimi Cabell" data-where="Bio · Mimi Cabell">
+      <div class="verdict" role="group" aria-label="Verdict for Mimi Cabell">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://www.mimicabell.com/" target="_blank" rel="noopener">Mimi Cabell</a></span>
+        <span class="host">mimicabell.com</span>
+        <span class="url">https://www.mimicabell.com/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="4" data-sec="Bio" data-href="https://en.wikipedia.org/wiki/American_Psycho_(conceptual_novel)" data-label="Wikipedia" data-where="Bio · Wikipedia">
+      <div class="verdict" role="group" aria-label="Verdict for Wikipedia">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://en.wikipedia.org/wiki/American_Psycho_(conceptual_novel)" target="_blank" rel="noopener">Wikipedia</a></span>
+        <span class="host">en.wikipedia.org</span>
+        <span class="url">https://en.wikipedia.org/wiki/American_Psycho_(conceptual_novel)</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="5" data-sec="Bio" data-href="https://www.printedmatter.org/catalog/41638" data-label="Printed Matter" data-where="Bio · Printed Matter">
+      <div class="verdict" role="group" aria-label="Verdict for Printed Matter">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://www.printedmatter.org/catalog/41638" target="_blank" rel="noopener">Printed Matter</a></span>
+        <span class="host">printedmatter.org</span>
+        <span class="url">https://www.printedmatter.org/catalog/41638</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="6" data-sec="Bio" data-href="https://www.artspacenewhaven.org" data-label="Artspace" data-where="Bio · Artspace">
+      <div class="verdict" role="group" aria-label="Verdict for Artspace">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://www.artspacenewhaven.org" target="_blank" rel="noopener">Artspace</a></span>
+        <span class="host">artspacenewhaven.org</span>
+        <span class="url">https://www.artspacenewhaven.org</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="7" data-sec="Bio" data-href="https://github.com/jsnhff/regender-xyz" data-label="regender-xyz" data-where="Bio · regender-xyz">
+      <div class="verdict" role="group" aria-label="Verdict for regender-xyz">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://github.com/jsnhff/regender-xyz" target="_blank" rel="noopener">regender-xyz</a></span>
+        <span class="host">github.com</span>
+        <span class="url">https://github.com/jsnhff/regender-xyz</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="8" data-sec="Bio" data-href="https://rhizome.org/editorial/2012/mar/14/beyond-surface-15-years-desktop-aesthetics/" data-label="Beyond the Surface: 15 Years of Desktop Aesthetics" data-where="Bio · Beyond the Surface: 15 Years of Desktop Aesthetics ; Writing · 2012 Beyond the Surface: 15 Years of Desktop Aesthetics">
+      <div class="verdict" role="group" aria-label="Verdict for Beyond the Surface: 15 Years of Desktop Aesthetics">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://rhizome.org/editorial/2012/mar/14/beyond-surface-15-years-desktop-aesthetics/" target="_blank" rel="noopener">Beyond the Surface: 15 Years of Desktop Aesthetics</a><span class="also" title="Bio · Beyond the Surface: 15 Years of Desktop Aesthetics  |  Writing · 2012 Beyond the Surface: 15 Years of Desktop Aesthetics">also 1 other entry</span></span>
+        <span class="host">rhizome.org</span>
+        <span class="url">https://rhizome.org/editorial/2012/mar/14/beyond-surface-15-years-desktop-aesthetics/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="9" data-sec="Bio" data-href="https://rhizome.org/editorial/2016/nov/01/artist-profile-damon-zucconi/" data-label="Damon Zucconi" data-where="Bio · Damon Zucconi ; Writing · 2016 Artist Profile: Damon Zucconi">
+      <div class="verdict" role="group" aria-label="Verdict for Damon Zucconi">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://rhizome.org/editorial/2016/nov/01/artist-profile-damon-zucconi/" target="_blank" rel="noopener">Damon Zucconi</a><span class="also" title="Bio · Damon Zucconi  |  Writing · 2016 Artist Profile: Damon Zucconi">also 1 other entry</span></span>
+        <span class="host">rhizome.org</span>
+        <span class="url">https://rhizome.org/editorial/2016/nov/01/artist-profile-damon-zucconi/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="10" data-sec="Bio" data-href="https://rhizome.org/tags/jason-huff/" data-label="archive" data-where="Bio · archive">
+      <div class="verdict" role="group" aria-label="Verdict for archive">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://rhizome.org/tags/jason-huff/" target="_blank" rel="noopener">archive</a></span>
+        <span class="host">rhizome.org</span>
+        <span class="url">https://rhizome.org/tags/jason-huff/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="11" data-sec="Bio" data-href="https://jason-huff.com/writing/serf-boards/" data-label="Serf Boards" data-where="Bio · Serf Boards ; Writing · 2014 Serf Boards">
+      <div class="verdict" role="group" aria-label="Verdict for Serf Boards">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://jason-huff.com/writing/serf-boards/" target="_blank" rel="noopener">Serf Boards</a><span class="also" title="Bio · Serf Boards  |  Writing · 2014 Serf Boards">also 1 other entry</span></span>
+        <span class="host">jason-huff.com</span>
+        <span class="url">https://jason-huff.com/writing/serf-boards/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="12" data-sec="Bio" data-href="https://thecreativeindependent.com/guides/how-to-make-a-website-for-your-creative-work/" data-label="guide" data-where="Bio · guide ; Writing · 2019 How to Make a Website for Your Creative Work">
+      <div class="verdict" role="group" aria-label="Verdict for guide">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://thecreativeindependent.com/guides/how-to-make-a-website-for-your-creative-work/" target="_blank" rel="noopener">guide</a><span class="also" title="Bio · guide  |  Writing · 2019 How to Make a Website for Your Creative Work">also 1 other entry</span></span>
+        <span class="host">thecreativeindependent.com</span>
+        <span class="url">https://thecreativeindependent.com/guides/how-to-make-a-website-for-your-creative-work/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="13" data-sec="Bio" data-href="https://seansuchara.info/" data-label="Sean Suchara" data-where="Bio · Sean Suchara">
+      <div class="verdict" role="group" aria-label="Verdict for Sean Suchara">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://seansuchara.info/" target="_blank" rel="noopener">Sean Suchara</a></span>
+        <span class="host">seansuchara.info</span>
+        <span class="url">https://seansuchara.info/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="14" data-sec="Bio" data-href="https://library.moma.org" data-label="MoMA Library" data-where="Bio · MoMA Library ; Collections · MoMA Library, Museum of Modern Art">
+      <div class="verdict" role="group" aria-label="Verdict for MoMA Library">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://library.moma.org" target="_blank" rel="noopener">MoMA Library</a><span class="also" title="Bio · MoMA Library  |  Collections · MoMA Library, Museum of Modern Art">also 1 other entry</span></span>
+        <span class="host">library.moma.org</span>
+        <span class="url">https://library.moma.org</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="15" data-sec="Bio" data-href="https://soulellis.com/entries/lotpw.html" data-label="Printed Web" data-where="Bio · Printed Web">
+      <div class="verdict" role="group" aria-label="Verdict for Printed Web">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://soulellis.com/entries/lotpw.html" target="_blank" rel="noopener">Printed Web</a></span>
+        <span class="host">soulellis.com</span>
+        <span class="url">https://soulellis.com/entries/lotpw.html</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="16" data-sec="Bio" data-href="https://library.whitney.org" data-label="Special Collections" data-where="Bio · Special Collections ; Collections · Whitney Museum of American Art, Special Collections">
+      <div class="verdict" role="group" aria-label="Verdict for Special Collections">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://library.whitney.org" target="_blank" rel="noopener">Special Collections</a><span class="also" title="Bio · Special Collections  |  Collections · Whitney Museum of American Art, Special Collections">also 1 other entry</span></span>
+        <span class="host">library.whitney.org</span>
+        <span class="url">https://library.whitney.org</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="17" data-sec="Bio" data-href="https://apod.li/auto-summarize" data-label="Library of Artistic Print on Demand" data-where="Bio · Library of Artistic Print on Demand ; Collections · Bayerische Staatsbibliothek, Munich">
+      <div class="verdict" role="group" aria-label="Verdict for Library of Artistic Print on Demand">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://apod.li/auto-summarize" target="_blank" rel="noopener">Library of Artistic Print on Demand</a><span class="also" title="Bio · Library of Artistic Print on Demand  |  Collections · Bayerische Staatsbibliothek, Munich">also 1 other entry</span></span>
+        <span class="host">apod.li</span>
+        <span class="url">https://apod.li/auto-summarize</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="18" data-sec="Bio" data-href="https://conceptualisms.info" data-label="Conceptualisms" data-where="Bio · Conceptualisms ; Anthologies · 2022 Conceptualisms">
+      <div class="verdict" role="group" aria-label="Verdict for Conceptualisms">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://conceptualisms.info" target="_blank" rel="noopener">Conceptualisms</a><span class="also" title="Bio · Conceptualisms  |  Anthologies · 2022 Conceptualisms">also 1 other entry</span></span>
+        <span class="host">conceptualisms.info</span>
+        <span class="url">https://conceptualisms.info</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="19" data-sec="Bio" data-href="https://www.kunstforum.de/band/2016-243-postdigital2/" data-label="issue" data-where="Bio · issue ; Anthologies · 2016 KUNSTFORUM International, Band 243">
+      <div class="verdict" role="group" aria-label="Verdict for issue">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://www.kunstforum.de/band/2016-243-postdigital2/" target="_blank" rel="noopener">issue</a><span class="also" title="Bio · issue  |  Anthologies · 2016 KUNSTFORUM International, Band 243">also 1 other entry</span></span>
+        <span class="host">kunstforum.de</span>
+        <span class="url">https://www.kunstforum.de/band/2016-243-postdigital2/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="20" data-sec="Bio" data-href="https://jeudepaume.org/en/evenement/american-psycho-mimi-cabell-jason-huff/" data-label="Jeu de Paume" data-where="Bio · Jeu de Paume">
+      <div class="verdict" role="group" aria-label="Verdict for Jeu de Paume">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://jeudepaume.org/en/evenement/american-psycho-mimi-cabell-jason-huff/" target="_blank" rel="noopener">Jeu de Paume</a></span>
+        <span class="host">jeudepaume.org</span>
+        <span class="url">https://jeudepaume.org/en/evenement/american-psycho-mimi-cabell-jason-huff/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="21" data-sec="Bio" data-href="https://journals.ub.uni-heidelberg.de/index.php/ic/article/view/66992" data-label="Interface Critique" data-where="Bio · Interface Critique ; Scholarship · 2019 Karl Wolfgang Flender — American Psycho: Reading an Algorithm in Reverse">
+      <div class="verdict" role="group" aria-label="Verdict for Interface Critique">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://journals.ub.uni-heidelberg.de/index.php/ic/article/view/66992" target="_blank" rel="noopener">Interface Critique</a><span class="also" title="Bio · Interface Critique  |  Scholarship · 2019 Karl Wolfgang Flender — American Psycho: Reading an Algorithm in Reverse">also 1 other entry</span></span>
+        <span class="host">journals.ub.uni-heidelberg.de</span>
+        <span class="url">https://journals.ub.uni-heidelberg.de/index.php/ic/article/view/66992</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="22" data-sec="Bio" data-href="https://median.newmediacaucus.org" data-label="Media-N" data-where="Bio · Media-N">
+      <div class="verdict" role="group" aria-label="Verdict for Media-N">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://median.newmediacaucus.org" target="_blank" rel="noopener">Media-N</a></span>
+        <span class="host">median.newmediacaucus.org</span>
+        <span class="url">https://median.newmediacaucus.org</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="23" data-sec="Bio" data-href="https://elmcip.net/person/jason-huff" data-label="ELMCIP" data-where="Bio · ELMCIP">
+      <div class="verdict" role="group" aria-label="Verdict for ELMCIP">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://elmcip.net/person/jason-huff" target="_blank" rel="noopener">ELMCIP</a></span>
+        <span class="host">elmcip.net</span>
+        <span class="url">https://elmcip.net/person/jason-huff</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="24" data-sec="Bio" data-href="https://www.newschool.edu/parsons/" data-label="Parsons" data-where="Bio · Parsons">
+      <div class="verdict" role="group" aria-label="Verdict for Parsons">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://www.newschool.edu/parsons/" target="_blank" rel="noopener">Parsons</a></span>
+        <span class="host">newschool.edu</span>
+        <span class="url">https://www.newschool.edu/parsons/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="25" data-sec="Bio" data-href="https://www.newinc.org" data-label="NEW INC" data-where="Bio · NEW INC">
+      <div class="verdict" role="group" aria-label="Verdict for NEW INC">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://www.newinc.org" target="_blank" rel="noopener">NEW INC</a></span>
+        <span class="host">newinc.org</span>
+        <span class="url">https://www.newinc.org</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="26" data-sec="Bio" data-href="https://praksisoslo.org" data-label="residency" data-where="Bio · residency">
+      <div class="verdict" role="group" aria-label="Verdict for residency">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://praksisoslo.org" target="_blank" rel="noopener">residency</a></span>
+        <span class="host">praksisoslo.org</span>
+        <span class="url">https://praksisoslo.org</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="27" data-sec="Bio" data-href="https://livingroomlightexchange.com/lrlxny" data-label="Living Room Light Exchange" data-where="Bio · Living Room Light Exchange">
+      <div class="verdict" role="group" aria-label="Verdict for Living Room Light Exchange">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://livingroomlightexchange.com/lrlxny" target="_blank" rel="noopener">Living Room Light Exchange</a></span>
+        <span class="host">livingroomlightexchange.com</span>
+        <span class="url">https://livingroomlightexchange.com/lrlxny</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="28" data-sec="Bio" data-href="https://hyperallergic.com/risd-black-sheep-projects/" data-label="Hyperallergic" data-where="Bio · Hyperallergic ; Press · 2010 Hyperallergic — Black Sheep Projects">
+      <div class="verdict" role="group" aria-label="Verdict for Hyperallergic">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://hyperallergic.com/risd-black-sheep-projects/" target="_blank" rel="noopener">Hyperallergic</a><span class="also" title="Bio · Hyperallergic  |  Press · 2010 Hyperallergic — Black Sheep Projects">also 1 other entry</span></span>
+        <span class="host">hyperallergic.com</span>
+        <span class="url">https://hyperallergic.com/risd-black-sheep-projects/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="29" data-sec="Bio" data-href="https://www.risd.edu/news/stories/breakthrough-tool-wins-nsf-funding" data-label="Weft" data-where="Bio · Weft">
+      <div class="verdict" role="group" aria-label="Verdict for Weft">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://www.risd.edu/news/stories/breakthrough-tool-wins-nsf-funding" target="_blank" rel="noopener">Weft</a></span>
+        <span class="host">risd.edu</span>
+        <span class="url">https://www.risd.edu/news/stories/breakthrough-tool-wins-nsf-funding</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="30" data-sec="Bio" data-href="https://www.uga.edu" data-label="University of Georgia" data-where="Bio · University of Georgia">
+      <div class="verdict" role="group" aria-label="Verdict for University of Georgia">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://www.uga.edu" target="_blank" rel="noopener">University of Georgia</a></span>
+        <span class="host">uga.edu</span>
+        <span class="url">https://www.uga.edu</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="31" data-sec="Bio" data-href="mailto:jsnhff@gmail.com" data-label="email" data-where="Bio · email">
+      <div class="verdict" role="group" aria-label="Verdict for email">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="mailto:jsnhff@gmail.com" target="_blank" rel="noopener">email</a></span>
+        <span class="host"></span>
+        <span class="url">mailto:jsnhff@gmail.com</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="32" data-sec="Bio" data-href="https://instagram.com/jsnhff" data-label="Instagram" data-where="Bio · Instagram">
+      <div class="verdict" role="group" aria-label="Verdict for Instagram">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://instagram.com/jsnhff" target="_blank" rel="noopener">Instagram</a></span>
+        <span class="host">instagram.com</span>
+        <span class="url">https://instagram.com/jsnhff</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+  </ul>
+</section>
+<section class="band" aria-labelledby="h-Anthologies">
+  <div class="band-head">
+    <h2 id="h-Anthologies">Anthologies</h2>
+    <span class="band-count" data-band-count="Anthologies">2</span>
+    <button class="band-open" data-band-open="Anthologies" type="button">open next 5</button>
+  </div>
+  <p class="band-note">Book and journal listings.</p>
+  <ul class="rows">
+    <li class="row" data-i="33" data-sec="Anthologies" data-href="https://apod.li/american-psycho" data-label="2025 Library of Artistic Print on Demand" data-where="Anthologies · 2025 Library of Artistic Print on Demand">
+      <div class="verdict" role="group" aria-label="Verdict for 2025 Library of Artistic Print on Demand">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://apod.li/american-psycho" target="_blank" rel="noopener">2025 Library of Artistic Print on Demand</a></span>
+        <span class="host">apod.li</span>
+        <span class="url">https://apod.li/american-psycho</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="34" data-sec="Anthologies" data-href="https://mitpress.mit.edu/9780262549813/output/" data-label="2024 Output: An Anthology of Computer-Generated Text, 1953–2023" data-where="Anthologies · 2024 Output: An Anthology of Computer-Generated Text, 1953–2023">
+      <div class="verdict" role="group" aria-label="Verdict for 2024 Output: An Anthology of Computer-Generated Text, 1953–2023">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://mitpress.mit.edu/9780262549813/output/" target="_blank" rel="noopener">2024 Output: An Anthology of Computer-Generated Text, 1953–2023</a></span>
+        <span class="host">mitpress.mit.edu</span>
+        <span class="url">https://mitpress.mit.edu/9780262549813/output/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+  </ul>
+</section>
+<section class="band" aria-labelledby="h-Writing">
+  <div class="band-head">
+    <h2 id="h-Writing">Writing</h2>
+    <span class="band-count" data-band-count="Writing">5</span>
+    <button class="band-open" data-band-open="Writing" type="button">open next 5</button>
+  </div>
+  <p class="band-note">Jason's own essays. The Rhizome links are the likeliest to have moved; if they have, rhizome.org/tags/jason-huff/ is the fallback and the essays go unlinked.</p>
+  <ul class="rows">
+    <li class="row" data-i="35" data-sec="Writing" data-href="https://rhizome.org/editorial/2012/aug/03/interface-aesthetics/" data-label="2012 Interface Aesthetics: An Introduction" data-where="Writing · 2012 Interface Aesthetics: An Introduction">
+      <div class="verdict" role="group" aria-label="Verdict for 2012 Interface Aesthetics: An Introduction">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://rhizome.org/editorial/2012/aug/03/interface-aesthetics/" target="_blank" rel="noopener">2012 Interface Aesthetics: An Introduction</a></span>
+        <span class="host">rhizome.org</span>
+        <span class="url">https://rhizome.org/editorial/2012/aug/03/interface-aesthetics/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="36" data-sec="Writing" data-href="https://rhizome.org/editorial/2012/aug/01/thoughts-wikipedias-future/" data-label="2012 Thoughts on Wikipedia’s Future" data-where="Writing · 2012 Thoughts on Wikipedia’s Future">
+      <div class="verdict" role="group" aria-label="Verdict for 2012 Thoughts on Wikipedia’s Future">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://rhizome.org/editorial/2012/aug/01/thoughts-wikipedias-future/" target="_blank" rel="noopener">2012 Thoughts on Wikipedia’s Future</a></span>
+        <span class="host">rhizome.org</span>
+        <span class="url">https://rhizome.org/editorial/2012/aug/01/thoughts-wikipedias-future/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="37" data-sec="Writing" data-href="https://elmcip.net/critical-writing/invisible-participation-language-and-internet" data-label="2012 Invisible Participation: Language and the Internet" data-where="Writing · 2012 Invisible Participation: Language and the Internet">
+      <div class="verdict" role="group" aria-label="Verdict for 2012 Invisible Participation: Language and the Internet">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://elmcip.net/critical-writing/invisible-participation-language-and-internet" target="_blank" rel="noopener">2012 Invisible Participation: Language and the Internet</a></span>
+        <span class="host">elmcip.net</span>
+        <span class="url">https://elmcip.net/critical-writing/invisible-participation-language-and-internet</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="38" data-sec="Writing" data-href="https://rhizome.org/editorial/2011/dec/15/technology-not-enough-story-nyus-interactive-telec/" data-label="2011 Technology is Not Enough: The Story of NYU’s ITP" data-where="Writing · 2011 Technology is Not Enough: The Story of NYU’s ITP">
+      <div class="verdict" role="group" aria-label="Verdict for 2011 Technology is Not Enough: The Story of NYU’s ITP">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://rhizome.org/editorial/2011/dec/15/technology-not-enough-story-nyus-interactive-telec/" target="_blank" rel="noopener">2011 Technology is Not Enough: The Story of NYU’s ITP</a></span>
+        <span class="host">rhizome.org</span>
+        <span class="url">https://rhizome.org/editorial/2011/dec/15/technology-not-enough-story-nyus-interactive-telec/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="39" data-sec="Writing" data-href="https://rhizome.org/editorial/2010/aug/09/required-reading/" data-label="2010 Required Reading" data-where="Writing · 2010 Required Reading">
+      <div class="verdict" role="group" aria-label="Verdict for 2010 Required Reading">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://rhizome.org/editorial/2010/aug/09/required-reading/" target="_blank" rel="noopener">2010 Required Reading</a></span>
+        <span class="host">rhizome.org</span>
+        <span class="url">https://rhizome.org/editorial/2010/aug/09/required-reading/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+  </ul>
+</section>
+<section class="band" aria-labelledby="h-Press">
+  <div class="band-head">
+    <h2 id="h-Press">Press</h2>
+    <span class="band-count" data-band-count="Press">4</span>
+    <button class="band-open" data-band-open="Press" type="button">open next 5</button>
+  </div>
+  <p class="band-note">Adweek absorbed GalleyCat and most old GalleyCat URLs died — check that one first.</p>
+  <ul class="rows">
+    <li class="row" data-i="40" data-sec="Press" data-href="https://www.dazeddigital.com/artsandculture/article/21553/1/download-american-psycho-reimagined-using-google-ads" data-label="2014 Dazed — American Psycho" data-where="Press · 2014 Dazed — American Psycho">
+      <div class="verdict" role="group" aria-label="Verdict for 2014 Dazed — American Psycho">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://www.dazeddigital.com/artsandculture/article/21553/1/download-american-psycho-reimagined-using-google-ads" target="_blank" rel="noopener">2014 Dazed — American Psycho</a></span>
+        <span class="host">dazeddigital.com</span>
+        <span class="url">https://www.dazeddigital.com/artsandculture/article/21553/1/download-american-psycho-reimagined-using-google-ads</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="41" data-sec="Press" data-href="https://www.dailydot.com/upstream/american-psycho-reimagined-with-google-ads/" data-label="2014 Daily Dot — American Psycho" data-where="Press · 2014 Daily Dot — American Psycho">
+      <div class="verdict" role="group" aria-label="Verdict for 2014 Daily Dot — American Psycho">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://www.dailydot.com/upstream/american-psycho-reimagined-with-google-ads/" target="_blank" rel="noopener">2014 Daily Dot — American Psycho</a></span>
+        <span class="host">dailydot.com</span>
+        <span class="url">https://www.dailydot.com/upstream/american-psycho-reimagined-with-google-ads/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="42" data-sec="Press" data-href="https://www.adweek.com/galleycat/art-students-rewrite-american-psycho-using-google-ads/90819" data-label="2014 Adweek — American Psycho" data-where="Press · 2014 Adweek — American Psycho">
+      <div class="verdict" role="group" aria-label="Verdict for 2014 Adweek — American Psycho">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://www.adweek.com/galleycat/art-students-rewrite-american-psycho-using-google-ads/90819" target="_blank" rel="noopener">2014 Adweek — American Psycho</a></span>
+        <span class="host">adweek.com</span>
+        <span class="url">https://www.adweek.com/galleycat/art-students-rewrite-american-psycho-using-google-ads/90819</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="43" data-sec="Press" data-href="https://electricliterature.com/rewriting-through-google-ads-mimi-cabell-and-jason-huffs-american-psycho/" data-label="2014 Electric Literature — American Psycho" data-where="Press · 2014 Electric Literature — American Psycho">
+      <div class="verdict" role="group" aria-label="Verdict for 2014 Electric Literature — American Psycho">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://electricliterature.com/rewriting-through-google-ads-mimi-cabell-and-jason-huffs-american-psycho/" target="_blank" rel="noopener">2014 Electric Literature — American Psycho</a></span>
+        <span class="host">electricliterature.com</span>
+        <span class="url">https://electricliterature.com/rewriting-through-google-ads-mimi-cabell-and-jason-huffs-american-psycho/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+  </ul>
+</section>
+<section class="band" aria-labelledby="h-Scholarship">
+  <div class="band-head">
+    <h2 id="h-Scholarship">Scholarship</h2>
+    <span class="band-count" data-band-count="Scholarship">2</span>
+    <button class="band-open" data-band-open="Scholarship" type="button">open next 5</button>
+  </div>
+  <p class="band-note">Peer-reviewed articles. APRJA is the only one with a DOI, so it should be the most stable.</p>
+  <ul class="rows">
+    <li class="row" data-i="44" data-sec="Scholarship" data-href="https://aprja.net/article/view/116107" data-label="2015 Lea Muldtofte Olsen — Grammatized Psychopath: American Psycho Online and Offline" data-where="Scholarship · 2015 Lea Muldtofte Olsen — Grammatized Psychopath: American Psycho Online and Offline">
+      <div class="verdict" role="group" aria-label="Verdict for 2015 Lea Muldtofte Olsen — Grammatized Psychopath: American Psycho Online and Offline">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://aprja.net/article/view/116107" target="_blank" rel="noopener">2015 Lea Muldtofte Olsen — Grammatized Psychopath: American Psycho Online and Offline</a></span>
+        <span class="host">aprja.net</span>
+        <span class="url">https://aprja.net/article/view/116107</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="45" data-sec="Scholarship" data-href="https://median.newmediacaucus.org/the_aesthetics_of_erasure/erasing-in-the-algorithmic-extreme-mimi-cabell-and-jason-huffs-american-psycho/" data-label="2015 Kaja Marczewska — Erasing in the Algorithmic Extreme" data-where="Scholarship · 2015 Kaja Marczewska — Erasing in the Algorithmic Extreme">
+      <div class="verdict" role="group" aria-label="Verdict for 2015 Kaja Marczewska — Erasing in the Algorithmic Extreme">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://median.newmediacaucus.org/the_aesthetics_of_erasure/erasing-in-the-algorithmic-extreme-mimi-cabell-and-jason-huffs-american-psycho/" target="_blank" rel="noopener">2015 Kaja Marczewska — Erasing in the Algorithmic Extreme</a></span>
+        <span class="host">median.newmediacaucus.org</span>
+        <span class="url">https://median.newmediacaucus.org/the_aesthetics_of_erasure/erasing-in-the-algorithmic-extreme-mimi-cabell-and-jason-huffs-american-psycho/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+  </ul>
+</section>
+
+</div>
+
+<dialog id="dlg">
+  <div class="dlg-head">
+    <h2>What to change</h2>
+    <span class="spacer"></span>
+    <button class="btn" id="copy" type="button">Copy</button>
+    <button class="btn" id="close" type="button">Close</button>
+  </div>
+  <div class="dlg-body"><pre id="out"></pre></div>
+</dialog>
+
+<script>
+(function () {
+  var KEY = 'jh-linkcheck-v1';
+  var rows = Array.prototype.slice.call(document.querySelectorAll('.row'));
+  var state = {};
+
+  /* A sandboxed frame gets an opaque origin, so localStorage throws rather
+     than returning null. Find out once, up front, and say so — marks that
+     quietly evaporate on reload are worse than marks that never claimed to
+     persist. */
+  var canStore = false;
+  try { localStorage.setItem(KEY + '-probe', '1'); localStorage.removeItem(KEY + '-probe'); canStore = true; } catch (e) {}
+  if (canStore) { try { state = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { state = {}; } }
+
+  var cursor = 0;
+  function save() { if (canStore) { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} } }
+
+  /* Opening starts optimistic and falls back the first time it is refused.
+     A sandbox without allow-popups blocks window.open AND target=_blank
+     anchors, so there is no way to open a tab from in here — copying the URL
+     is the only thing left that actually works. */
+  var canOpen = true;
+  var warnEl = document.getElementById('warn');
+
+  function announce() {
+    if (canOpen && canStore) { warnEl.hidden = true; return; }
+    warnEl.innerHTML =
+      '<p><strong>Use the downloaded copy of this page instead.</strong> Viewed here it sits in a '
+      + 'sandboxed frame, which blocks opening tabs, blocks the clipboard, and gives it no storage — '
+      + 'so links will not open, <em>Copy</em> will not copy, and marks vanish on reload.</p>'
+      + '<p>Claude sent you <code>linkreview.html</code>. Save it anywhere and open it in your browser: '
+      + 'same page, no frame, everything works. You can still read and mark here, and select the text in '
+      + '<em>What to change</em> by hand — but nothing you mark will survive leaving.</p>';
+    warnEl.hidden = false;
+  }
+
+  function flash(btn, word) {
+    var was = btn.textContent;
+    btn.textContent = word;
+    setTimeout(function () { btn.textContent = was; }, 1200);
+  }
+
+  function copyText(t) {
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t);
+    return new Promise(function (res, rej) {
+      var ta = document.createElement('textarea');
+      ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      ok ? res() : rej();
+    });
+  }
+
+  function paint() {
+    var n = { ok: 0, gone: 0, weak: 0 };
+    rows.forEach(function (r) {
+      var v = state[r.dataset.href];
+      if (v) { r.setAttribute('data-v', v); n[v]++; } else { r.removeAttribute('data-v'); }
+    });
+    var total = rows.length;
+    ['ok', 'gone', 'weak'].forEach(function (k) {
+      document.getElementById('c-' + k).textContent = n[k];
+      document.getElementById('m-' + k).style.width = (n[k] / total * 100) + '%';
+    });
+    var left = total - n.ok - n.gone - n.weak;
+    document.getElementById('c-todo').textContent = left;
+    var nx = document.getElementById('opennext');
+    if (nx) {
+      nx.textContent = left ? 'Open next unchecked' : 'All ' + total + ' checked';
+      nx.disabled = left === 0;
+      nx.style.opacity = left ? '' : '.5';
+    }
+
+    // Per-band tally, so a section that is finished reads as finished.
+    var bands = {};
+    rows.forEach(function (r) {
+      var s = r.dataset.sec;
+      bands[s] = bands[s] || { done: 0, all: 0 };
+      bands[s].all++;
+      if (state[r.dataset.href]) bands[s].done++;
+    });
+    Object.keys(bands).forEach(function (s) {
+      var el = document.querySelector('[data-band-count="' + s + '"]');
+      if (el) el.textContent = bands[s].done + '/' + bands[s].all;
+      var ob = document.querySelector('[data-band-open="' + s + '"]');
+      if (ob) {
+        var left = bands[s].all - bands[s].done;
+        ob.hidden = left === 0;
+        ob.textContent = 'open next ' + Math.min(5, left);
+      }
+    });
+  }
+
+  function mark(row, v) {
+    var h = row.dataset.href;
+    if (v === null || state[h] === v) delete state[h]; else state[h] = v;
+    save(); paint();
+  }
+
+  function focusRow(i) {
+    cursor = Math.max(0, Math.min(rows.length - 1, i));
+    rows.forEach(function (r) { r.classList.remove('cursor'); });
+    var r = rows[cursor];
+    r.classList.add('cursor');
+    r.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+
+  function open1(row, btn) {
+    if (!row) return;
+    if (canOpen) {
+      var w = null;
+      try { w = window.open(row.dataset.href, '_blank', 'noopener'); } catch (e) { w = null; }
+      if (w) return true;
+      canOpen = false;           // refused once, refused always — switch modes
+      announce();
+    }
+    copyText(row.dataset.href).then(
+      function () { if (btn) flash(btn, 'Copied'); },
+      function () { if (btn) flash(btn, '\u2318C'); }
+    );
+    return false;
+  }
+
+  // The next row nobody has judged yet, searching forward from the cursor and
+  // wrapping once, so the button keeps working after a jump back up the page.
+  function nextUnmarked(from) {
+    for (var i = 0; i < rows.length; i++) {
+      var j = (from + i) % rows.length;
+      if (!state[rows[j].dataset.href]) return j;
+    }
+    return -1;
+  }
+
+  document.addEventListener('click', function (e) {
+    var v = e.target.closest('.v');
+    if (v) { var row = v.closest('.row'); cursor = rows.indexOf(row); mark(row, v.dataset.set); return; }
+
+    var op = e.target.closest('[data-open]');
+    if (op) { var r2 = op.closest('.row'); cursor = rows.indexOf(r2); focusRow(cursor); open1(r2, op); return; }
+
+    var band = e.target.closest('[data-band-open]');
+    if (band) {
+      var sec = band.dataset.bandOpen;
+      var batch = rows.filter(function (r) { return r.dataset.sec === sec && !state[r.dataset.href]; }).slice(0, 5);
+      if (!batch.length) return;
+      if (canOpen) {
+        batch.forEach(function (r) { open1(r); });
+      }
+      if (!canOpen) {   // blocked: hand over all five at once instead
+        copyText(batch.map(function (r) { return r.dataset.href; }).join('\n')).then(
+          function () { flash(band, 'copied ' + batch.length); },
+          function () { flash(band, '\u2318C'); }
+        );
+      }
+      cursor = rows.indexOf(batch[0]); focusRow(cursor);
+      return;
+    }
+
+    var row3 = e.target.closest('.row');
+    if (row3) cursor = rows.indexOf(row3);
+  });
+
+  document.getElementById('opennext').addEventListener('click', function () {
+    var i = nextUnmarked(cursor);
+    if (i < 0) { this.textContent = 'All 46 checked'; return; }
+    focusRow(i);
+    open1(rows[i], this);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (document.getElementById('dlg').open) return;
+    var k = e.key;
+    if (k === 'j') { e.preventDefault(); focusRow(cursor + 1); }
+    else if (k === 'k') { e.preventDefault(); focusRow(cursor - 1); }
+    else if (k === '1') { mark(rows[cursor], 'ok');   focusRow(cursor + 1); }
+    else if (k === '2') { mark(rows[cursor], 'gone'); focusRow(cursor + 1); }
+    else if (k === '3') { mark(rows[cursor], 'weak'); focusRow(cursor + 1); }
+    else if (k === '0') { mark(rows[cursor], null); }
+    else if (k === 'o' || k === 'Enter') {
+      if (k === 'Enter' && document.activeElement && document.activeElement.tagName === 'BUTTON') return;
+      e.preventDefault();
+      open1(rows[cursor], rows[cursor].querySelector('[data-open]'));
+    }
+  });
+
+  document.getElementById('copyall').addEventListener('click', function () {
+    var btn = this;
+    var left = rows.filter(function (r) { return !state[r.dataset.href]; });
+    if (!left.length) { flash(btn, 'Nothing left'); return; }
+    copyText(left.map(function (r) { return r.dataset.href; }).join('\n')).then(
+      function () { flash(btn, 'Copied ' + left.length); },
+      function () { flash(btn, 'Press \u2318C'); }
+    );
+  });
+
+  document.getElementById('reset').addEventListener('click', function () {
+    if (!confirm('Clear all marks?')) return;
+    state = {}; save(); paint();
+  });
+
+  document.getElementById('export').addEventListener('click', function () {
+    var gone = rows.filter(function (r) { return state[r.dataset.href] === 'gone'; });
+    var weak = rows.filter(function (r) { return state[r.dataset.href] === 'weak'; });
+    var left = rows.filter(function (r) { return !state[r.dataset.href]; });
+    var t = '';
+
+    if (!gone.length && !weak.length) {
+      t += left.length === rows.length
+        ? 'Nothing marked yet.\n'
+        : 'No dead links and nothing flagged weak. Nothing to change.\n';
+    }
+    if (gone.length) {
+      t += 'DEAD — drop the href, keep the entry as plain text (' + gone.length + ')\n\n';
+      gone.forEach(function (r) {
+        t += '  ' + r.dataset.href + '\n     appears in: ' + r.dataset.where + '\n';
+      });
+      t += '\n';
+    }
+    if (weak.length) {
+      t += 'WEAK — resolves, but wants a better URL (' + weak.length + ')\n\n';
+      weak.forEach(function (r) {
+        t += '  ' + r.dataset.href + '\n     appears in: ' + r.dataset.where + '\n';
+      });
+      t += '\n';
+    }
+    if (left.length) {
+      t += 'STILL UNCHECKED (' + left.length + ') — these stay as they are\n\n';
+      left.forEach(function (r) {
+        t += '  ' + r.dataset.sec + ' · ' + r.dataset.label + '\n    ' + r.dataset.href + '\n';
+      });
+      t += '\n';
+    }
+    t += '---\nPaste this back to Claude and it will edit _bio/src/lists.data.js\nand _bio/src/bio.data.js, then rebuild.\n';
+    var out = document.getElementById('out');
+    out.textContent = t;
+    document.getElementById('dlg').showModal();
+    // Pre-select it: where the clipboard API is blocked, the only way out of
+    // the frame is a manual copy, so leave nothing to do but press the keys.
+    try {
+      var r = document.createRange(); r.selectNodeContents(out);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    } catch (e) {}
+  });
+
+  document.getElementById('close').addEventListener('click', function () { document.getElementById('dlg').close(); });
+  document.getElementById('copy').addEventListener('click', function () {
+    var btn = this;
+    navigator.clipboard.writeText(document.getElementById('out').textContent).then(function () {
+      btn.textContent = 'Copied';
+      setTimeout(function () { btn.textContent = 'Copy'; }, 1400);
+    }, function () { btn.textContent = 'Selected — press \u2318C'; });
+  });
+
+  if (!canStore) { canOpen = false; announce(); }
+  paint();
+  focusRow(0);
+})();
+</script>
