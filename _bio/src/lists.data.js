@@ -12,7 +12,10 @@
 export const COLLECTIONS = [
   { name:"MoMA Library, Museum of Modern Art",
     note:"AutoSummarize and American Psycho, acquired 2017 with the Library of the Printed Web",
-    href:"https://library.moma.org" },
+    href:"https://library.moma.org/permalink/01NYA_INST/13u92is/alma991013562918507141" },
+  { name:"Library of the Printed Web, full index",
+    note:"Paul Soulellis's list of every title in the collection",
+    href:"https://docs.google.com/spreadsheets/d/1kk7dYKk12ON7RgtZ-wg7Vmp44Fqv7OEi6Z90nu7WNpU/edit?gid=0#gid=0" },
   { name:"Whitney Museum of American Art, Special Collections",
     note:"AutoSummarize. Call no. N6537.H8251 A8 2010",
     href:"https://library.whitney.org" },

@@ -217,7 +217,7 @@
   <div class="bar">
     <div class="bar-top">
       <h1>Link review</h1>
-      <span class="sub">46 URLs across 60 link positions on jason-huff.com</span>
+      <span class="sub">47 URLs across 62 link positions on jason-huff.com</span>
       <span class="spacer"></span>
       <button class="btn btn-go" id="opennext" type="button">Open next unchecked</button>
       <button class="btn" id="copyall" type="button">Copy unchecked URLs</button>
@@ -233,7 +233,7 @@
       <span class="key"><i class="dot d-ok"></i>works <b id="c-ok">0</b></span>
       <span class="key"><i class="dot d-gone"></i>gone <b id="c-gone">0</b></span>
       <span class="key"><i class="dot d-weak"></i>weak <b id="c-weak">0</b></span>
-      <span class="key"><i class="dot d-todo"></i>left <b id="c-todo">46</b></span>
+      <span class="key"><i class="dot d-todo"></i>left <b id="c-todo">47</b></span>
     </div>
   </div>
 </header>
@@ -241,8 +241,8 @@
 <div class="wrap">
   <div class="warn" id="warn" hidden></div>
   <div class="intro">
-    <p><strong>Nothing here has been checked.</strong> The build server's egress proxy answers 403 for every host, so all 60 probes came back identical — that measured the network, not the web. These need a human to open them.</p>
-    <p>The 60 link positions resolve to <strong>46 distinct URLs</strong>, so that is how many you actually have to open. A URL used in more than one entry is one decision; marking it here marks every entry that points at it. Hover <em>also…</em> to see where else it appears.</p>
+    <p><strong>Nothing here has been checked.</strong> The build server's egress proxy answers 403 for every host, so all 62 probes came back identical — that measured the network, not the web. These need a human to open them.</p>
+    <p>The 60 link positions resolve to <strong>47 distinct URLs</strong>, so that is how many you actually have to open. A URL used in more than one entry is one decision; marking it here marks every entry that points at it. Hover <em>also…</em> to see where else it appears.</p>
     <p>The rule the list lives by: <strong>if a URL 404s, the entry keeps its text and loses its link.</strong> An unlinked credential is fine; a dead link is not. Mark <em>weak</em> for a URL that resolves but should point somewhere better — a library homepage where a catalog record exists.</p>
     <p>The loop: hit <strong>Open next unchecked</strong>, glance at the tab, then press <kbd>1</kbd> works, <kbd>2</kbd> gone, or <kbd>3</kbd> weak. Marking jumps the cursor forward, so it is open-look-key, open-look-key. Every row also has its own <strong>Open</strong>, and each section can throw its next five into tabs at once.</p>
     <p>Keys: <kbd>o</kbd> or <kbd>Enter</kbd> opens, <kbd>j</kbd>/<kbd>k</kbd> move, <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> mark, <kbd>0</kbd> clears one. Marks save in this browser as you go, so you can stop and come back.</p>
@@ -250,7 +250,7 @@
   <section class="band" aria-labelledby="h-Bio">
   <div class="band-head">
     <h2 id="h-Bio">Bio</h2>
-    <span class="band-count" data-band-count="Bio">33</span>
+    <span class="band-count" data-band-count="Bio">21</span>
     <button class="band-open" data-band-open="Bio" type="button">open next 5</button>
   </div>
   <p class="band-note">Links inside the running bio. They open from a chip, so a dead one stays invisible until someone taps it.</p>
@@ -268,20 +268,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="1" data-sec="Bio" data-href="https://www.newyorker.com/books/page-turner/rise-of-the-literature-machines" data-label="The New Yorker" data-where="Bio · The New Yorker ; Press · 2010 The New Yorker — Rise of the Literature Machines">
-      <div class="verdict" role="group" aria-label="Verdict for The New Yorker">
-        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
-        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
-        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
-      </div>
-      <div class="meat">
-        <span class="line"><a class="lbl" href="https://www.newyorker.com/books/page-turner/rise-of-the-literature-machines" target="_blank" rel="noopener">The New Yorker</a><span class="also" title="Bio · The New Yorker  |  Press · 2010 The New Yorker — Rise of the Literature Machines">also 1 other entry</span></span>
-        <span class="host">newyorker.com</span>
-        <span class="url">https://www.newyorker.com/books/page-turner/rise-of-the-literature-machines</span>
-      </div>
-      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
-    </li>
-    <li class="row" data-i="2" data-sec="Bio" data-href="https://p-dpa.net/work/autosummarize/" data-label="edition" data-where="Bio · edition">
+    <li class="row" data-i="1" data-sec="Bio" data-href="https://p-dpa.net/work/autosummarize/" data-label="edition" data-where="Bio · edition">
       <div class="verdict" role="group" aria-label="Verdict for edition">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -294,7 +281,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="3" data-sec="Bio" data-href="https://www.mimicabell.com/" data-label="Mimi Cabell" data-where="Bio · Mimi Cabell">
+    <li class="row" data-i="2" data-sec="Bio" data-href="https://www.mimicabell.com/" data-label="Mimi Cabell" data-where="Bio · Mimi Cabell">
       <div class="verdict" role="group" aria-label="Verdict for Mimi Cabell">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -307,7 +294,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="4" data-sec="Bio" data-href="https://en.wikipedia.org/wiki/American_Psycho_(conceptual_novel)" data-label="Wikipedia" data-where="Bio · Wikipedia">
+    <li class="row" data-i="3" data-sec="Bio" data-href="https://en.wikipedia.org/wiki/American_Psycho_(conceptual_novel)" data-label="Wikipedia" data-where="Bio · Wikipedia">
       <div class="verdict" role="group" aria-label="Verdict for Wikipedia">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -320,7 +307,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="5" data-sec="Bio" data-href="https://www.printedmatter.org/catalog/41638" data-label="Printed Matter" data-where="Bio · Printed Matter">
+    <li class="row" data-i="4" data-sec="Bio" data-href="https://www.printedmatter.org/catalog/41638" data-label="Printed Matter" data-where="Bio · Printed Matter">
       <div class="verdict" role="group" aria-label="Verdict for Printed Matter">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -333,7 +320,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="6" data-sec="Bio" data-href="https://www.artspacenewhaven.org" data-label="Artspace" data-where="Bio · Artspace">
+    <li class="row" data-i="5" data-sec="Bio" data-href="https://www.artspacenewhaven.org" data-label="Artspace" data-where="Bio · Artspace">
       <div class="verdict" role="group" aria-label="Verdict for Artspace">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -346,7 +333,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="7" data-sec="Bio" data-href="https://github.com/jsnhff/regender-xyz" data-label="regender-xyz" data-where="Bio · regender-xyz">
+    <li class="row" data-i="6" data-sec="Bio" data-href="https://github.com/jsnhff/regender-xyz" data-label="regender-xyz" data-where="Bio · regender-xyz">
       <div class="verdict" role="group" aria-label="Verdict for regender-xyz">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -359,33 +346,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="8" data-sec="Bio" data-href="https://rhizome.org/editorial/2012/mar/14/beyond-surface-15-years-desktop-aesthetics/" data-label="Beyond the Surface: 15 Years of Desktop Aesthetics" data-where="Bio · Beyond the Surface: 15 Years of Desktop Aesthetics ; Writing · 2012 Beyond the Surface: 15 Years of Desktop Aesthetics">
-      <div class="verdict" role="group" aria-label="Verdict for Beyond the Surface: 15 Years of Desktop Aesthetics">
-        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
-        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
-        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
-      </div>
-      <div class="meat">
-        <span class="line"><a class="lbl" href="https://rhizome.org/editorial/2012/mar/14/beyond-surface-15-years-desktop-aesthetics/" target="_blank" rel="noopener">Beyond the Surface: 15 Years of Desktop Aesthetics</a><span class="also" title="Bio · Beyond the Surface: 15 Years of Desktop Aesthetics  |  Writing · 2012 Beyond the Surface: 15 Years of Desktop Aesthetics">also 1 other entry</span></span>
-        <span class="host">rhizome.org</span>
-        <span class="url">https://rhizome.org/editorial/2012/mar/14/beyond-surface-15-years-desktop-aesthetics/</span>
-      </div>
-      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
-    </li>
-    <li class="row" data-i="9" data-sec="Bio" data-href="https://rhizome.org/editorial/2016/nov/01/artist-profile-damon-zucconi/" data-label="Damon Zucconi" data-where="Bio · Damon Zucconi ; Writing · 2016 Artist Profile: Damon Zucconi">
-      <div class="verdict" role="group" aria-label="Verdict for Damon Zucconi">
-        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
-        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
-        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
-      </div>
-      <div class="meat">
-        <span class="line"><a class="lbl" href="https://rhizome.org/editorial/2016/nov/01/artist-profile-damon-zucconi/" target="_blank" rel="noopener">Damon Zucconi</a><span class="also" title="Bio · Damon Zucconi  |  Writing · 2016 Artist Profile: Damon Zucconi">also 1 other entry</span></span>
-        <span class="host">rhizome.org</span>
-        <span class="url">https://rhizome.org/editorial/2016/nov/01/artist-profile-damon-zucconi/</span>
-      </div>
-      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
-    </li>
-    <li class="row" data-i="10" data-sec="Bio" data-href="https://rhizome.org/tags/jason-huff/" data-label="archive" data-where="Bio · archive">
+    <li class="row" data-i="7" data-sec="Bio" data-href="https://rhizome.org/tags/jason-huff/" data-label="archive" data-where="Bio · archive">
       <div class="verdict" role="group" aria-label="Verdict for archive">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -398,33 +359,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="11" data-sec="Bio" data-href="https://thenewinquiry.com/serf-boards/" data-label="Serf Boards" data-where="Bio · Serf Boards ; Writing · 2014 Serf Boards">
-      <div class="verdict" role="group" aria-label="Verdict for Serf Boards">
-        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
-        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
-        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
-      </div>
-      <div class="meat">
-        <span class="line"><a class="lbl" href="https://thenewinquiry.com/serf-boards/" target="_blank" rel="noopener">Serf Boards</a><span class="also" title="Bio · Serf Boards  |  Writing · 2014 Serf Boards">also 1 other entry</span></span>
-        <span class="host">thenewinquiry.com</span>
-        <span class="url">https://thenewinquiry.com/serf-boards/</span>
-      </div>
-      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
-    </li>
-    <li class="row" data-i="12" data-sec="Bio" data-href="https://thecreativeindependent.com/guides/how-to-make-a-website-for-your-creative-work/" data-label="guide" data-where="Bio · guide ; Writing · 2019 How to Make a Website for Your Creative Work">
-      <div class="verdict" role="group" aria-label="Verdict for guide">
-        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
-        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
-        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
-      </div>
-      <div class="meat">
-        <span class="line"><a class="lbl" href="https://thecreativeindependent.com/guides/how-to-make-a-website-for-your-creative-work/" target="_blank" rel="noopener">guide</a><span class="also" title="Bio · guide  |  Writing · 2019 How to Make a Website for Your Creative Work">also 1 other entry</span></span>
-        <span class="host">thecreativeindependent.com</span>
-        <span class="url">https://thecreativeindependent.com/guides/how-to-make-a-website-for-your-creative-work/</span>
-      </div>
-      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
-    </li>
-    <li class="row" data-i="13" data-sec="Bio" data-href="https://seansuchara.info/" data-label="Sean Suchara" data-where="Bio · Sean Suchara">
+    <li class="row" data-i="8" data-sec="Bio" data-href="https://seansuchara.info/" data-label="Sean Suchara" data-where="Bio · Sean Suchara">
       <div class="verdict" role="group" aria-label="Verdict for Sean Suchara">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -437,20 +372,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="14" data-sec="Bio" data-href="https://library.moma.org" data-label="MoMA Library" data-where="Bio · MoMA Library ; Collections · MoMA Library, Museum of Modern Art">
-      <div class="verdict" role="group" aria-label="Verdict for MoMA Library">
-        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
-        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
-        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
-      </div>
-      <div class="meat">
-        <span class="line"><a class="lbl" href="https://library.moma.org" target="_blank" rel="noopener">MoMA Library</a><span class="also" title="Bio · MoMA Library  |  Collections · MoMA Library, Museum of Modern Art">also 1 other entry</span></span>
-        <span class="host">library.moma.org</span>
-        <span class="url">https://library.moma.org</span>
-      </div>
-      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
-    </li>
-    <li class="row" data-i="15" data-sec="Bio" data-href="https://soulellis.com/entries/lotpw.html" data-label="Printed Web" data-where="Bio · Printed Web">
+    <li class="row" data-i="9" data-sec="Bio" data-href="https://soulellis.com/entries/lotpw.html" data-label="Printed Web" data-where="Bio · Printed Web">
       <div class="verdict" role="group" aria-label="Verdict for Printed Web">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -463,59 +385,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="16" data-sec="Bio" data-href="https://library.whitney.org" data-label="Special Collections" data-where="Bio · Special Collections ; Collections · Whitney Museum of American Art, Special Collections">
-      <div class="verdict" role="group" aria-label="Verdict for Special Collections">
-        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
-        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
-        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
-      </div>
-      <div class="meat">
-        <span class="line"><a class="lbl" href="https://library.whitney.org" target="_blank" rel="noopener">Special Collections</a><span class="also" title="Bio · Special Collections  |  Collections · Whitney Museum of American Art, Special Collections">also 1 other entry</span></span>
-        <span class="host">library.whitney.org</span>
-        <span class="url">https://library.whitney.org</span>
-      </div>
-      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
-    </li>
-    <li class="row" data-i="17" data-sec="Bio" data-href="https://apod.li/auto-summarize" data-label="Library of Artistic Print on Demand" data-where="Bio · Library of Artistic Print on Demand ; Collections · Bayerische Staatsbibliothek, Munich">
-      <div class="verdict" role="group" aria-label="Verdict for Library of Artistic Print on Demand">
-        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
-        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
-        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
-      </div>
-      <div class="meat">
-        <span class="line"><a class="lbl" href="https://apod.li/auto-summarize" target="_blank" rel="noopener">Library of Artistic Print on Demand</a><span class="also" title="Bio · Library of Artistic Print on Demand  |  Collections · Bayerische Staatsbibliothek, Munich">also 1 other entry</span></span>
-        <span class="host">apod.li</span>
-        <span class="url">https://apod.li/auto-summarize</span>
-      </div>
-      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
-    </li>
-    <li class="row" data-i="18" data-sec="Bio" data-href="https://conceptualisms.info" data-label="Conceptualisms" data-where="Bio · Conceptualisms ; Anthologies · 2022 Conceptualisms">
-      <div class="verdict" role="group" aria-label="Verdict for Conceptualisms">
-        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
-        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
-        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
-      </div>
-      <div class="meat">
-        <span class="line"><a class="lbl" href="https://conceptualisms.info" target="_blank" rel="noopener">Conceptualisms</a><span class="also" title="Bio · Conceptualisms  |  Anthologies · 2022 Conceptualisms">also 1 other entry</span></span>
-        <span class="host">conceptualisms.info</span>
-        <span class="url">https://conceptualisms.info</span>
-      </div>
-      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
-    </li>
-    <li class="row" data-i="19" data-sec="Bio" data-href="https://www.kunstforum.de/band/2016-243-postdigital2/" data-label="issue" data-where="Bio · issue ; Anthologies · 2016 KUNSTFORUM International, Band 243">
-      <div class="verdict" role="group" aria-label="Verdict for issue">
-        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
-        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
-        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
-      </div>
-      <div class="meat">
-        <span class="line"><a class="lbl" href="https://www.kunstforum.de/band/2016-243-postdigital2/" target="_blank" rel="noopener">issue</a><span class="also" title="Bio · issue  |  Anthologies · 2016 KUNSTFORUM International, Band 243">also 1 other entry</span></span>
-        <span class="host">kunstforum.de</span>
-        <span class="url">https://www.kunstforum.de/band/2016-243-postdigital2/</span>
-      </div>
-      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
-    </li>
-    <li class="row" data-i="20" data-sec="Bio" data-href="https://jeudepaume.org/en/evenement/american-psycho-mimi-cabell-jason-huff/" data-label="Jeu de Paume" data-where="Bio · Jeu de Paume">
+    <li class="row" data-i="10" data-sec="Bio" data-href="https://jeudepaume.org/en/evenement/american-psycho-mimi-cabell-jason-huff/" data-label="Jeu de Paume" data-where="Bio · Jeu de Paume">
       <div class="verdict" role="group" aria-label="Verdict for Jeu de Paume">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -528,20 +398,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="21" data-sec="Bio" data-href="https://journals.ub.uni-heidelberg.de/index.php/ic/article/view/66992" data-label="Interface Critique" data-where="Bio · Interface Critique ; Scholarship · 2019 Karl Wolfgang Flender — American Psycho: Reading an Algorithm in Reverse">
-      <div class="verdict" role="group" aria-label="Verdict for Interface Critique">
-        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
-        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
-        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
-      </div>
-      <div class="meat">
-        <span class="line"><a class="lbl" href="https://journals.ub.uni-heidelberg.de/index.php/ic/article/view/66992" target="_blank" rel="noopener">Interface Critique</a><span class="also" title="Bio · Interface Critique  |  Scholarship · 2019 Karl Wolfgang Flender — American Psycho: Reading an Algorithm in Reverse">also 1 other entry</span></span>
-        <span class="host">journals.ub.uni-heidelberg.de</span>
-        <span class="url">https://journals.ub.uni-heidelberg.de/index.php/ic/article/view/66992</span>
-      </div>
-      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
-    </li>
-    <li class="row" data-i="22" data-sec="Bio" data-href="https://median.newmediacaucus.org" data-label="Media-N" data-where="Bio · Media-N">
+    <li class="row" data-i="11" data-sec="Bio" data-href="https://median.newmediacaucus.org" data-label="Media-N" data-where="Bio · Media-N">
       <div class="verdict" role="group" aria-label="Verdict for Media-N">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -554,7 +411,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="23" data-sec="Bio" data-href="https://elmcip.net/person/jason-huff" data-label="ELMCIP" data-where="Bio · ELMCIP">
+    <li class="row" data-i="12" data-sec="Bio" data-href="https://elmcip.net/person/jason-huff" data-label="ELMCIP" data-where="Bio · ELMCIP">
       <div class="verdict" role="group" aria-label="Verdict for ELMCIP">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -567,7 +424,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="24" data-sec="Bio" data-href="https://www.newschool.edu/parsons/" data-label="Parsons" data-where="Bio · Parsons">
+    <li class="row" data-i="13" data-sec="Bio" data-href="https://www.newschool.edu/parsons/" data-label="Parsons" data-where="Bio · Parsons">
       <div class="verdict" role="group" aria-label="Verdict for Parsons">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -580,7 +437,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="25" data-sec="Bio" data-href="https://www.newinc.org" data-label="NEW INC" data-where="Bio · NEW INC">
+    <li class="row" data-i="14" data-sec="Bio" data-href="https://www.newinc.org" data-label="NEW INC" data-where="Bio · NEW INC">
       <div class="verdict" role="group" aria-label="Verdict for NEW INC">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -593,7 +450,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="26" data-sec="Bio" data-href="https://praksisoslo.org" data-label="residency" data-where="Bio · residency">
+    <li class="row" data-i="15" data-sec="Bio" data-href="https://praksisoslo.org" data-label="residency" data-where="Bio · residency">
       <div class="verdict" role="group" aria-label="Verdict for residency">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -606,7 +463,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="27" data-sec="Bio" data-href="https://livingroomlightexchange.com/lrlxny" data-label="Living Room Light Exchange" data-where="Bio · Living Room Light Exchange">
+    <li class="row" data-i="16" data-sec="Bio" data-href="https://livingroomlightexchange.com/lrlxny" data-label="Living Room Light Exchange" data-where="Bio · Living Room Light Exchange">
       <div class="verdict" role="group" aria-label="Verdict for Living Room Light Exchange">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -619,20 +476,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="28" data-sec="Bio" data-href="https://hyperallergic.com/risd-black-sheep-projects/" data-label="Hyperallergic" data-where="Bio · Hyperallergic ; Press · 2010 Hyperallergic — Black Sheep Projects">
-      <div class="verdict" role="group" aria-label="Verdict for Hyperallergic">
-        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
-        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
-        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
-      </div>
-      <div class="meat">
-        <span class="line"><a class="lbl" href="https://hyperallergic.com/risd-black-sheep-projects/" target="_blank" rel="noopener">Hyperallergic</a><span class="also" title="Bio · Hyperallergic  |  Press · 2010 Hyperallergic — Black Sheep Projects">also 1 other entry</span></span>
-        <span class="host">hyperallergic.com</span>
-        <span class="url">https://hyperallergic.com/risd-black-sheep-projects/</span>
-      </div>
-      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
-    </li>
-    <li class="row" data-i="29" data-sec="Bio" data-href="https://www.risd.edu/news/stories/breakthrough-tool-wins-nsf-funding" data-label="Weft" data-where="Bio · Weft">
+    <li class="row" data-i="17" data-sec="Bio" data-href="https://www.risd.edu/news/stories/breakthrough-tool-wins-nsf-funding" data-label="Weft" data-where="Bio · Weft">
       <div class="verdict" role="group" aria-label="Verdict for Weft">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -645,7 +489,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="30" data-sec="Bio" data-href="https://www.uga.edu" data-label="University of Georgia" data-where="Bio · University of Georgia">
+    <li class="row" data-i="18" data-sec="Bio" data-href="https://www.uga.edu" data-label="University of Georgia" data-where="Bio · University of Georgia">
       <div class="verdict" role="group" aria-label="Verdict for University of Georgia">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -658,7 +502,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="31" data-sec="Bio" data-href="mailto:jsnhff@gmail.com" data-label="email" data-where="Bio · email">
+    <li class="row" data-i="19" data-sec="Bio" data-href="mailto:jsnhff@gmail.com" data-label="email" data-where="Bio · email">
       <div class="verdict" role="group" aria-label="Verdict for email">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -671,7 +515,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="32" data-sec="Bio" data-href="https://instagram.com/jsnhff" data-label="Instagram" data-where="Bio · Instagram">
+    <li class="row" data-i="20" data-sec="Bio" data-href="https://instagram.com/jsnhff" data-label="Instagram" data-where="Bio · Instagram">
       <div class="verdict" role="group" aria-label="Verdict for Instagram">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -686,15 +530,103 @@
     </li>
   </ul>
 </section>
+<section class="band" aria-labelledby="h-Collections">
+  <div class="band-head">
+    <h2 id="h-Collections">Collections</h2>
+    <span class="band-count" data-band-count="Collections">4</span>
+    <button class="band-open" data-band-open="Collections" type="button">open next 5</button>
+  </div>
+  <p class="band-note">MoMA and the Whitney point at library homepages, not records. Accurate but weak — mark weak if you want the catalog URL instead. The Whitney record is biblionumber 46618.</p>
+  <ul class="rows">
+    <li class="row" data-i="21" data-sec="Collections" data-href="https://library.moma.org/permalink/01NYA_INST/13u92is/alma991013562918507141" data-label="MoMA Library" data-where="Bio · MoMA Library ; Collections · MoMA Library, Museum of Modern Art">
+      <div class="verdict" role="group" aria-label="Verdict for MoMA Library">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://library.moma.org/permalink/01NYA_INST/13u92is/alma991013562918507141" target="_blank" rel="noopener">MoMA Library</a><span class="also" title="Bio · MoMA Library  |  Collections · MoMA Library, Museum of Modern Art">also 1 other entry</span></span>
+        <span class="host">library.moma.org</span>
+        <span class="url">https://library.moma.org/permalink/01NYA_INST/13u92is/alma991013562918507141</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="22" data-sec="Collections" data-href="https://docs.google.com/spreadsheets/d/1kk7dYKk12ON7RgtZ-wg7Vmp44Fqv7OEi6Z90nu7WNpU/edit?gid=0#gid=0" data-label="index" data-where="Bio · index ; Collections · Library of the Printed Web, full index">
+      <div class="verdict" role="group" aria-label="Verdict for index">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://docs.google.com/spreadsheets/d/1kk7dYKk12ON7RgtZ-wg7Vmp44Fqv7OEi6Z90nu7WNpU/edit?gid=0#gid=0" target="_blank" rel="noopener">index</a><span class="also" title="Bio · index  |  Collections · Library of the Printed Web, full index">also 1 other entry</span></span>
+        <span class="host">docs.google.com</span>
+        <span class="url">https://docs.google.com/spreadsheets/d/1kk7dYKk12ON7RgtZ-wg7Vmp44Fqv7OEi6Z90nu7WNpU/edit?gid=0#gid=0</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="23" data-sec="Collections" data-href="https://library.whitney.org" data-label="Special Collections" data-where="Bio · Special Collections ; Collections · Whitney Museum of American Art, Special Collections">
+      <div class="verdict" role="group" aria-label="Verdict for Special Collections">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://library.whitney.org" target="_blank" rel="noopener">Special Collections</a><span class="also" title="Bio · Special Collections  |  Collections · Whitney Museum of American Art, Special Collections">also 1 other entry</span></span>
+        <span class="host">library.whitney.org</span>
+        <span class="url">https://library.whitney.org</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="24" data-sec="Collections" data-href="https://apod.li/auto-summarize" data-label="Library of Artistic Print on Demand" data-where="Bio · Library of Artistic Print on Demand ; Collections · Bayerische Staatsbibliothek, Munich">
+      <div class="verdict" role="group" aria-label="Verdict for Library of Artistic Print on Demand">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://apod.li/auto-summarize" target="_blank" rel="noopener">Library of Artistic Print on Demand</a><span class="also" title="Bio · Library of Artistic Print on Demand  |  Collections · Bayerische Staatsbibliothek, Munich">also 1 other entry</span></span>
+        <span class="host">apod.li</span>
+        <span class="url">https://apod.li/auto-summarize</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+  </ul>
+</section>
 <section class="band" aria-labelledby="h-Anthologies">
   <div class="band-head">
     <h2 id="h-Anthologies">Anthologies</h2>
-    <span class="band-count" data-band-count="Anthologies">2</span>
+    <span class="band-count" data-band-count="Anthologies">4</span>
     <button class="band-open" data-band-open="Anthologies" type="button">open next 5</button>
   </div>
   <p class="band-note">Book and journal listings.</p>
   <ul class="rows">
-    <li class="row" data-i="33" data-sec="Anthologies" data-href="https://apod.li/american-psycho" data-label="2025 Library of Artistic Print on Demand" data-where="Anthologies · 2025 Library of Artistic Print on Demand">
+    <li class="row" data-i="25" data-sec="Anthologies" data-href="https://conceptualisms.info" data-label="Conceptualisms" data-where="Bio · Conceptualisms ; Anthologies · 2022 Conceptualisms">
+      <div class="verdict" role="group" aria-label="Verdict for Conceptualisms">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://conceptualisms.info" target="_blank" rel="noopener">Conceptualisms</a><span class="also" title="Bio · Conceptualisms  |  Anthologies · 2022 Conceptualisms">also 1 other entry</span></span>
+        <span class="host">conceptualisms.info</span>
+        <span class="url">https://conceptualisms.info</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="26" data-sec="Anthologies" data-href="https://www.kunstforum.de/band/2016-243-postdigital2/" data-label="issue" data-where="Bio · issue ; Anthologies · 2016 KUNSTFORUM International, Band 243">
+      <div class="verdict" role="group" aria-label="Verdict for issue">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://www.kunstforum.de/band/2016-243-postdigital2/" target="_blank" rel="noopener">issue</a><span class="also" title="Bio · issue  |  Anthologies · 2016 KUNSTFORUM International, Band 243">also 1 other entry</span></span>
+        <span class="host">kunstforum.de</span>
+        <span class="url">https://www.kunstforum.de/band/2016-243-postdigital2/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="27" data-sec="Anthologies" data-href="https://apod.li/american-psycho" data-label="2025 Library of Artistic Print on Demand" data-where="Anthologies · 2025 Library of Artistic Print on Demand">
       <div class="verdict" role="group" aria-label="Verdict for 2025 Library of Artistic Print on Demand">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -707,7 +639,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="34" data-sec="Anthologies" data-href="https://mitpress.mit.edu/9780262549813/output/" data-label="2024 Output: An Anthology of Computer-Generated Text, 1953–2023" data-where="Anthologies · 2024 Output: An Anthology of Computer-Generated Text, 1953–2023">
+    <li class="row" data-i="28" data-sec="Anthologies" data-href="https://mitpress.mit.edu/9780262549813/output/" data-label="2024 Output: An Anthology of Computer-Generated Text, 1953–2023" data-where="Anthologies · 2024 Output: An Anthology of Computer-Generated Text, 1953–2023">
       <div class="verdict" role="group" aria-label="Verdict for 2024 Output: An Anthology of Computer-Generated Text, 1953–2023">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -725,12 +657,64 @@
 <section class="band" aria-labelledby="h-Writing">
   <div class="band-head">
     <h2 id="h-Writing">Writing</h2>
-    <span class="band-count" data-band-count="Writing">5</span>
+    <span class="band-count" data-band-count="Writing">9</span>
     <button class="band-open" data-band-open="Writing" type="button">open next 5</button>
   </div>
   <p class="band-note">Jason's own essays. The Rhizome links are the likeliest to have moved; if they have, rhizome.org/tags/jason-huff/ is the fallback and the essays go unlinked.</p>
   <ul class="rows">
-    <li class="row" data-i="35" data-sec="Writing" data-href="https://rhizome.org/editorial/2012/aug/03/interface-aesthetics/" data-label="2012 Interface Aesthetics: An Introduction" data-where="Writing · 2012 Interface Aesthetics: An Introduction">
+    <li class="row" data-i="29" data-sec="Writing" data-href="https://rhizome.org/editorial/2012/mar/14/beyond-surface-15-years-desktop-aesthetics/" data-label="Beyond the Surface: 15 Years of Desktop Aesthetics" data-where="Bio · Beyond the Surface: 15 Years of Desktop Aesthetics ; Writing · 2012 Beyond the Surface: 15 Years of Desktop Aesthetics">
+      <div class="verdict" role="group" aria-label="Verdict for Beyond the Surface: 15 Years of Desktop Aesthetics">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://rhizome.org/editorial/2012/mar/14/beyond-surface-15-years-desktop-aesthetics/" target="_blank" rel="noopener">Beyond the Surface: 15 Years of Desktop Aesthetics</a><span class="also" title="Bio · Beyond the Surface: 15 Years of Desktop Aesthetics  |  Writing · 2012 Beyond the Surface: 15 Years of Desktop Aesthetics">also 1 other entry</span></span>
+        <span class="host">rhizome.org</span>
+        <span class="url">https://rhizome.org/editorial/2012/mar/14/beyond-surface-15-years-desktop-aesthetics/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="30" data-sec="Writing" data-href="https://rhizome.org/editorial/2016/nov/01/artist-profile-damon-zucconi/" data-label="Damon Zucconi" data-where="Bio · Damon Zucconi ; Writing · 2016 Artist Profile: Damon Zucconi">
+      <div class="verdict" role="group" aria-label="Verdict for Damon Zucconi">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://rhizome.org/editorial/2016/nov/01/artist-profile-damon-zucconi/" target="_blank" rel="noopener">Damon Zucconi</a><span class="also" title="Bio · Damon Zucconi  |  Writing · 2016 Artist Profile: Damon Zucconi">also 1 other entry</span></span>
+        <span class="host">rhizome.org</span>
+        <span class="url">https://rhizome.org/editorial/2016/nov/01/artist-profile-damon-zucconi/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="31" data-sec="Writing" data-href="https://thenewinquiry.com/serf-boards/" data-label="Serf Boards" data-where="Bio · Serf Boards ; Writing · 2014 Serf Boards">
+      <div class="verdict" role="group" aria-label="Verdict for Serf Boards">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://thenewinquiry.com/serf-boards/" target="_blank" rel="noopener">Serf Boards</a><span class="also" title="Bio · Serf Boards  |  Writing · 2014 Serf Boards">also 1 other entry</span></span>
+        <span class="host">thenewinquiry.com</span>
+        <span class="url">https://thenewinquiry.com/serf-boards/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="32" data-sec="Writing" data-href="https://thecreativeindependent.com/guides/how-to-make-a-website-for-your-creative-work/" data-label="guide" data-where="Bio · guide ; Writing · 2019 How to Make a Website for Your Creative Work">
+      <div class="verdict" role="group" aria-label="Verdict for guide">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://thecreativeindependent.com/guides/how-to-make-a-website-for-your-creative-work/" target="_blank" rel="noopener">guide</a><span class="also" title="Bio · guide  |  Writing · 2019 How to Make a Website for Your Creative Work">also 1 other entry</span></span>
+        <span class="host">thecreativeindependent.com</span>
+        <span class="url">https://thecreativeindependent.com/guides/how-to-make-a-website-for-your-creative-work/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="33" data-sec="Writing" data-href="https://rhizome.org/editorial/2012/aug/03/interface-aesthetics/" data-label="2012 Interface Aesthetics: An Introduction" data-where="Writing · 2012 Interface Aesthetics: An Introduction">
       <div class="verdict" role="group" aria-label="Verdict for 2012 Interface Aesthetics: An Introduction">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -743,7 +727,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="36" data-sec="Writing" data-href="https://rhizome.org/editorial/2012/aug/01/thoughts-wikipedias-future/" data-label="2012 Thoughts on Wikipedia’s Future" data-where="Writing · 2012 Thoughts on Wikipedia’s Future">
+    <li class="row" data-i="34" data-sec="Writing" data-href="https://rhizome.org/editorial/2012/aug/01/thoughts-wikipedias-future/" data-label="2012 Thoughts on Wikipedia’s Future" data-where="Writing · 2012 Thoughts on Wikipedia’s Future">
       <div class="verdict" role="group" aria-label="Verdict for 2012 Thoughts on Wikipedia’s Future">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -756,7 +740,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="37" data-sec="Writing" data-href="https://elmcip.net/critical-writing/invisible-participation-language-and-internet" data-label="2012 Invisible Participation: Language and the Internet" data-where="Writing · 2012 Invisible Participation: Language and the Internet">
+    <li class="row" data-i="35" data-sec="Writing" data-href="https://elmcip.net/critical-writing/invisible-participation-language-and-internet" data-label="2012 Invisible Participation: Language and the Internet" data-where="Writing · 2012 Invisible Participation: Language and the Internet">
       <div class="verdict" role="group" aria-label="Verdict for 2012 Invisible Participation: Language and the Internet">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -769,7 +753,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="38" data-sec="Writing" data-href="https://rhizome.org/editorial/2011/dec/15/technology-not-enough-story-nyus-interactive-telec/" data-label="2011 Technology is Not Enough: The Story of NYU’s ITP" data-where="Writing · 2011 Technology is Not Enough: The Story of NYU’s ITP">
+    <li class="row" data-i="36" data-sec="Writing" data-href="https://rhizome.org/editorial/2011/dec/15/technology-not-enough-story-nyus-interactive-telec/" data-label="2011 Technology is Not Enough: The Story of NYU’s ITP" data-where="Writing · 2011 Technology is Not Enough: The Story of NYU’s ITP">
       <div class="verdict" role="group" aria-label="Verdict for 2011 Technology is Not Enough: The Story of NYU’s ITP">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -782,7 +766,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="39" data-sec="Writing" data-href="https://rhizome.org/editorial/2010/aug/09/required-reading/" data-label="2010 Required Reading" data-where="Writing · 2010 Required Reading">
+    <li class="row" data-i="37" data-sec="Writing" data-href="https://rhizome.org/editorial/2010/aug/09/required-reading/" data-label="2010 Required Reading" data-where="Writing · 2010 Required Reading">
       <div class="verdict" role="group" aria-label="Verdict for 2010 Required Reading">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -800,11 +784,37 @@
 <section class="band" aria-labelledby="h-Press">
   <div class="band-head">
     <h2 id="h-Press">Press</h2>
-    <span class="band-count" data-band-count="Press">4</span>
+    <span class="band-count" data-band-count="Press">6</span>
     <button class="band-open" data-band-open="Press" type="button">open next 5</button>
   </div>
   <p class="band-note">Adweek absorbed GalleyCat and most old GalleyCat URLs died — check that one first.</p>
   <ul class="rows">
+    <li class="row" data-i="38" data-sec="Press" data-href="https://www.newyorker.com/books/page-turner/rise-of-the-literature-machines" data-label="The New Yorker" data-where="Bio · The New Yorker ; Press · 2010 The New Yorker — Rise of the Literature Machines">
+      <div class="verdict" role="group" aria-label="Verdict for The New Yorker">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://www.newyorker.com/books/page-turner/rise-of-the-literature-machines" target="_blank" rel="noopener">The New Yorker</a><span class="also" title="Bio · The New Yorker  |  Press · 2010 The New Yorker — Rise of the Literature Machines">also 1 other entry</span></span>
+        <span class="host">newyorker.com</span>
+        <span class="url">https://www.newyorker.com/books/page-turner/rise-of-the-literature-machines</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="39" data-sec="Press" data-href="https://hyperallergic.com/risd-black-sheep-projects/" data-label="Hyperallergic" data-where="Bio · Hyperallergic ; Press · 2010 Hyperallergic — Black Sheep Projects">
+      <div class="verdict" role="group" aria-label="Verdict for Hyperallergic">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://hyperallergic.com/risd-black-sheep-projects/" target="_blank" rel="noopener">Hyperallergic</a><span class="also" title="Bio · Hyperallergic  |  Press · 2010 Hyperallergic — Black Sheep Projects">also 1 other entry</span></span>
+        <span class="host">hyperallergic.com</span>
+        <span class="url">https://hyperallergic.com/risd-black-sheep-projects/</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
     <li class="row" data-i="40" data-sec="Press" data-href="https://www.dazeddigital.com/artsandculture/article/21553/1/download-american-psycho-reimagined-using-google-ads" data-label="2014 Dazed — American Psycho" data-where="Press · 2014 Dazed — American Psycho">
       <div class="verdict" role="group" aria-label="Verdict for 2014 Dazed — American Psycho">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
@@ -862,12 +872,25 @@
 <section class="band" aria-labelledby="h-Scholarship">
   <div class="band-head">
     <h2 id="h-Scholarship">Scholarship</h2>
-    <span class="band-count" data-band-count="Scholarship">2</span>
+    <span class="band-count" data-band-count="Scholarship">3</span>
     <button class="band-open" data-band-open="Scholarship" type="button">open next 5</button>
   </div>
   <p class="band-note">Peer-reviewed articles. APRJA is the only one with a DOI, so it should be the most stable.</p>
   <ul class="rows">
-    <li class="row" data-i="44" data-sec="Scholarship" data-href="https://aprja.net/article/view/116107" data-label="2015 Lea Muldtofte Olsen — Grammatized Psychopath: American Psycho Online and Offline" data-where="Scholarship · 2015 Lea Muldtofte Olsen — Grammatized Psychopath: American Psycho Online and Offline">
+    <li class="row" data-i="44" data-sec="Scholarship" data-href="https://journals.ub.uni-heidelberg.de/index.php/ic/article/view/66992" data-label="Interface Critique" data-where="Bio · Interface Critique ; Scholarship · 2019 Karl Wolfgang Flender — American Psycho: Reading an Algorithm in Reverse">
+      <div class="verdict" role="group" aria-label="Verdict for Interface Critique">
+        <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
+        <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
+        <button class="v v-weak" data-set="weak" type="button" title="Resolves, wants a better URL (3)"><span aria-hidden="true">~</span><span class="sr">Weak</span></button>
+      </div>
+      <div class="meat">
+        <span class="line"><a class="lbl" href="https://journals.ub.uni-heidelberg.de/index.php/ic/article/view/66992" target="_blank" rel="noopener">Interface Critique</a><span class="also" title="Bio · Interface Critique  |  Scholarship · 2019 Karl Wolfgang Flender — American Psycho: Reading an Algorithm in Reverse">also 1 other entry</span></span>
+        <span class="host">journals.ub.uni-heidelberg.de</span>
+        <span class="url">https://journals.ub.uni-heidelberg.de/index.php/ic/article/view/66992</span>
+      </div>
+      <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
+    </li>
+    <li class="row" data-i="45" data-sec="Scholarship" data-href="https://aprja.net/article/view/116107" data-label="2015 Lea Muldtofte Olsen — Grammatized Psychopath: American Psycho Online and Offline" data-where="Scholarship · 2015 Lea Muldtofte Olsen — Grammatized Psychopath: American Psycho Online and Offline">
       <div class="verdict" role="group" aria-label="Verdict for 2015 Lea Muldtofte Olsen — Grammatized Psychopath: American Psycho Online and Offline">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -880,7 +903,7 @@
       </div>
       <button class="open" data-open type="button" title="Open in a new tab (o)">Open <span aria-hidden="true">&#8599;</span></button>
     </li>
-    <li class="row" data-i="45" data-sec="Scholarship" data-href="https://median.newmediacaucus.org/the_aesthetics_of_erasure/erasing-in-the-algorithmic-extreme-mimi-cabell-and-jason-huffs-american-psycho/" data-label="2015 Kaja Marczewska — Erasing in the Algorithmic Extreme" data-where="Scholarship · 2015 Kaja Marczewska — Erasing in the Algorithmic Extreme">
+    <li class="row" data-i="46" data-sec="Scholarship" data-href="https://median.newmediacaucus.org/the_aesthetics_of_erasure/erasing-in-the-algorithmic-extreme-mimi-cabell-and-jason-huffs-american-psycho/" data-label="2015 Kaja Marczewska — Erasing in the Algorithmic Extreme" data-where="Scholarship · 2015 Kaja Marczewska — Erasing in the Algorithmic Extreme">
       <div class="verdict" role="group" aria-label="Verdict for 2015 Kaja Marczewska — Erasing in the Algorithmic Extreme">
         <button class="v v-ok"   data-set="ok"   type="button" title="Works (1)"><span aria-hidden="true">✓</span><span class="sr">Works</span></button>
         <button class="v v-gone" data-set="gone" type="button" title="Gone — 404 (2)"><span aria-hidden="true">✕</span><span class="sr">Gone</span></button>
@@ -1073,7 +1096,7 @@
 
   document.getElementById('opennext').addEventListener('click', function () {
     var i = nextUnmarked(cursor);
-    if (i < 0) { this.textContent = 'All 46 checked'; return; }
+    if (i < 0) { this.textContent = 'All 47 checked'; return; }
     focusRow(i);
     open1(rows[i], this);
   });

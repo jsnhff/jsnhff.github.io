@@ -107,9 +107,11 @@ export const DOC = [
   "His books are held in ",
   { w:"museums", m:"pediment", add:[
       ": the ",
-      { l:"MoMA Library", h:"https://library.moma.org" },
+      { l:"MoMA Library", h:"https://library.moma.org/permalink/01NYA_INST/13u92is/alma991013562918507141" },
       ", acquired in 2017 as part of Paul Soulellis's ",
       { l:"Printed Web", h:"https://soulellis.com/entries/lotpw.html" },
+      ", every title of which he lists in a public ",
+      { l:"index", h:"https://docs.google.com/spreadsheets/d/1kk7dYKk12ON7RgtZ-wg7Vmp44Fqv7OEi6Z90nu7WNpU/edit?gid=0#gid=0" },
       "; the Whitney Museum's ",
       { l:"Special Collections", h:"https://library.whitney.org" },
       "; and the Bavarian State Library in ",
