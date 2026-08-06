@@ -1,0 +1,50 @@
+---
+layout: site
+title: Index
+section: index
+dark: true
+permalink: /index/
+redirect_from:
+  - /updates/
+description: "What is coming up, and a record of exhibitions, press, talks and publications."
+---
+
+<h1 class="sr-only">Index</h1>
+
+{%- comment -%}
+  One list, split by the clock rather than by hand: anything dated ahead of the
+  build is Upcoming, everything else is the archive. Adding an entry is still
+  just dropping a file in _updates.
+{%- endcomment -%}
+{% assign now = site.time | date: "%s" | plus: 0 %}
+{% assign all = site.updates | sort: "date" %}
+
+{% assign ahead = "" | split: "" %}
+{% assign past = "" | split: "" %}
+{% for u in all %}
+  {% assign ts = u.date | date: "%s" | plus: 0 %}
+  {% if ts > now %}{% assign ahead = ahead | push: u %}
+  {% else %}{% assign past = past | push: u %}{% endif %}
+{% endfor %}
+
+{% if ahead.size > 0 %}
+  <section class="row upcoming">
+    <p class="up-label">Upcoming</p>
+    {% for u in ahead %}
+      <article class="up-item">
+        <p class="up-when">{{ u.update-type | default: "Update" }} &middot; {{ u.date | date: "%B %-d, %Y" }}</p>
+        <p class="up-body">{{ u.content | strip_newlines | strip }}</p>
+      </article>
+    {% endfor %}
+  </section>
+{% endif %}
+
+<p class="row past-label">Past</p>
+
+{% assign archive = past | reverse %}
+{% for u in archive %}
+  <article class="row">
+    <p class="row-meta">{{ u.update-type | default: "Update" }} &middot; {{ u.date | date: "%B %-d, %Y" }}</p>
+    <p class="row-body">{{ u.content | strip_newlines | strip }}</p>
+  </article>
+{% endfor %}

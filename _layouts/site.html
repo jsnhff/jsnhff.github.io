@@ -1,0 +1,92 @@
+<!doctype html>
+{%- comment -%}
+  The ground is chosen here, not after paint. A page that should be black says
+  so in its front matter (`dark: true`) and arrives black, which is why there is
+  no flash and no inversion to sit through on a cold load.
+{%- endcomment -%}
+<html lang="en" class="{% if page.dark %}is-dark scheme-dark{% endif %}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% if page.title %}{{ page.title }} — {% endif %}{{ site.title }}</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
+
+  <link rel="canonical" href="{{ page.url | absolute_url }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="/feed.xml">
+
+  <meta property="og:title" content="{% if page.title %}{{ page.title }} — {% endif %}{{ site.title }}">
+  <meta property="og:description" content="{{ page.description | default: site.description }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  {%- if site.twitter_username %}<meta name="twitter:site" content="@{{ site.twitter_username }}">{% endif %}
+
+  <link rel="stylesheet" href="/css/site.css?v={{ site.time | date: '%s' }}">
+</head>
+<body>
+
+<div class="topfade fadeband" aria-hidden="true">
+  <span class="fb1"></span><span class="fb2"></span><span class="fb3"></span>
+  <span class="wash wash-light"></span><span class="wash wash-dark"></span>
+</div>
+
+<canvas class="field" id="paper" aria-hidden="true"></canvas>
+<canvas class="field" id="night" aria-hidden="true"></canvas>
+
+{%- comment -%}
+  Home is the one page with nowhere to go back to, so it is the one page
+  without this.
+{%- endcomment -%}
+{% unless page.home %}
+<a class="back" href="/" aria-label="Home">
+  <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none"
+       stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3.2 10.4 12 3.6l8.8 6.8"/>
+    <path d="M5.4 9.6v9.2a1 1 0 0 0 1 1h11.2a1 1 0 0 0 1-1V9.6"/>
+    <path d="M9.8 19.8v-5.4h4.4v5.4"/>
+  </svg>
+</a>
+{% endunless %}
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Project">
+  <div class="sheet-scrim" id="sheet-scrim"></div>
+  <div class="sheet-panel" id="sheet-panel">
+    <div class="sheet-grip">
+      <button class="sheet-close" id="sheet-close" type="button" aria-label="Close project">&times;</button>
+    </div>
+    <div class="sheet-body" id="sheet-body"></div>
+  </div>
+</div>
+
+<div class="shell">
+  <main class="stage {% if page.home %}is-centred{% else %}is-flow{% endif %}" id="stage">
+    {{ content }}
+  </main>
+
+  <div class="navwrap">
+    <div class="botfade fadeband" aria-hidden="true">
+      <span class="fb1"></span><span class="fb2"></span><span class="fb3"></span>
+      <span class="wash wash-light"></span><span class="wash wash-dark"></span>
+    </div>
+    <nav aria-label="Main">
+      <span class="nav-thumb" aria-hidden="true"></span>
+      {%- assign sec = page.section -%}
+      <a href="/studio/"  data-view="studio"  {% if sec == 'studio' %}aria-current="page"{% endif %}>Studio</a>
+      <a href="/mission/" data-view="mission" {% if sec == 'mission' %}aria-current="page"{% endif %}>Mission</a>
+      <a href="/index/"   data-view="index"   {% if sec == 'index' %}aria-current="page"{% endif %}>Index</a>
+    </nav>
+  </div>
+</div>
+
+{% if site.background_shader %}
+<script src="/js/bg-shader.js" data-manual
+        data-variant="{{ site.background_shader }}"
+        data-grain="{{ site.background_grain | default: 1 }}" defer></script>
+{% endif %}
+<script src="/js/site.js?v={{ site.time | date: '%s' }}" defer></script>
+</body>
+</html>

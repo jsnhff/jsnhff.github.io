@@ -1,0 +1,853 @@
+/* jason-huff.com
+ *
+ * Ported from the prototype. Two grounds: home is white, every interior page is
+ * black. The ground is decided server-side (`dark: true` in a page's front
+ * matter puts .is-dark on <html>), so a page arrives already the right colour
+ * instead of inverting after paint.
+ *
+ * Sections below, in order: tokens, shell, home, reading pages, upcoming,
+ * studio wall, project, sheet, back/nav, edge blur, motion.
+ */
+
+:root {
+    --ground: #FFFFFF;
+    --ink: #0A0A0A;
+    --dim: #6E6E72;
+    --pill: #DCDCDC;
+    --pill-hover: #CECECE;
+    --pill-ink: #111111;
+    --focus: #0082F3;
+
+    /* Glass. A tint rather than a colour: the fill is translucent and the
+       blur behind it samples whatever is passing under the nav, so the pill
+       shifts with the page instead of sitting on it. On the white ground the
+       tint is darker than the page; on black it is lighter. Both read as the
+       same material. */
+    --glass:        rgba(206, 206, 212, 0.40);
+    --glass-hover:  rgba(186, 186, 192, 0.58);
+    --glass-edge:   rgba(0, 0, 0, 0.09);
+    --glass-ink:    #111111;
+    --glass-on:     rgba(12, 12, 12, 0.86);
+    --glass-on-edge: rgba(255, 255, 255, 0.16);
+    --glass-on-ink: #FFFFFF;
+    --glass-blur:   saturate(200%) blur(20px);
+    /* A veil inside the bar, under the tint. Without it a white book plate
+       passing behind washes the bar out and the labels drop under 4.5:1; this
+       caps how bright the backdrop can push it while leaving the shift itself
+       plainly visible. */
+    --glass-veil:   transparent;
+    /* Corner is ~0.2 of the bar's height, per the reference — a soft rounded
+       rectangle, well short of a capsule. */
+    --bar-radius:   0.55rem;
+    --bar-pad:      0.28rem;
+
+    --face: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --rise: cubic-bezier(0.16, 1, 0.3, 1);
+    --invert: 340ms;
+    --leave: 220ms;
+  }
+
+  /* Home is the only white page. Every interior inverts, so the flip means
+     "you have gone inside" rather than being decoration on one screen. */
+  :root.is-dark {
+    --ground: #070707;
+    --ink: #EDEDED;
+    --dim: #85858A;
+    --pill: #1E1E20;
+    --pill-hover: #2A2A2D;
+    --pill-ink: #EDEDED;
+
+    --glass:        rgba(150, 150, 162, 0.20);
+    --glass-hover:  rgba(170, 170, 184, 0.32);
+    --glass-edge:   rgba(255, 255, 255, 0.13);
+    --glass-ink:    #EDEDED;
+    --glass-on:     rgba(238, 238, 238, 0.88);
+    --glass-on-edge: rgba(0, 0, 0, 0.16);
+    --glass-on-ink: #0A0A0A;
+    --glass-veil:   rgba(7, 7, 7, 0.34);
+  }
+
+  /* color-scheme cannot be transitioned — it snaps. Left on .is-dark it flipped
+     the moment the ground *started* moving, so the UA repainted the frame's own
+     canvas and scrollbars a third of a second before the page caught up, which
+     showed as a hard edge at the panel's rounded corners. It rides its own class
+     instead, set once the ground has already arrived, so the snap lands where
+     there is nothing left to see. */
+  :root { color-scheme: light; }
+  :root.scheme-dark { color-scheme: dark; }
+
+  html, body {
+    background: var(--ground);
+    transition: background-color var(--invert) ease;
+  }
+
+  .field { position: fixed; inset: 0; z-index: 0; display: block; width: 100%; height: 100%; }
+  #night { opacity: 0; transition: opacity var(--invert) ease; }
+  :root.is-dark #night { opacity: 1; }
+  :root.is-dark #paper { opacity: 0; transition: opacity var(--invert) ease; }
+
+  /* ---- shell ----------------------------------------------------------- */
+
+  .shell {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    font-family: var(--face);
+    color: var(--ink);
+    transition: color var(--invert) ease;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .stage { min-height: 0; }
+
+  /* Home centres in the viewport; the reading views run down the page. */
+  .stage.is-centred { display: grid; place-items: center; padding: clamp(2rem, 6vh, 4rem) 1.5rem clamp(1rem, 3vh, 2rem); }
+  .stage.is-flow { padding: clamp(4.5rem, 10vh, 6.5rem) 1.5rem 2rem; }
+
+  .col { max-width: 40rem; margin: 0 auto; }
+
+  /* ---- home ------------------------------------------------------------ */
+
+  .statement {
+    max-width: 39rem;
+    margin: 0;
+    text-align: center;
+    text-wrap: balance;
+    font-size: clamp(1.05rem, min(3.4vw, 4.6vh), 2.2rem);
+    line-height: 1.25;
+    letter-spacing: -0.012em;
+    font-weight: 400;
+  }
+  .statement .w {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(0.5em);
+    animation: rise 0.5s var(--rise) forwards;
+    animation-delay: calc(var(--i) * 18ms);
+  }
+
+  /* The statement is the scratch coating: drag across it and the picture
+     underneath comes through. Nothing announces it but the cursor. */
+  .egg { position: relative; display: grid; place-items: center; }
+  .egg-canvas {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    /* A grab hand reads as "rub me"; a crosshair reads as "aim". */
+    cursor: grab;
+    touch-action: none;
+    border-radius: 4px;
+    transition: opacity 320ms ease, transform 320ms var(--rise);
+  }
+
+  /* The credit belongs to the picture, so it only exists once the whole
+     picture does. It sits under the plate, centred on it. */
+  .egg-credit {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 2;
+    transform: translate(-50%, 0);
+    margin-top: 0.85rem;
+    font-size: 0.8rem;
+    color: var(--dim);
+    text-align: center;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 420ms ease, color var(--invert) ease;
+  }
+  .egg-credit.on { opacity: 1; }
+  .egg-canvas:active { cursor: grabbing; }
+
+  /* Clearing puts the picture back under the coating: it lifts and dissolves,
+     rather than blinking out. */
+  .egg.is-clearing .egg-canvas { opacity: 0; transform: translate(-50%, -54%) scale(0.985); }
+  .egg.is-clearing .egg-credit { opacity: 0; }
+
+  /* No chip, no circle — just the mark. The X is drawn as two crossing lines
+     rather than set as a glyph, so it is exactly symmetrical and optically
+     centred instead of sitting wherever the font's × happens to fall. A drop
+     shadow rather than a plate keeps it legible over sky as well as over
+     shadow. */
+  .egg-clear {
+    position: absolute;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #fff;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+    transition: opacity 320ms ease, transform 180ms ease;
+  }
+  .egg-clear svg { display: block; }
+  .egg-clear.on { opacity: 0.92; pointer-events: auto; }
+  .egg-clear.on:hover { opacity: 1; transform: scale(1.06); }
+  .egg-clear:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+  /* ---- reading views --------------------------------------------------- */
+
+  /* The nav already says which view you are on, so the heading is redundant
+     on screen. It stays in the accessibility tree. */
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* No orphans. `balance` evens out short headings so a single word never
+     drops to its own line; `pretty` does the same job for running prose by
+     pulling a word down rather than leaving one behind. Both degrade to normal
+     wrapping where unsupported, so nothing breaks without them. */
+  h1, h2, h3, .pj-title, .gal-head, .w-title, .up-when, .row-title,
+  .is-prose .m-h2, .is-prose .m-h3 { text-wrap: balance; }
+  p, li, .row-body, .up-body, .pj-desc, .w-blurb, .entry-body { text-wrap: pretty; }
+
+  .row { margin-bottom: clamp(2.75rem, 7vh, 3.75rem); }
+  .row:last-child { margin-bottom: 0; }
+
+  /* Mission is one continuous piece of writing, not a list of things. */
+  .is-prose .row { margin-bottom: 1.15rem; }
+
+  /* Its one section break. */
+  .is-prose em { font-style: italic; }
+
+  /* The opening statement carries at a larger size, the way it does on the
+     live site. */
+  .is-prose .m-lead {
+    margin: 0 0 1.4rem;
+    font-size: clamp(1.15rem, 2.6vw, 1.45rem);
+    line-height: 1.42;
+    letter-spacing: -0.012em;
+  }
+
+  .is-prose .m-h2 {
+    margin: 3.25rem 0 1.1rem;
+    font-size: 1.5rem;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+  }
+  /* Sub-heads sit at body size and are set apart by colour, not scale. */
+  .is-prose .m-h3 {
+    margin: 2.1rem 0 0.55rem;
+    font-size: 1.02rem;
+    font-weight: 400;
+    color: var(--dim);
+    transition: color var(--invert) ease;
+  }
+  .is-prose .m-list {
+    margin: 0.35rem 0 1.4rem;
+    padding-left: 1.35rem;
+    font-size: 1.05rem;
+    line-height: 1.62;
+  }
+  .is-prose .m-list li { margin-bottom: 0.7rem; }
+  .is-prose .m-list li:last-child { margin-bottom: 0; }
+  .is-prose .m-list::marker, .is-prose .m-list li::marker { color: var(--dim); }
+
+  /* Recognition and press: stacked lines, not bullets. A record, read down. */
+  .is-prose .m-lines {
+    margin: 0.35rem 0 1.4rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .is-prose .m-lines li { margin-bottom: 0.55rem; }
+  .is-prose .m-lines li:last-child { margin-bottom: 0; }
+
+  /* Writing sits on the mission page as a record, not a feed: venue and year
+     in the dim voice, the title carrying the link. */
+  .w-item { margin: 0 0 1.6rem; }
+  .w-item:last-child { margin-bottom: 0; }
+  .w-meta { margin: 0 0 0.2rem; font-size: 0.82rem; color: var(--dim);
+            transition: color var(--invert) ease; }
+  .w-title { margin: 0 0 0.35rem; font-size: 1.05rem; font-weight: 400;
+             letter-spacing: -0.005em; }
+  .w-blurb { margin: 0; font-size: 0.95rem; line-height: 1.55; color: var(--dim);
+             transition: color var(--invert) ease; }
+
+  .is-prose .m-colophon {
+    margin: 3.25rem 0 0;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--rule);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--dim);
+    transition: color var(--invert) ease, border-color var(--invert) ease;
+  }
+
+  .is-prose .m-sign {
+    margin: 3rem 0 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--dim);
+    transition: color var(--invert) ease;
+  }
+
+  .row-meta {
+    margin: 0 0 0.5rem;
+    font-size: 0.82rem;
+    color: var(--dim);
+    transition: color var(--invert) ease;
+  }
+  /* ---- upcoming --------------------------------------------------------- */
+  /* What has not happened yet is the one thing on the index that is not an
+     archive entry, so it gets the opposite ground. Its colours are literal
+     rather than var-driven: the sheet inverts around it and this stays light,
+     which is the whole point of it. */
+  /* The heading stays over the group; each activity is its own card so two
+     unrelated things stop reading as one block of text. Their colours are
+     literal rather than var-driven: the sheet inverts around them and these
+     stay light, which is the whole point of them. */
+  .upcoming { margin: 0 0 clamp(3rem, 8vh, 4.5rem); }
+  /* The two halves of the index are each announced the same way. */
+  .up-label, .past-label {
+    margin: 0 0 0.9rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--dim);
+    transition: color var(--invert) ease;
+  }
+  /* .row would give it the list's full bottom margin; the label belongs to the
+     entries under it, not apart from them. */
+  .past-label { margin: 0 0 1.5rem; }
+
+  .up-item {
+    margin: 0 0 0.75rem;
+    padding: clamp(1.15rem, 2.6vw, 1.6rem) clamp(1.2rem, 2.8vw, 1.75rem);
+    border-radius: 0.9rem;
+    background: #F7F7F5;
+    color: #101010;
+  }
+  .up-item:last-child { margin-bottom: 0; }
+  .up-when {
+    margin: 0 0 0.3rem;
+    font-size: 0.82rem;
+    color: #6E6E72;
+  }
+  .up-body {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  /* Inside a card the ink is dark whichever way the page has gone, so links
+     cannot inherit the page's colour. */
+  .up-item a { color: #101010; }
+
+  /* ---- the project sheet ------------------------------------------------ */
+  /* A project rides over the wall instead of replacing it. The wall keeps its
+     scroll position, the nav keeps its meaning, and closing is a gesture rather
+     than a navigation. */
+  .sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 6;
+    visibility: hidden;
+  }
+  .sheet.open { visibility: visible; }
+
+  .sheet-scrim {
+    position: absolute;
+    inset: 0;
+    background: rgba(4, 4, 5, 0.55);
+    -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity 320ms ease;
+  }
+  .sheet.open .sheet-scrim { opacity: 1; }
+
+  .sheet-panel {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: min(72rem, 100%);
+    height: min(92vh, 100%);
+    transform: translate(-50%, 100%);
+    background: var(--ground);
+    /* The sheet lives outside .shell, so none of the page's typography reaches
+       it by inheritance — it has to be stated. Without this the prose fell back
+       to the document default, which is a hotter white than the site's ink. */
+    font-family: var(--face);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    border-radius: 0.9rem 0.9rem 0 0;
+    box-shadow: 0 -1px 0 var(--glass-edge);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    transition: transform 460ms var(--rise), background-color var(--invert) ease,
+                color var(--invert) ease;
+  }
+  .sheet.open .sheet-panel { transform: translate(-50%, 0); }
+
+  /* The grip reads as "this pulls down". */
+  .sheet-grip {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.1rem;
+    background: var(--ground);
+    transition: background-color var(--invert) ease;
+  }
+  .sheet-grip::before {
+    content: '';
+    width: 2.4rem;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--glass);
+  }
+  .sheet-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: var(--glass);
+    color: var(--glass-ink);
+    font: inherit;
+    font-size: 0.95rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 200ms ease, color var(--invert) ease;
+  }
+  .sheet-close:hover { background: var(--glass-hover); }
+  .sheet-close:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  .sheet-body { padding: 1rem 1.5rem clamp(3rem, 8vh, 5rem); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sheet-panel, .sheet-scrim { transition: none !important; }
+  }
+
+  /* ---- a single project ------------------------------------------------- */
+  /* Wider than the reading column so the plates can breathe, with the prose
+     still held to a readable measure inside it. */
+  .col.is-project { max-width: 62rem; }
+  .pj-head { max-width: 40rem; margin: 0 auto clamp(2.5rem, 6vh, 4rem); }
+  .pj-year { margin: 0 0 0.4rem; font-size: 0.82rem; color: var(--dim);
+             transition: color var(--invert) ease; }
+  .pj-title { margin: 0 0 1rem; font-size: clamp(1.5rem, 4vw, 2.1rem);
+              font-weight: 400; letter-spacing: -0.015em; }
+  .pj-desc { margin: 0; font-size: 1.05rem; line-height: 1.62; }
+  .pj-desc p { margin: 0 0 1rem; }
+  .pj-desc p:last-child { margin-bottom: 0; }
+  .pj-visit { margin: 1.1rem 0 0; font-size: 0.95rem; }
+
+  .pj-shot { margin: 0 0 clamp(1.5rem, 4vh, 2.5rem); text-align: center; }
+  .pj-shot:last-child { margin-bottom: 0; }
+  .pj-shot img { max-width: 100%; height: auto; border-radius: 2px; }
+
+  /* ---- projects gallery ------------------------------------------------- */
+  /* The studio wall hangs as a set rather than reading as a list, so this view
+     breaks out of the 40rem reading column. */
+  .col.is-gallery { max-width: 96rem; }
+
+  .gal-head {
+    margin: 0 0 clamp(1.75rem, 4vh, 2.75rem);
+    text-align: center;
+    font-size: 1.05rem;
+    font-weight: 400;
+    letter-spacing: -0.005em;
+    text-transform: capitalize;
+  }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(2rem, 4vw, 3rem) clamp(1rem, 2.2vw, 1.75rem);
+    margin: 0 0 clamp(4rem, 9vh, 6rem);
+  }
+  .gallery:last-child { margin-bottom: 0; }
+
+  /* The grid supplies the rhythm; the cells must not also carry the list's
+     bottom margin. */
+  .gal-cell { margin-bottom: 0; }
+
+  /* Every plate in a group is drawn on the same canvas, so giving them all one
+     band height is what keeps a set at its true relative scale — the wide book
+     reads wider, the tall one taller, exactly as they are. */
+  .plate {
+    display: flex;
+    /* Standing on a shelf rather than floating in the band: a short book reads
+       as short, which is the whole reason the plates share a scale. */
+    align-items: flex-end;
+    justify-content: center;
+    height: clamp(15rem, 56vh, 34rem);
+    margin-bottom: 0;
+  }
+  .plate img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 2px;
+  }
+  /* A wall with a hole in it reads as broken, so the one project without a
+     picture yet holds its place. */
+  .plate.is-empty {
+    align-items: center;
+    width: 100%;
+    max-width: 13rem;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 1px var(--glass-edge);
+    font-size: 0.9rem;
+    text-align: center;
+    line-height: 1.5;
+    color: var(--dim);
+    transition: box-shadow var(--invert) ease, color var(--invert) ease;
+  }
+  .plate.is-empty small { display: block; font-size: 0.78rem; opacity: 0.75; }
+
+  /* A live site is reachable through its own picture, so the wall needs no
+     "Visit" line to carry the link. */
+  .gal-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 200ms ease;
+  }
+  .gal-link:hover { opacity: 0.72; }
+  .gal-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 6px; border-radius: 4px; }
+
+  @media (max-width: 62rem) { .gallery { grid-template-columns: repeat(2, 1fr); } }
+  /* Stays two up on a phone. The band comes down with it so the cells are not
+     mostly empty air, and the titles tighten to survive a ~9rem column. */
+  @media (max-width: 38rem) {
+    .gallery { gap: clamp(1.75rem, 6vw, 2.5rem) clamp(0.9rem, 4vw, 1.5rem); }
+    .plate { height: clamp(9rem, 34vh, 15rem); margin-bottom: 0; }
+  }
+
+  .row-title {
+    margin: 0 0 0.35rem;
+    font-size: 1.28rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .row-body {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.62;
+    color: var(--ink);
+    transition: color var(--invert) ease;
+  }
+  .row-body + .row-body { margin-top: 1rem; }
+
+  /* Links carry no colour of their own. They sit at the text's exact weight,
+     size and colour, and the underline is the whole signal. */
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+    transition: text-decoration-thickness 120ms ease;
+  }
+  a:hover { text-decoration-thickness: 2px; }
+  a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  /* ---- back arrow ------------------------------------------------------ */
+
+  .back {
+    position: fixed;
+    top: clamp(1rem, 3vh, 1.75rem);
+    left: clamp(1rem, 3vw, 1.75rem);
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border: 0;
+    /* Same corner family as the bar, so the two read as one set. */
+    border-radius: var(--bar-radius);
+    background-color: var(--glass);
+    background-image: linear-gradient(var(--glass-veil), var(--glass-veil));
+    color: var(--glass-ink);
+    box-shadow: inset 0 0 0 1px var(--glass-edge);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    font-family: var(--face);
+    font-size: 1.05rem;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color var(--invert) ease, color var(--invert) ease;
+  }
+  .back { opacity: 0; visibility: hidden; transition: opacity 260ms ease, visibility 260ms, background-color var(--invert) ease, color var(--invert) ease, box-shadow var(--invert) ease; }
+  :root:not(.at-home) .back { opacity: 1; visibility: visible; }
+  .back:hover { background: var(--glass-hover); }
+  .back:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+  /* Rows dissolve into the edges rather than being cut by them. A flat wash
+     could only fade content toward the ground; this blurs it as well, so what
+     is leaving frame goes out of focus on its way rather than simply dimming.
+     Each layer is a masked backdrop-filter, and because a layer samples what
+     the ones beneath it already produced, three of them read as a ramp rather
+     than three steps. */
+  .fadeband {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .fadeband > * { position: absolute; inset: 0; display: block; }
+  .fb1, .fb2, .fb3 { will-change: backdrop-filter; }
+
+  .topfade {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: clamp(4.5rem, 11vh, 7rem);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .topfade .fb1 {
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 12%, transparent 34%);
+            mask-image: linear-gradient(to bottom, #000 0%, #000 12%, transparent 34%);
+  }
+  .topfade .fb2 {
+    -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 62%);
+            mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 62%);
+  }
+  .topfade .fb3 {
+    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+            mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+  }
+
+  /* The wash sits over the blur and only tints — light enough that the blurred
+     content stays visible instead of being painted out. Two of them cross-fade
+     on opacity so the scrim never lags the ground. */
+  .wash { transition: opacity var(--invert) ease; }
+  .topfade .wash-light {
+    background: linear-gradient(to bottom,
+      rgba(255,255,255,0.90) 0%, rgba(255,255,255,0.42) 46%, rgba(255,255,255,0) 100%);
+    opacity: 1;
+  }
+  .topfade .wash-dark {
+    background: linear-gradient(to bottom,
+      rgba(7,7,7,0.90) 0%, rgba(7,7,7,0.42) 46%, rgba(7,7,7,0) 100%);
+    opacity: 0;
+  }
+  :root.is-dark .topfade .wash-light { opacity: 0; }
+  :root.is-dark .topfade .wash-dark  { opacity: 1; }
+
+  /* ---- nav ------------------------------------------------------------- */
+
+  .navwrap {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    padding: 2.5rem 1rem clamp(1.5rem, 5vh, 3rem);
+    pointer-events: none;
+  }
+  /* Mirror of the top band. It sits under the bar, which does its own blur on
+     top of this one. */
+  .botfade { z-index: -1; }
+  .botfade .fb1 {
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    -webkit-mask-image: linear-gradient(to top, #000 0%, #000 12%, transparent 34%);
+            mask-image: linear-gradient(to top, #000 0%, #000 12%, transparent 34%);
+  }
+  .botfade .fb2 {
+    -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
+    -webkit-mask-image: linear-gradient(to top, #000 0%, #000 30%, transparent 62%);
+            mask-image: linear-gradient(to top, #000 0%, #000 30%, transparent 62%);
+  }
+  .botfade .fb3 {
+    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+    -webkit-mask-image: linear-gradient(to top, #000 0%, #000 55%, transparent 100%);
+            mask-image: linear-gradient(to top, #000 0%, #000 55%, transparent 100%);
+  }
+  .botfade .wash-light {
+    background: linear-gradient(to top,
+      rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.55) 48%, rgba(255,255,255,0) 100%);
+    opacity: 1;
+  }
+  .botfade .wash-dark {
+    background: linear-gradient(to top,
+      rgba(7,7,7,0.92) 0%, rgba(7,7,7,0.55) 48%, rgba(7,7,7,0) 100%);
+    opacity: 0;
+  }
+  :root.is-dark .botfade .wash-light { opacity: 0; }
+  :root.is-dark .botfade .wash-dark  { opacity: 1; }
+  /* One continuous bar rather than three separate pills. The corner is a soft
+     rounded rectangle, not a capsule: measured off the reference at roughly
+     0.2 of the bar's height, which is what keeps it reading as a bar and not
+     a lozenge. Items divide it in equal thirds, so it never wraps and needs no
+     breakpoint. */
+  nav {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: min(34rem, 100%);
+    padding: var(--bar-pad);
+    border-radius: var(--bar-radius);
+    background-color: var(--glass);
+    background-image: linear-gradient(var(--glass-veil), var(--glass-veil));
+    box-shadow: inset 0 0 0 1px var(--glass-edge);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    pointer-events: auto;
+    transition: background-color var(--invert) ease, box-shadow var(--invert) ease;
+  }
+  nav a {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0.55rem 0.4rem;
+    /* Nested radius: outer minus the padding between them, so the inner curve
+       sits concentric with the bar's rather than fighting it. */
+    border-radius: calc(var(--bar-radius) - var(--bar-pad));
+    background: transparent;
+    color: var(--glass-ink);
+    font-size: clamp(0.82rem, 3.4vw, 0.95rem);
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: none;
+    transition: background-color 200ms ease, color var(--invert) ease;
+  }
+  nav a:hover { background: var(--glass-hover); }
+  nav a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  /* Selected is the inversion of the page it is on. The chip is a single
+     element that slides between items rather than a background switching off
+     one link and on at another, so moving between areas reads as one object
+     travelling instead of two blinking. */
+  .nav-thumb {
+    position: absolute;
+    z-index: 0;
+    top: var(--bar-pad);
+    left: 0;
+    height: calc(100% - var(--bar-pad) * 2);
+    width: 0;
+    border-radius: calc(var(--bar-radius) - var(--bar-pad));
+    background: var(--glass-on);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 420ms var(--rise), width 420ms var(--rise),
+                opacity 200ms ease, background-color var(--invert) ease;
+  }
+  .nav-thumb.on { opacity: 1; }
+  /* Placing it for the first time, or after a resize, must not look like a
+     slide from the left edge. */
+  .nav-thumb.no-anim { transition: background-color var(--invert) ease; }
+
+  nav a[aria-current="page"] { color: var(--glass-on-ink); }
+
+  /* Wherever the blur is unavailable the bar falls back to a solid fill, so
+     the nav is never a near-invisible outline. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    nav, .back { background: var(--pill); color: var(--pill-ink); box-shadow: none; }
+    nav a { color: var(--pill-ink); }
+    nav a:hover, .back:hover { background: var(--pill-hover); }
+    .nav-thumb { background: var(--ink); }
+    nav a[aria-current="page"] { color: var(--ground); }
+  }
+
+  /* ---- entering and leaving -------------------------------------------- */
+
+  .rise-in { opacity: 0; animation: rise 0.46s var(--rise) forwards; animation-delay: calc(var(--i, 0) * 34ms); }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .row { opacity: 0; transform: translateY(14px); }
+  .row.in { animation: roll 0.48s var(--rise) forwards; animation-delay: calc(var(--i, 0) * 34ms); }
+  @keyframes roll { to { opacity: 1; transform: none; } }
+
+  :root.is-leaving .row,
+  :root.is-leaving .row.in,
+  :root.is-leaving .statement .w,
+  :root.is-leaving .rise-in {
+    animation: leave var(--leave) ease forwards;
+    animation-delay: calc(var(--o, 0) * 12ms);
+  }
+  @keyframes leave { to { opacity: 0; transform: translateY(-10px); } }
+
+  /* A scratched-open picture has to clear immediately, otherwise it hangs
+     over the transition long after the type has gone. */
+  :root.is-leaving .egg-canvas {
+    animation: fadeOut 160ms ease forwards;
+  }
+  @keyframes fadeOut { to { opacity: 0; } }
+
+  @media (max-width: 30rem) {
+    .navwrap { padding-left: 0.6rem; padding-right: 0.6rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html, body, .shell, .navwrap, .field, nav a, .back, .nav-thumb,
+    .row, .row-body, .row-meta, a { transition: none !important; }
+    .row, .rise-in, .statement .w, .back {
+      animation: none !important; opacity: 1 !important; transform: none !important;
+    }
+    :root.is-leaving .egg-canvas { opacity: 0 !important; animation: none !important; }
+    :root.is-leaving .row,
+    :root.is-leaving .rise-in,
+    :root.is-leaving .statement .w { opacity: 0 !important; }
+  }
+
+/* ---- an essay ----------------------------------------------------------- */
+/* Writing lives on Mission; a single piece gets the same reading measure as
+   the prose there, and its images run to the column's full width. */
+.post-title { margin-top: 0; }
+.post-note { margin: -0.4rem 0 2rem; }
+.post-body { font-size: 1.05rem; line-height: 1.62; }
+.post-body p { margin: 0 0 1.15rem; }
+.post-body h2, .post-body h3 { margin: 2.4rem 0 0.8rem; font-weight: 400; letter-spacing: -0.012em; }
+.post-body h2 { font-size: 1.4rem; }
+.post-body h3 { font-size: 1.1rem; }
+.post-body figure { margin: 2rem 0; }
+.post-body img { max-width: 100%; height: auto; border-radius: 2px; }
+.post-body figcaption { margin-top: 0.5rem; font-size: 0.82rem; color: var(--dim); }
+.post-body blockquote {
+  margin: 1.6rem 0;
+  padding-left: 1.1rem;
+  border-left: 1px solid var(--glass-edge);
+  color: var(--dim);
+}

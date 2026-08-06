@@ -9,11 +9,14 @@ github_username:  jsnhff
 
 # Background texture (js/bg-shader.js). Options: darkroom, nightfield, gallery.
 # Comment out background_shader to fall back to the tiled noise PNG.
+home_statement: "Jason Huff is a design director and artist based in Los Angeles. He creates work that investigates the cultural impact of technology and leads teams building products for entrepreneurs."
+
 background_shader: nightfield
 background_grain: 0.5
 
 # Build settings
 markdown: kramdown
+future: true
 
 # Collections
 collections:
@@ -35,3 +38,20 @@ permalink: /writing/:title/
 plugins:
 - jekyll-sitemap
 - jekyll-redirect-from
+
+# Front matter set on a layout is only visible as `layout.*`, never `page.*`,
+# so anything the shell reads off the page (ground colour, which nav item is
+# lit) has to be declared here instead.
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      dark: true
+      section: "mission"
+  - scope:
+      path: ""
+      type: "projects"
+    values:
+      dark: true
+      section: "studio"

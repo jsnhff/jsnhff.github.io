@@ -7,6 +7,7 @@
  *   darkroom  — near-black paper with animated filmic grain and a soft vignette
  *   nightfield — drifting parallax dust motes over a faint nebular haze
  *   gallery   — a black wall lit by one soft key and a cool fill, under grain
+ *   paper     — nightfield inverted onto white: fibre mottle, flecks, grain
  *
  * Pick one with any of these, in order of precedence:
  *   ?bg=nightfield&grain=0.5 in the URL   (handy for side-by-side comparison)
@@ -24,7 +25,7 @@
   // WebGL context, so only the first one through does any work.
   if (window.BGShader) return;
 
-  var VARIANTS = { darkroom: 0, nightfield: 1, gallery: 2 };
+  var VARIANTS = { darkroom: 0, nightfield: 1, gallery: 2, paper: 3 };
   var DEFAULT_VARIANT = 'darkroom';
   var DEFAULT_GRAIN = 1;
 
@@ -47,6 +48,9 @@
     'uniform float uSeed;',
     'uniform float uDpr;',
     'uniform float uGrain;',
+    'uniform float uMotes;',   // paper only: fleck strength
+    'uniform float uMottle;',  // paper only: fibre mottle strength
+    'uniform float uWarm;',    // paper only: how far off neutral the sheet sits
 
     'float h21(vec2 p){',
     '  p = fract(p * vec2(123.34, 456.21));',
@@ -90,8 +94,8 @@
     '}',
     '#endif',
 
-    '#if VARIANT == 1',
-    // Night field: the current starfield, but continuous and with depth.
+    // Sparse twinkling motes on a jittered grid. Shared by nightfield and its
+    // light counterpart, paper.
     'float motes(vec2 p, float dens, float t, float sd){',
     '  vec2 g = p * dens;',
     '  vec2 id = floor(g);',
@@ -103,17 +107,25 @@
     '  float tw = 0.5 + 0.5 * sin(t * (0.35 + h * 1.4) + h * 57.0);',
     '  return on * smoothstep(0.055, 0.0, d) * (0.25 + h * 3.0) * (0.45 + 0.55 * tw);',
     '}',
+
+    // Three parallax mote layers, drifting. Returns accumulated brightness.
+    'float moteField(vec2 p, float t){',
+    '  float s = 0.0;',
+    '  s += motes(p + vec2(t * 0.0045, -t * 0.0016),  46.0, t,  0.0) * 0.55;',
+    '  s += motes(p + vec2(t * 0.0090, -t * 0.0032),  78.0, t,  9.3) * 0.34;',
+    '  s += motes(p + vec2(t * 0.0150, -t * 0.0054), 130.0, t, 21.7) * 0.20;',
+    '  return s;',
+    '}',
+
+    '#if VARIANT == 1',
+    // Night field: the current starfield, but continuous and with depth.
     'vec3 render(vec2 fc, vec2 uv){',
     '  float t = uTime;',
     '  vec2 p = vec2(uv.x * (uRes.x / uRes.y), uv.y);',
     '  float haze = fbm(p * 2.4 + vec2(t * 0.008, t * 0.004));',
     '  vec3 col = vec3(0.021, 0.023, 0.029)',
     '           + vec3(0.030, 0.034, 0.055) * pow(haze, 2.2) * 0.55;',
-    '  float s = 0.0;',
-    '  s += motes(p + vec2(t * 0.0045, -t * 0.0016),  46.0, t,  0.0) * 0.55;',
-    '  s += motes(p + vec2(t * 0.0090, -t * 0.0032),  78.0, t,  9.3) * 0.34;',
-    '  s += motes(p + vec2(t * 0.0150, -t * 0.0054), 130.0, t, 21.7) * 0.20;',
-    '  col += vec3(0.92, 0.95, 1.0) * s;',
+    '  col += vec3(0.92, 0.95, 1.0) * moteField(p, t);',
     '  col += (grain(fc, 1.0, uSeed) - 0.5) * 0.048 * uGrain;',
     '  return col;',
     '}',
@@ -141,6 +153,29 @@
     '  float g1 = grain(fc, 1.0, uSeed) - 0.5;',
     '  float g2 = grain(fc, 2.0, uSeed + 4.0) - 0.5;',
     '  col += (g1 * 0.052 + g2 * 0.020) * uGrain;',
+    '  return col;',
+    '}',
+    '#endif',
+
+    '#if VARIANT == 3',
+    // Paper: nightfield inverted onto white. Same three ingredients — haze,
+    // motes, grain — but subtracted from the sheet instead of added to the
+    // void, and at roughly a fifth the amplitude. Dark specks on white read
+    // far louder than bright specks on black, so the numbers cannot carry
+    // over unchanged.
+    'vec3 render(vec2 fc, vec2 uv){',
+    '  float t = uTime;',
+    '  vec2 p = vec2(uv.x * (uRes.x / uRes.y), uv.y);',
+    '  vec3 col = vec3(1.0);',
+    // Warmth works by taking more blue out than red, which is what leaves a
+    // sheet reading cream rather than grey.
+    '  float haze = fbm(p * 2.4 + vec2(t * 0.008, t * 0.004));',
+    '  vec3 mottle = vec3(0.022 - 0.004 * uWarm, 0.022, 0.022 + 0.008 * uWarm);',
+    '  col -= mottle * pow(haze, 2.2) * 0.9 * uMottle;',
+    // Flecks in the pulp.
+    '  vec3 fleck = vec3(0.145 - 0.010 * uWarm, 0.145, 0.145 + 0.015 * uWarm);',
+    '  col -= fleck * moteField(p, t) * 0.17 * uMotes;',
+    '  col -= (grain(fc, 1.0, uSeed) - 0.5) * 0.026 * uGrain;',
     '  return col;',
     '}',
     '#endif',
@@ -188,7 +223,8 @@
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     var u = {};
-    ['uRes', 'uViewport', 'uOrigin', 'uZoom', 'uTime', 'uSeed', 'uDpr', 'uGrain']
+    ['uRes', 'uViewport', 'uOrigin', 'uZoom', 'uTime', 'uSeed', 'uDpr', 'uGrain',
+     'uMotes', 'uMottle', 'uWarm']
       .forEach(function (name) { u[name] = gl.getUniformLocation(prog, name); });
 
     return { program: prog, buffer: buf, uniforms: u };
@@ -218,6 +254,11 @@
    * opts.canvas   — render into this canvas instead of a new fixed one
    * opts.variant  — variant name, overrides URL/attribute detection
    * opts.grain    — grain multiplier, default 1
+   * opts.motes    — paper only: fleck strength, default 1
+   * opts.mottle   — paper only: fibre mottle strength, default 1
+   * opts.warm     — paper only: warmth off neutral, default 1
+   * opts.speed    — time multiplier, default 1; 0 freezes drift
+   * opts.animateGrain — re-seed grain each frame for filmic flicker, default true
    * opts.zoom     — magnification, default 1 (the loupe uses 4)
    * opts.source   — controller whose size/time this one mirrors (for the loupe)
    */
@@ -255,6 +296,9 @@
       canvas: canvas,
       variant: variant,
       grain: opts.grain == null ? resolveGrain(opts.script) : opts.grain,
+      motes: opts.motes == null ? 1 : opts.motes,
+      mottle: opts.mottle == null ? 1 : opts.mottle,
+      warm: opts.warm == null ? 1 : opts.warm,
       zoom: opts.zoom || 1,
       origin: null,          // null = centre of the field
       logical: [1, 1],       // uRes: the field the shader thinks it is filling
@@ -262,6 +306,11 @@
       dpr: 1,
       seed: 0,
       time: 0,
+      // Time multiplier. 0 freezes drift entirely.
+      speed: opts.speed == null ? 1 : opts.speed,
+      // Re-seeding the grain every frame is the filmic flicker. Paper wants
+      // it pinned: real fibre does not shimmer.
+      animateGrain: opts.animateGrain !== false,
       running: false
     };
 
@@ -292,6 +341,9 @@
       gl.uniform1f(u.uSeed, opts.source ? opts.source.seed : ctl.seed);
       gl.uniform1f(u.uDpr, ctl.dpr);
       gl.uniform1f(u.uGrain, ctl.grain);
+      gl.uniform1f(u.uMotes, ctl.motes);
+      gl.uniform1f(u.uMottle, ctl.mottle);
+      gl.uniform1f(u.uWarm, ctl.warm);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
 
@@ -300,21 +352,28 @@
 
     var raf = 0;
     var last = 0;
-    var start = 0;
     var interval = 1000 / FPS;
 
     function frame(now) {
       raf = requestAnimationFrame(frame);
       if (now - last < interval) return;
+      // Accumulate rather than derive from a start stamp, so changing speed
+      // mid-run eases into the new rate instead of jumping the clock.
+      var dt = last ? (now - last) / 1000 : 0;
       last = now;
-      if (!start) start = now;
-      ctl.time = (now - start) / 1000;
-      ctl.seed = (ctl.seed + 1) % 1024;
+      ctl.time += dt * ctl.speed;
+      if (ctl.animateGrain) ctl.seed = (ctl.seed + 1) % 1024;
       draw();
     }
 
+    // Nothing to animate when the clock is stopped and the grain is pinned.
+    ctl.isStatic = function () {
+      return ctl.speed === 0 && !ctl.animateGrain;
+    };
+
     ctl.play = function () {
       if (ctl.running || reduceMotion) return;
+      if (ctl.isStatic()) { draw(); return; }
       ctl.running = true;
       last = 0;
       raf = requestAnimationFrame(frame);
