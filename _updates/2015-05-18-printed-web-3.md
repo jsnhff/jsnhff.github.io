@@ -1,7 +1,7 @@
 ---
 layout: update
 update-type: Collection
-date: May 18th, 2015
+date: 2015-05-18
 ---
 
 Some excerpts of my research for <a title="real-beauty.pics" href="/projects/real-beauty-pics/">real-beauty.pics</a> are included in <a title="Printed Web 3" href="http://libraryoftheprintedweb.tumblr.com/">Printed Web 3</a>, curated by <a href="http://soulellis.com/">Paul Soulellis</a>. You can read more about the third issue in Paul's essay <a title="Poor Media on Demand: All the files of Printed Web 3" href="http://rhizome.org/editorial/2015/may/18/printed-web-3/">Poor Media on Demand: All the files of Printed Web 3</a> at <a title="Rhizome" href="http://rhizome.org">Rhizome</a>.
