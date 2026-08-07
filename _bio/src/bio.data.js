@@ -67,12 +67,6 @@ export const DOC = [
           " (2012), which queries Google image search on a loop and prints the results, watching for the ranking to change. It ran live for the length of Toonskin, Kenya Robinson's exhibition at Artspace in New Haven"
       ]}
   ]},
-  ". He builds ",
-  { w:"software", m:"code", add:[
-      ", most recently ",
-      { l:"regender-xyz", h:"https://github.com/jsnhff/regender-xyz" },
-      ", free and open source, which transforms the gendered structure of English texts. Its first publication is Pride & Prejudice in four volumes"
-  ]},
   ". And he ",
   { w:"writes", m:"pen", add:[
       " about the cultural impact of technology, for ",

@@ -129,7 +129,7 @@
        third below. The height term is the guard: on a laptop, and on a phone
        held sideways, it is the short axis that decides whether the sentence
        still fits without scrolling. */
-    font-size: clamp(1.35rem, min(6vw, 5.2vh), 2.6rem);
+    font-size: clamp(1.15rem, min(4.4vw, 3.4vh), 1.7rem);
     line-height: 1.25;
     letter-spacing: -0.012em;
     font-weight: 400;
@@ -245,7 +245,10 @@
     overflow: hidden;
     opacity: 0;
     transform: translate(-50%, 0);
-    animation: island-in 520ms var(--rise) 300ms forwards;
+    /* The delay is set from the statement's own settle time once the words are
+       split; 300ms is the fallback for a page with no statement to wait for,
+       and for reduced motion, where there is no roll to follow. */
+    animation: island-in 520ms var(--rise) var(--island-delay, 300ms) forwards;
     /* One duration and one curve for both axes: run them apart and the corner
        arrives before the edge, which is what made the morph look loose. */
     transition: width 420ms var(--rise), height 420ms var(--rise),
@@ -566,7 +569,11 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     border-radius: 0.9rem 0.9rem 0 0;
-    box-shadow: 0 -1px 0 var(--glass-edge);
+    /* No hairline along the top. It drew a hard 1px lid directly above a
+       header whose whole point is that it dissolves, and being a box-shadow
+       it sat outside the border box, so the rounded corners clipped it into a
+       line that stopped short of each end. The scrim already separates the
+       panel from the page behind it. */
     overflow-y: auto;
     outline: none;
     overscroll-behavior: contain;

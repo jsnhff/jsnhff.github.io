@@ -12,7 +12,7 @@ jason-huff.com and building four static lists underneath it.
 A bio that starts at 74 words and expands to about 750. Highlighted phrases
 open in place; outbound links are outlined mono pills. Closed state:
 
-> Jason Huff (b. 1981) is an artist, writer, and designer living and working in **Los Angeles**. He makes **books**. He builds **software**. And he **writes**.
+> Jason Huff (b. 1981) is an artist, writer, and designer living and working in **Los Angeles**. He makes **books**. And he **writes**.
 >
 > His books are held in **museums**. They appear in **anthologies**. The work has been exhibited in **galleries**. It has been written about in **academic journals**.
 >
