@@ -1,0 +1,120 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; padding: 0; background: #fff; }
+  body { width: 2000px; height: 1400px; }
+
+  .win {
+    position: absolute;
+    left: 86px; top: 58px;
+    width: 1828px; height: 1244px;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 26px 60px rgba(0,0,0,.42), 0 6px 16px rgba(0,0,0,.28);
+  }
+
+  .bar {
+    height: 46px;
+    background: linear-gradient(#3d3d3d, #303030);
+    border-bottom: 1px solid #1c1c1c;
+    position: relative;
+  }
+  .lights { position: absolute; left: 16px; top: 16px; display: flex; gap: 9px; }
+  .lights i { width: 15px; height: 15px; border-radius: 50%; display: block; }
+  .lights .r { background: #ff5f57; }
+  .lights .y { background: #febc2e; }
+  .lights .g { background: #28c840; }
+  .title {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font: 400 20px/1 "DejaVu Sans", Helvetica, Arial, sans-serif;
+    color: #cfcfcf;
+    letter-spacing: .1px;
+  }
+  .title .fold {
+    display: inline-block; width: 17px; height: 14px; border-radius: 2px;
+    background: #63a4ff; margin-right: 9px; position: relative; top: 2px;
+  }
+
+  .body {
+    height: 1198px;
+    background: #000;
+    padding: 0 30px;
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  pre {
+    margin: 0;
+    padding-left: 14px;
+    font: 400 35.5px/42px "DejaVu Sans Mono", monospace;
+    color: #f4f4f4;
+    letter-spacing: 0;
+    white-space: pre;
+  }
+  .dim  { color: #8b8b8b; }
+  .dim2 { color: #767676; }
+  b { font-weight: 700; color: #fff; }
+
+  .rule  { height: 3px; background: #f4f4f4; }
+  .rule.thick { height: 5px; }
+  .pad6  { height: 13px; }
+  .pad10 { height: 16px; }
+
+  .foot { position: absolute; left: 30px; right: 30px; bottom: 14px; }
+  .foot pre { padding-top: 12px; }
+
+  .scroll {
+    position: absolute; right: 12px; top: 962px;
+    width: 13px; height: 172px; border-radius: 7px; background: #4a4a4a;
+  }
+</style>
+
+<div class="win">
+  <div class="bar">
+    <div class="lights"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+    <div class="title"><span class="fold"></span>jasonhuff — cd ~/regender-xyz &amp;&amp; python3 regender_cli.py — cd — python3 regender_cli.py — 80×28</div>
+  </div>
+
+  <div class="body">
+    <div class="pad10"></div>
+<pre>regender.xyz  transform characters' gender in books                       v1.0</pre>
+    <div class="pad6"></div>
+    <div class="rule"></div>
+    <div class="pad6"></div>
+<pre><span class="dim">book:</span> Pride Prejudice Sample   <span class="dim">pages:</span> 32   <span class="dim">chapters:</span> 6   <span class="dim">characters:</span> <span class="dim">—</span></pre>
+    <div class="pad6"></div>
+    <div class="rule"></div>
+    <div class="pad6"></div>
+<pre><span class="dim">transformation:</span> nonbinary   <span class="dim">model:</span> llama 3.3 70b     <span class="dim">total cost:</span></pre>
+    <div class="pad6"></div>
+    <div class="rule thick"></div>
+<pre>
+
+
+   <b>10</b>  Mr. Morris          <span class="dim">→</span>  Mx. Morris
+   <b>11</b>  Sir William Lucas   <span class="dim">→</span>  Noble William Lucas
+   <b>12</b>  Lady Lucas          <span class="dim">→</span>  Noble Lucas
+   <b>13</b>  Charlotte Lucas     <span class="dim">→</span>  Charlie Lucas
+   <b>14</b>  Maria Lucas         <span class="dim">→</span>  Marion Lucas
+   <b>15</b>  Fitzwilliam Darcy   <span class="dim">→</span>  Finley Darcy
+   <b>16</b>  Mrs. Hurst          <span class="dim">→</span>  Mx. Hurst
+   <b>17</b>  Miss Bingley        <span class="dim">→</span>  Mx. Bingley
+   <b>18</b>  Mr. Hurst           <span class="dim">→</span>  Mx. Hurst
+   <b>19</b>  Mr. Robinson        <span class="dim">→</span>  Mx. Robinson
+   <b>20</b>  Miss King           <span class="dim">→</span>  Mx. King
+
+   <span class="dim">A</span> <span class="dim">accept all</span>  <span class="dim">K</span> <span class="dim">keep originals</span>   <span class="dim2">1-20</span> <span class="dim">edit entry</span>  <span class="dim">M</span> <span class="dim">add custom</span>
+
+<span class="dim">✓</span> 20 characters renamed
+
+Starting transformation...
+<span class="dim">⋮</span> <span class="dim">Transforming (2s)</span>
+</pre>
+    <div class="scroll"></div>
+    <div class="foot">
+      <div class="rule"></div>
+<pre>&gt;</pre>
+    </div>
+  </div>
+</div>
