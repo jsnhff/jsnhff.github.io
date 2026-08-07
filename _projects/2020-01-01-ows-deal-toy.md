@@ -9,27 +9,21 @@ video_poster: "/images/ows-deal-toy/jhuff-ows-deal-toy-poster.jpg"
 description: |
   A speculative object in the style of a twentieth-century banker's deal toy:
   six Occupy Wall Street protesters setting off from the corner of Broadway and
-  Liberty Street, beside Zuccotti Park, in gold under glass on a marble base cut
+  Liberty Street, beside Zuccotti Park. Gold under glass, on a marble base cut
   with the date of Occupy's tenth anniversary.
 
-  It had been ten years since I was walking through Zuccotti Park, meeting
-  people and watching the general assemblies and the talks at the makeshift
-  library organizers had set up on the corner. Income inequality had only
-  increased. I wanted to use the visual language of Wall Street deal toys to
-  make a commemorative object for a movement the people who commission those
-  toys had defeated, and to have it exist inside a new form of speculative
-  capitalism — a digital memento trying to subvert the triumph of wealth over
-  equity.
+  Ten years on, income inequality had widened. The work takes the visual
+  language of the deal toy — the desk ornament a bank commissions to mark a
+  deal — and gives it to the movement those deals defeated. It was issued as a
+  digital edition.
 
-  The figures come out of photo research on the people in and around the park,
+  The figures come from photo research on the people in and around the park:
   the hand-painted signs, the accessories, the outfits, the corners they stood
-  on. The rest comes from the design patterns of the deal toys themselves, and
-  from working in the graphics department of a real estate investment bank
-  during the 2008 crash.
+  on. The form comes from the deal toys themselves, and from working in the
+  graphics department of a real estate investment bank during the 2008 crash.
 
-  Modelled with Peter Valkanoff. All proceeds were assigned to W.A.G.E.,
-  Working Artists and the Greater Economy, and I set up the account for them to
-  receive them.
+  Modelled with Peter Valkanoff. All proceeds assigned to W.A.G.E., Working
+  Artists and the Greater Economy.
 plate: "/images/plates/ows-deal-toy.webp"
 plate_w: 1000
 plate_h: 1679
@@ -53,5 +47,21 @@ dark: true
 </div>
 
 <div class="row pj-shot">
-<img src="{{ page.image_path }}2.jpg" alt="{{ page.title }}, detail" loading="lazy" decoding="async">
+<img src="{{ page.image_path }}2.jpg" alt="{{ page.title }}, the six figures" loading="lazy" decoding="async">
+</div>
+
+<div class="row pj-shot">
+<img src="{{ page.image_path }}3.jpg" alt="{{ page.title }}, the cut base" loading="lazy" decoding="async">
+</div>
+
+<div class="row pj-shot">
+<img src="{{ page.image_path }}4.jpg" alt="{{ page.title }}, three-quarter view" loading="lazy" decoding="async">
+</div>
+
+<div class="row pj-shot">
+<img src="{{ page.image_path }}5.jpg" alt="{{ page.title }}, the figures in the glass" loading="lazy" decoding="async">
+</div>
+
+<div class="row pj-shot">
+<img src="{{ page.image_path }}6.jpg" alt="{{ page.title }}, from behind" loading="lazy" decoding="async">
 </div>
