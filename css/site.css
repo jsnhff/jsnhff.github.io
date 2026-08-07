@@ -753,42 +753,53 @@
      breaks out of the 40rem reading column. */
   .col.is-gallery { max-width: 96rem; }
 
-  .gal-head {
-    margin: 0 0 clamp(1.75rem, 4vh, 2.75rem);
-    text-align: center;
-    font-size: 1.05rem;
-    font-weight: 400;
-    letter-spacing: -0.005em;
-    text-transform: capitalize;
+  /* The tag under a plate: what it is, and when. Quiet enough to stay a label
+     rather than a caption — it names the work, it does not describe it. The
+     year is tabular so a column of them lines up down the wall. */
+  .gal-tag {
+    display: flex;
+    justify-content: center;
+    gap: 0.5em;
+    margin: 0.9rem 0 0;
+    font-size: 0.78rem;
+    color: var(--dim);
+    transition: color var(--invert) ease;
   }
+  .gal-kind { text-transform: capitalize; }
+  .gal-kind::after { content: "\00b7"; margin-left: 0.5em; }
+  .gal-year { font-variant-numeric: tabular-nums; }
 
   .gallery {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: clamp(var(--s6), 4vw, var(--s7)) clamp(var(--s4), 2.2vw, 1.75rem);
-    margin: 0 0 clamp(4rem, 9vh, 6rem);
+    margin: 0;
   }
-  .gallery:last-child { margin-bottom: 0; }
 
   /* The grid supplies the rhythm; the cells must not also carry the list's
      bottom margin. */
-  .gal-cell { margin-bottom: 0; }
+  /* The cell fills its grid row, and so does the link inside it, so the plate
+     can take whatever height is left above the tag. Everything in a row then
+     stands on one baseline and the tags line up across it — the shelf, kept,
+     but drawn per row instead of once for the whole wall. */
+  .gal-cell { display: flex; margin-bottom: 0; }
 
-  /* Every plate in a group is drawn on the same canvas, so giving them all one
-     band height is what keeps a set at its true relative scale — the wide book
-     reads wider, the tall one taller, exactly as they are. */
+  /* One band held every plate at a common scale, which was right when the wall
+     was sorted into sets and a shelf of books could be compared like for like.
+     In date order the neighbours are a screenshot, a print and an installation,
+     where relative scale means nothing and a tall band just leaves a hole above
+     anything short. Each plate now takes the height its own image needs, capped
+     so nothing towers, and still stands on the row's baseline. */
   .plate {
     display: flex;
-    /* Standing on a shelf rather than floating in the band: a short book reads
-       as short, which is the whole reason the plates share a scale. */
+    flex: 1;
     align-items: flex-end;
     justify-content: center;
-    height: clamp(15rem, 56vh, 34rem);
     margin-bottom: 0;
   }
   .plate img {
     max-width: 100%;
-    max-height: 100%;
+    max-height: clamp(13rem, 38vh, 24rem);
     width: auto;
     height: auto;
     object-fit: contain;
@@ -815,7 +826,9 @@
   /* A live site is reachable through its own picture, so the wall needs no
      "Visit" line to carry the link. */
   .gal-link {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     text-decoration: none;
     color: inherit;
     transition: opacity 200ms ease;

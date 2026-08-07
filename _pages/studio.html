@@ -12,33 +12,32 @@ redirect_from:
 
 <h1 class="sr-only">Studio</h1>
 
+{%- comment -%}
+  One wall in date order, newest first. Grouping by category cut the run into
+  five short blocks of uneven length, which is what made it read lumpy; the
+  category survives as a tag under each plate, where it labels the work without
+  interrupting the sequence.
+{%- endcomment -%}
 <div class="col is-gallery">
-
-{% assign order = "book,website,diagrams,prints,installation" | split: "," %}
-{% for cat in order %}
-  {% assign group = site.projects | where: "category", cat | sort: "date" | reverse %}
-  {% if group.size > 0 %}
-    {% assign label = cat %}
-    {% if cat == "diagrams" %}{% assign label = "diagrams" %}
-    {% elsif cat == "prints" %}{% assign label = "prints" %}
-    {% else %}{% assign label = cat | append: "s" %}{% endif %}
-    <h2 class="row gal-head">{{ label }}</h2>
-    <div class="gallery">
-      {% for p in group %}
-        <article class="row gal-cell">
-          {%- if p.live_url -%}
-          <a class="gal-link" href="{{ p.live_url }}" target="_blank" rel="noopener">
-          {%- else -%}
-          <a class="gal-link" href="{{ p.url }}">
-          {%- endif -%}
-            <div class="plate">
-              <img src="{{ p.plate }}" width="{{ p.plate_w }}" height="{{ p.plate_h }}"
-                   alt="{{ p.title }}" loading="lazy" decoding="async">
-            </div>
-          </a>
-        </article>
-      {% endfor %}
-    </div>
-  {% endif %}
-{% endfor %}
+  <div class="gallery">
+    {%- assign works = site.projects | sort: "date" | reverse -%}
+    {%- for p in works %}
+      <article class="row gal-cell">
+        {%- if p.live_url -%}
+        <a class="gal-link" href="{{ p.live_url }}" target="_blank" rel="noopener">
+        {%- else -%}
+        <a class="gal-link" href="{{ p.url }}">
+        {%- endif -%}
+          <div class="plate">
+            <img src="{{ p.plate }}" width="{{ p.plate_w }}" height="{{ p.plate_h }}"
+                 alt="{{ p.title }}" loading="lazy" decoding="async">
+          </div>
+          <p class="gal-tag">
+            <span class="gal-kind">{{ p.category }}</span>
+            <span class="gal-year">{{ p.date | date: "%Y" }}</span>
+          </p>
+        </a>
+      </article>
+    {%- endfor %}
+  </div>
 </div>
