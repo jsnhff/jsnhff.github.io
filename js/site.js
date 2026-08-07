@@ -512,7 +512,7 @@
   // ---- go -----------------------------------------------------------------
 
   // Shared so anything that writes its own prose after load — the bio on the
-  // Mission page rewrites its paragraphs on every tap — can re-bind its tails.
+  // Info page rewrites its paragraphs on every tap — can re-bind its tails.
   window.noOrphans = noOrphans;
 
   noOrphans(document.body);

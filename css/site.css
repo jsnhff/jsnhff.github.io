@@ -364,7 +364,7 @@
   .row { margin-bottom: clamp(2.75rem, 7vh, 3.75rem); }
   .row:last-child { margin-bottom: 0; }
 
-  /* Mission is one continuous piece of writing, not a list of things. */
+  /* Info is one continuous piece of writing, not a list of things. */
   .is-prose .row { margin-bottom: 1.15rem; }
 
   /* Its one section break. */
@@ -414,7 +414,7 @@
   .is-prose .m-lines li { margin-bottom: 0.55rem; }
   .is-prose .m-lines li:last-child { margin-bottom: 0; }
 
-  /* Writing sits on the mission page as a record, not a feed: venue and year
+  /* Writing sits on the Info page as a record, not a feed: venue and year
      in the dim voice, the title carrying the link. */
   .w-item { margin: 0 0 1.6rem; }
   .w-item:last-child { margin-bottom: 0; }
@@ -779,7 +779,7 @@
   .row-body + .row-body { margin-top: 1rem; }
 
   /* The Index is a log: every entry is a solid block of three or four lines
-     with a lot of air between entries, where Mission is short paragraphs with
+     with a lot of air between entries, where Info is short paragraphs with
      small breaks. The same leading that reads as generous there reads as tight
      here, so the log gets its own. */
   .is-log .row-body { line-height: 1.78; }
@@ -1062,7 +1062,7 @@
   }
 
 /* ---- an essay ----------------------------------------------------------- */
-/* Writing lives on Mission; a single piece gets the same reading measure as
+/* Writing lives on Info; a single piece gets the same reading measure as
    the prose there, and its images run to the column's full width. */
 .post-title { margin-top: 0; }
 .post-note { margin: -0.4rem 0 2rem; }

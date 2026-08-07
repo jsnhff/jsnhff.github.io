@@ -48,7 +48,7 @@ defaults:
       type: "posts"
     values:
       dark: true
-      section: "mission"
+      section: "info"
   - scope:
       path: ""
       type: "projects"
