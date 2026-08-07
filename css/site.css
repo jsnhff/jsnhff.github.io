@@ -81,6 +81,9 @@
   :root.scheme-dark { color-scheme: dark; }
 
   html, body {
+    /* The UA's own 8px on the body was making every page 16px taller than the
+       screen it was on, so a view that fits still offered a scroll. */
+    margin: 0;
     background: var(--ground);
     transition: background-color var(--invert) ease;
   }
@@ -121,7 +124,12 @@
     margin: 0;
     text-align: center;
     text-wrap: balance;
-    font-size: clamp(1.05rem, min(3.4vw, 4.6vh), 2.2rem);
+    /* The width term is what a phone actually gets — 3.4vw put the statement on
+       its floor at 16.8px with a third of the screen empty above it and another
+       third below. The height term is the guard: on a laptop, and on a phone
+       held sideways, it is the short axis that decides whether the sentence
+       still fits without scrolling. */
+    font-size: clamp(1.35rem, min(6vw, 5.2vh), 2.6rem);
     line-height: 1.25;
     letter-spacing: -0.012em;
     font-weight: 400;
@@ -215,10 +223,14 @@
     top: clamp(1rem, 3vh, 1.75rem);
     left: 50%;
     z-index: 5;
-    /* Auto while closed; JS pins both states in px so the open and shut can be
-       a single travelling width rather than a snap. */
-    width: max-content;
-    max-width: min(28rem, calc(100vw - 2rem));
+    /* The open size is CSS's, because CSS can know it: it is the column the
+       page gives the capsule. Only the shut size needs measuring — the header
+       is as wide as its own label — and it carries a fallback near enough to
+       hold the shape if the measurement never lands. Nothing about the layout
+       inside waits on a script. */
+    width: var(--shut-w, 12rem);
+    height: var(--shut-h, 2.4rem);
+    max-width: calc(100vw - 2rem);
     border-radius: 999px;
     background-color: var(--glass);
     /* Its own veil, heavier than the nav's: open, the capsule lands over the
@@ -234,12 +246,39 @@
     opacity: 0;
     transform: translate(-50%, 0);
     animation: island-in 520ms var(--rise) 300ms forwards;
-    transition: width 460ms var(--rise), border-radius 380ms var(--rise),
+    /* One duration and one curve for both axes: run them apart and the corner
+       arrives before the edge, which is what made the morph look loose. */
+    transition: width 420ms var(--rise), height 420ms var(--rise),
+                border-radius 420ms var(--rise),
                 background-color var(--invert) ease, color var(--invert) ease,
                 box-shadow var(--invert) ease;
+    will-change: width, height;
   }
   /* The capsule squares off as it grows, the way the island does. */
-  .island.open { border-radius: 1.35rem; }
+  .island.open {
+    width: min(28rem, calc(100vw - 2rem));
+    height: var(--open-h, auto);
+    border-radius: 1.35rem;
+  }
+  /* More entries than the screen has room for: the capsule stops at the
+     viewport and the list scrolls inside it, rather than running off the
+     bottom edge with no way to reach the rest. */
+  .island.open .island-frame {
+    max-height: 100%;
+    /* Stated, not left to the shorthand: setting only overflow-y turns
+       overflow-x from visible into auto behind your back. */
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  /* Re-measuring must not be a second animation. */
+  .island.no-anim { transition: background-color var(--invert) ease, color var(--invert) ease; }
+
+  /* The one thing that never moves. It is laid out at the open width whatever
+     the capsule is doing, so growing the capsule uncovers type that is already
+     set instead of re-wrapping every line on every frame — the reflow was the
+     glitch. The capsule is a window; this is the picture behind it. */
+  .island-frame { width: min(28rem, calc(100vw - 2rem)); }
 
   @keyframes island-in {
     from { opacity: 0; transform: translate(-50%, -0.5rem); }
@@ -250,7 +289,11 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    width: 100%;
+    /* Sized to its own label rather than to the frame, so the shut capsule can
+       be measured without shutting anything, and the label never sits in a
+       wide box waiting to be clipped. */
+    width: max-content;
+    max-width: 100%;
     /* Tall enough to be a thumb target, not just a label. */
     padding: 0.6rem 0.95rem;
     border: 0;
@@ -271,7 +314,6 @@
     .island:has(.island-pill:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }
     .island:has(.island-pill:focus-visible) .island-pill:focus-visible { outline: none; }
   }
-  .island-label { flex: 1 1 auto; }
 
   /* A live indicator, not a bullet: it breathes so the pill reads as current. */
   .island-dot {
@@ -288,30 +330,15 @@
     50%      { opacity: 0.75; transform: scale(1.1); }
   }
 
-  /* Rows collapse to nothing and open to their own height — no measuring, and
-     no fixed height to keep in step with the copy. */
+  /* The entries are always laid out; only the window over them moves. Opening,
+     they fade in behind the growing edge; closing, they are gone before the
+     edge reaches them, so nothing is caught mid-shrink. */
   .island-panel {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 460ms var(--rise);
-  }
-  .island.open .island-panel { grid-template-rows: 1fr; }
-  /* Collapsed, the entries must not widen the capsule: rows at 0fr take away
-     their height but not their width, and the shut pill would otherwise be as
-     wide as its longest event. */
-  .island:not(.open) .island-panel { width: 0; }
-  .island-inner {
-    min-height: 0;
-    overflow: hidden;
-    padding: 0 0.95rem;
+    padding: 0 0.95rem 0.9rem;
     opacity: 0;
-    transition: opacity 200ms ease;
+    transition: opacity 140ms ease;
   }
-  .island.open .island-inner {
-    padding-bottom: 0.9rem;
-    opacity: 1;
-    transition: opacity 320ms ease 140ms;
-  }
+  .island.open .island-panel { opacity: 1; transition: opacity 260ms ease 110ms; }
 
   .island-event { margin: 0; padding: 0.7rem 0; }
   .island-event + .island-event { border-top: 1px solid var(--glass-edge); }
@@ -756,11 +783,23 @@
   .gal-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 6px; border-radius: 4px; }
 
   @media (max-width: 62rem) { .gallery { grid-template-columns: repeat(2, 1fr); } }
-  /* Stays two up on a phone. The band comes down with it so the cells are not
-     mostly empty air, and the titles tighten to survive a ~9rem column. */
+  /* One up on a phone. Two columns put every plate in a ~9rem box — a
+     screenshot at that size is a smudge — and a phone only ever has one
+     column's worth of width to give, so the wall gives all of it to one plate
+     at a time.
+     The shared band goes with the second column. Its job was to hold a set at
+     its true relative scale side by side, and there is no side by side here:
+     the column sets the width, the screen caps the height, and each plate comes
+     up as large as the phone can show it. */
   @media (max-width: 38rem) {
-    .gallery { gap: clamp(1.75rem, 6vw, 2.5rem) clamp(0.9rem, 4vw, 1.5rem); }
-    .plate { height: clamp(9rem, 34vh, 15rem); margin-bottom: 0; }
+    .gallery {
+      grid-template-columns: 1fr;
+      gap: clamp(2.5rem, 9vw, 3.5rem);
+    }
+    .plate { height: auto; margin-bottom: 0; }
+    /* A tall picture would otherwise run past the screen it is meant to fit. */
+    .plate img { max-height: 62vh; }
+    .plate.is-empty { height: 9rem; max-width: none; }
   }
 
   .row-title {
@@ -1055,7 +1094,7 @@
     :root.is-leaving .egg-canvas { opacity: 0 !important; animation: none !important; }
     .island { animation: none !important; opacity: 1 !important; transition: none !important; }
     .island-dot { animation: none !important; opacity: 0.55 !important; transform: none !important; }
-    .island-panel, .island-inner { transition: none !important; }
+    .island-panel, .island-frame { transition: none !important; }
     :root.is-leaving .row,
     :root.is-leaving .rise-in,
     :root.is-leaving .statement .w { opacity: 0 !important; }
@@ -1107,6 +1146,30 @@
 .bio-block .bio p { margin: 0 0 0.9em; }
 .bio-block .bio p:last-child { margin-bottom: 0; }
 
+/* The bio ships fully open — that is what a crawler and a reader without
+   JavaScript get — and enhance() collapses it on load. Between first paint and
+   that swap the page was showing all 3,000px of it against the 490px it settles
+   at, which is the flicker: a wall of text, then a page rearranging itself.
+
+   Clamped to the collapsed bio's shape, first paint already looks like the
+   answer. Same four paragraphs, same opening words, near enough the same
+   height — so when the swap lands it changes words rather than the layout.
+
+   Only where scripting is on. With JS off no swap is coming and the whole bio
+   is the page, which is the point of shipping it open. */
+@media (scripting: enabled) {
+  .bio-block:not(.is-ready) .bio p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    overflow: hidden;
+  }
+  /* The collapsed paragraphs run a line shorter once the measure widens. */
+  @media (min-width: 38rem) {
+    .bio-block:not(.is-ready) .bio p { -webkit-line-clamp: 3; }
+  }
+}
+
 /* a chip: opens in place, one way */
 .bio-block .chip {
   display: inline;
@@ -1135,9 +1198,16 @@
 }
 
 /* an outbound link, in the site's face rather than a mono one */
+/* A bubble is one object, so it is one box: inline, it fragmented at the line
+   end and drew a second bubble around whatever was left over — usually the
+   arrow on its own. Inline-block cannot fragment. A pill that does not fit
+   moves down whole; a title too long for any line wraps inside its own border
+   instead of being cut in half by one, and max-width keeps the longest of them
+   inside the column on the narrowest phone. */
 .bio-block .pill,
 .rec .pill {
-  display: inline;
+  display: inline-block;
+  max-width: 100%;
   margin: 0 0.12em;
   padding: 0.34em 0.72em 0.32em;
   border: 1px solid var(--bio-pill-line);
@@ -1158,7 +1228,13 @@
 .rec .pill:hover { border-color: var(--ink); color: var(--ink); background: var(--bio-chip); }
 .bio-block .pill:focus-visible,
 .rec .pill:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-.pill .arw { display: inline-block; margin-left: 0.5em; font-size: 0.9em; }
+/* The arrow was an inline-block, and a line is allowed to break before one of
+   those: at the end of a line the label stayed put and the arrow went to the
+   next line inside a second bubble of its own, which is what
+   box-decoration-break: clone draws for a fragment. Inline, there is no break
+   opportunity in front of it, so it cannot be left behind — in the prose or in
+   the lists, whatever the measure. */
+.pill .arw { display: inline; margin-left: 0.5em; font-size: 0.9em; }
 
 .bio-block .mark {
   display: inline-block;

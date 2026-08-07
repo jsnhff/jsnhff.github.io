@@ -34,6 +34,9 @@ description: "Jason Huff (b. 1981) is an artist, writer, and designer living and
   const root = document.querySelector('.bio-block');
   if (root) {
     enhance(root);
+    // The stylesheet holds the static bio at the collapsed bio's shape until
+    // this lands, so the swap changes words rather than the whole page.
+    root.classList.add('is-ready');
 
     // enhance() rewrites the bio's paragraphs, and rewrites them again on every
     // tap, which drops the non-breaking spaces site.js bound at load. Re-bind
@@ -50,4 +53,16 @@ description: "Jason Huff (b. 1981) is an artist, writer, and designer living and
       window.noOrphans(bio);
     }
   }
+</script>
+
+{%- comment -%}
+  A module that never arrives — an offline reload, a blocked request — would
+  otherwise leave the clamp on and the bio short, so the clamp gets a deadline.
+  Classic, not a module, so it runs even when the import above fails.
+{%- endcomment -%}
+<script>
+  setTimeout(function () {
+    var root = document.querySelector('.bio-block');
+    if (root) root.classList.add('is-ready');
+  }, 2500);
 </script>

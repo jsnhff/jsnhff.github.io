@@ -1,6 +1,6 @@
 ---
 layout: project
-title:  "Endless Opportunties"
+title:  "Endless Opportunities"
 date:   2011-05-01
 category: installation
 image_path: "/images/endless-opportunities/jhuff-endless-opportunities-"
