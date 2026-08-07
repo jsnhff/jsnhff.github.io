@@ -38,6 +38,24 @@ description: "Jason Huff (b. 1981) is an artist, writer, and designer living and
     // this lands, so the swap changes words rather than the whole page.
     root.classList.add('is-ready');
 
+    // The same rise the home statement makes, by paragraph rather than by
+    // word: at 109 words the per-word stagger would run two seconds, and the
+    // count changes every time a chip opens.
+    //
+    // Animated rather than classed because enhance() rebuilds every <p> on
+    // each tap. A CSS initial state would either be wiped, or — worse — leave
+    // the paragraphs it rebuilds stuck at opacity 0. Nothing here is hidden by
+    // the stylesheet, so a paragraph replaced mid-flight is simply visible.
+    var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!still && document.body.animate) {
+      root.querySelectorAll('.bio p').forEach(function (p, i) {
+        p.animate(
+          [{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }],
+          { duration: 480, delay: i * 60, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'backwards' }
+        );
+      });
+    }
+
     // enhance() rewrites the bio's paragraphs, and rewrites them again on every
     // tap, which drops the non-breaking spaces site.js bound at load. Re-bind
     // after each change so no revealed run ends on a word by itself.
