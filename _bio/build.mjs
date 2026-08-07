@@ -44,9 +44,18 @@ const pill = (label, href) =>
   `<a class="pill" href="${href}"${href.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>`
   + esc(label) + `<span class="arw" aria-hidden="true">↗</span></a>`;
 
-// A title is a pill when it has somewhere to go, and plain text otherwise —
-// never a link to a URL we do not have.
-const titled = (label, href) => href ? pill(label, href) : `<span class="rec-title">${esc(label)}</span>`;
+// A title reads at one size whether or not it has somewhere to go — the link
+// is marked by an underline and an arrow, not by shrinking.
+//
+// It used to be a pill when linked and plain text otherwise, which inverted
+// the emphasis: the pill sets 0.66em uppercase in the dim colour, so every
+// entry that HAD a link whispered while every dead end shouted in full-size
+// ink. A pill is also the wrong shape for a title — these run to a full
+// sentence, and a stadium border round three wrapped lines is not a label.
+const titled = (label, href) => href
+  ? `<a class="rec-title rec-link" href="${href}"${href.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>`
+    + esc(label) + `<span class="arw" aria-hidden="true">↗</span></a>`
+  : `<span class="rec-title">${esc(label)}</span>`;
 
 // A year only gets a line of its own when there is one. Collections carry no
 // date, and an empty span would still hold the space open above the entry.

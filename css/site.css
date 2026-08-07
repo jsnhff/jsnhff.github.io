@@ -1408,7 +1408,27 @@
   color: var(--dim);
   transition: color var(--invert) ease;
 }
-.rec-body > .rec-title { color: var(--ink); }
+/* Linked or not, a title is a title: same size, same ink. Only the underline
+   and the arrow say one of them leaves. */
+.rec-body > .rec-title { display: inline; color: var(--ink); }
+.rec-link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--bio-pill-line);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color 160ms ease, color var(--invert) ease;
+}
+.rec-link:hover { text-decoration-color: var(--ink); }
+.rec-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 3px; }
+.rec-link .arw {
+  display: inline-block;
+  margin-left: 0.35em;
+  font-size: 0.78em;
+  text-decoration: none;
+  color: var(--dim);
+}
+
 /* A pill carries side margin so it can sit inside a sentence. Leading an
    entry it should start on the margin, flush with the note beneath it. */
 .rec-body > .pill:first-child { margin-left: 0; }
