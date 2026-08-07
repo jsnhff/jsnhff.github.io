@@ -1257,7 +1257,12 @@
    able to wrap between its own words, and no longer needs the help: its glyph
    stopped being an atomic box. */
 .bio-block .knit, .rec .knit { white-space: nowrap; }
-.bio-block .knit .chip { white-space: normal; }
+/* nowrap must not reach inside the pill. A long label — LIVING ROOM LIGHT
+   EXCHANGE — then cannot wrap, and one run wider than the screen scales a
+   phone's whole layout down. The pill sets its own wrapping again; the break
+   being closed is the one between the pill's box and the punctuation after
+   it, which the knit still governs. */
+.bio-block .knit .pill, .rec .knit .pill { white-space: normal; }
 
 .bio-block .chip:hover { background: var(--bio-chip-hover); }
 .bio-block .chip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }

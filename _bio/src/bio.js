@@ -38,7 +38,11 @@ const knit = (nodes, render) => {
     if (typeof n === "string") { out += esc(n); continue; }
     const piece = render(n);
     const next = nodes[i + 1];
-    const tail = typeof next === "string" && /^[.,;:!?)\u2019\u201d]+/.exec(next);
+    // Only a link. A chip's rendered piece carries its whole revealed subtree
+    // with it, and wrapping that in nowrap builds one unbreakable run wider
+    // than a phone — which is exactly what it did. A chip needs no help here
+    // anyway: its glyph stopped being an atomic box.
+    const tail = n.l && typeof next === "string" && /^[.,;:!?)\u2019\u201d]+/.exec(next);
     if (tail) {
       out += `<span class="knit">${piece}${esc(tail[0])}</span>`;
       carry = next.slice(tail[0].length);
