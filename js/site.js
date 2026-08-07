@@ -182,6 +182,18 @@
   var restoreFocus = null;
   var cache = {};
 
+  // A looping turntable is motion like any other: where the system has asked
+  // for less of it, the video holds on its poster frame and grows the controls
+  // to play it by hand.
+  function holdVideo(scope) {
+    if (!reduce) return;
+    [].forEach.call(scope.querySelectorAll('video[autoplay]'), function (v) {
+      v.autoplay = false;
+      v.controls = true;
+      v.pause();
+    });
+  }
+
   function fillSheet(html, href) {
     var doc = new DOMParser().parseFromString(html, 'text/html');
     var article = doc.querySelector('.project');
@@ -191,6 +203,7 @@
     noOrphans(sheetBody);
     sheetPanel.scrollTop = 0;
     sheet.classList.add('open');
+    holdVideo(sheetBody);
     [].forEach.call(sheetBody.querySelectorAll('.row'), function (r, i) {
       r.style.setProperty('--i', Math.min(i, 6));
       r.classList.add('in');
@@ -568,6 +581,7 @@
   window.noOrphans = noOrphans;
 
   noOrphans(document.body);
+  holdVideo(document);
   collect(document.body);
   placeThumb(false);
 
