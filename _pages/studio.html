@@ -14,7 +14,7 @@ redirect_from:
 
 <div class="col is-gallery">
 
-{% assign order = "book,website,diagrams,prints,installation" | split: "," %}
+{% assign order = "book,website,diagrams,prints,sculpture,installation" | split: "," %}
 {% for cat in order %}
   {% assign group = site.projects | where: "category", cat | sort: "date" | reverse %}
   {% if group.size > 0 %}

@@ -707,6 +707,18 @@
   .pj-shot:last-child { margin-bottom: 0; }
   .pj-shot img { max-width: 100%; height: auto; border-radius: 2px; }
 
+  /* A piece that turns gets to turn. Same measure and same rhythm as a plate,
+     since on this sheet it is one more view of the object. */
+  .pj-video { margin: 0 0 clamp(1.5rem, 4vh, 2.5rem); text-align: center; }
+  .pj-video:last-child { margin-bottom: 0; }
+  .pj-video video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+    border-radius: 2px;
+  }
+
   /* ---- projects gallery ------------------------------------------------- */
   /* The studio wall hangs as a set rather than reading as a list, so this view
      breaks out of the 40rem reading column. */
