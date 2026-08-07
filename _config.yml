@@ -9,7 +9,9 @@ github_username:  jsnhff
 
 # Background texture (js/bg-shader.js). Options: darkroom, nightfield, gallery.
 # Comment out background_shader to fall back to the tiled noise PNG.
-home_statement: "Jason Huff is a design director and artist based in Los Angeles. He creates work that investigates the cultural impact of technology and leads teams building products for entrepreneurs."
+# Non-breaking spaces are binds, not typos: they hold a phrase together so
+# the statement never deals one across two lines.
+home_statement: "Jason Huff is a design director and artist based in Los Angeles. He creates work that investigates the cultural impact of technology and leads teams building products for entrepreneurs."
 
 background_shader: nightfield
 background_grain: 0.5

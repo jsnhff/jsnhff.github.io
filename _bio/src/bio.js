@@ -24,6 +24,34 @@ const link = n =>
   `<a class="pill" href="${n.h}"${n.h.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>`
   + esc(n.l) + `<span class="arw" aria-hidden="true">\u2197</span></a>`;
 
+/* A chip and a pill both end in a small box the layout treats as atomic, and an
+   atomic box opens a line-break opportunity after itself. Where the next thing
+   is the sentence's full stop, that opportunity is the difference between a
+   tidy paragraph and one ending on a lone period. A word joiner does not close
+   it in Blink; holding the pair together does. Only the punctuation is caught,
+   so a chip is still free to break across lines anywhere inside itself. */
+const knit = (nodes, render) => {
+  let out = "", carry = null;
+  for (let i = 0; i < nodes.length; i++) {
+    const n = carry !== null ? carry : nodes[i];
+    carry = null;
+    if (typeof n === "string") { out += esc(n); continue; }
+    const piece = render(n);
+    const next = nodes[i + 1];
+    const tail = typeof next === "string" && /^[.,;:!?)\u2019\u201d]+/.exec(next);
+    if (tail) {
+      out += `<span class="knit">${piece}${esc(tail[0])}</span>`;
+      carry = next.slice(tail[0].length);
+      i++;                       // the string is consumed here, tail and all
+      if (carry) { out += esc(carry); }
+      carry = null;
+    } else {
+      out += piece;
+    }
+  }
+  return out;
+};
+
 /* ---- ids, assigned once, in document order ---- */
 let TOTAL = 0;
 (function seed(nodes, n = { i: 0 }) {
@@ -35,11 +63,10 @@ let TOTAL = 0;
 
 /* ---- 1. static: everything open, real links, no JS needed ---- */
 export function renderStatic() {
-  const walk = nodes => nodes.map(n => {
-    if (typeof n === "string") return esc(n);
+  const walk = nodes => knit(nodes, n => {
     if (n.l) return link(n);
     return `<span class="spent">${esc(n.w)}${mark(n.m)}</span>` + walk(n.add || []);
-  }).join("");
+  });
   return DOC.map(p => "<p>" + walk(p) + "</p>").join("");
 }
 
@@ -52,15 +79,18 @@ export function enhance(root) {
   const spent = new Set();
   let last = null;
 
-  const walk = nodes => nodes.map(n => {
-    if (typeof n === "string") return esc(n);
+  const walk = nodes => knit(nodes, n => {
     if (n.l) return link(n);
     if (spent.has(n.id)) {
       const body = `<span class="spent">${esc(n.w)}${mark(n.m)}</span>` + walk(n.add || []);
       return n.id === last ? `<span class="fresh">${body}</span>` : body;
     }
-    return `<button class="chip" data-id="${n.id}">${esc(n.w)}${mark(n.m)}</button>`;
-  }).join("");
+    // A span, not a button. A button is an atomic inline box in every engine —
+    // display:inline does not change that — so a wide chip could never break
+    // across a line and instead jumped down whole, leaving a third of the line
+    // above it empty. A span fragments like the words around it.
+    return `<span class="chip" role="button" tabindex="0" data-id="${n.id}">${esc(n.w)}${mark(n.m)}</span>`;
+  });
 
   function paint() {
     el.innerHTML = DOC.map(p => "<p>" + walk(p) + "</p>").join("");
@@ -75,8 +105,15 @@ export function enhance(root) {
     if (dotEl) dotEl.style.background = left === 0 ? "var(--ink)" : "var(--faint)";
     if (resetEl) resetEl.classList.toggle("on", spent.size > 0);
 
-    el.querySelectorAll(".chip").forEach(b =>
-      b.addEventListener("click", () => { last = b.dataset.id; spent.add(last); paint(); }));
+    el.querySelectorAll(".chip").forEach(b => {
+      const open = () => { last = b.dataset.id; spent.add(last); paint(); };
+      b.addEventListener("click", open);
+      // A span gets none of a button's keyboard behaviour, so it is restated:
+      // Enter and Space both open, and Space does not scroll the page.
+      b.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") { e.preventDefault(); open(); }
+      });
+    });
   }
 
   if (resetEl) resetEl.addEventListener("click", () => {

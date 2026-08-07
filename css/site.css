@@ -44,6 +44,24 @@
     --bar-radius:   0.55rem;
     --bar-pad:      0.28rem;
 
+    /* Spacing. Eight steps, each roughly 1.5x the last, chosen to match the
+       values already doing most of the work rather than to impose new ones.
+       Reach for a step before inventing a number; if none fits, the layout is
+       usually asking for a different structure rather than a 33rd value. */
+    --s1: 0.35rem;
+    --s2: 0.5rem;
+    --s3: 0.75rem;
+    --s4: 1rem;
+    --s5: 1.5rem;
+    --s6: 2rem;
+    --s7: 3rem;
+    --s8: 4.5rem;
+    /* The page's outer gutter. One value for the top edge and the bottom edge
+       alike, so the island stands off the top by exactly what the nav stands
+       off the bottom. Narrow screens get the smaller end: on a phone the bar
+       belongs near the edge. */
+    --edge: clamp(0.6rem, 2.2vw, 1.6rem);
+
     --face: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --rise: cubic-bezier(0.16, 1, 0.3, 1);
     --invert: 340ms;
@@ -112,8 +130,24 @@
   .stage { min-height: 0; }
 
   /* Home centres in the viewport; the reading views run down the page. */
-  .stage.is-centred { display: grid; place-items: center; padding: clamp(2rem, 6vh, 4rem) 1.5rem clamp(1rem, 3vh, 2rem); }
-  .stage.is-flow { padding: clamp(4.5rem, 10vh, 6.5rem) 1.5rem 2rem; }
+  /* Symmetric top and bottom: this row centres its content, and unequal
+     padding quietly moved the centre off the middle of the row. */
+  .stage.is-centred {
+    display: grid;
+    place-items: center;
+    padding: clamp(var(--s6), 6vh, var(--s8)) var(--s5);
+  }
+  /* The nav takes a row of the shell; the island is fixed and takes none. So
+     the row this centres in is short at the bottom and full-height at the top,
+     which put the statement above the middle of the space a reader actually
+     sees. Adding the island's own footprint to the top padding moves the
+     centre down by exactly that much — only when there is an island to clear. */
+  body:has(.island) .stage.is-centred {
+    /* island's own height and offset, plus the run-up above the bar, which is
+       part of the nav's row but is empty air rather than something you see. */
+    padding-top: calc(clamp(var(--s6), 6vh, var(--s8)) + var(--edge) + 2.4rem + var(--s7));
+  }
+  .stage.is-flow { padding: clamp(var(--s8), 10vh, 6.5rem) var(--s5) var(--s6); }
 
   .col { max-width: 40rem; margin: 0 auto; }
 
@@ -129,7 +163,7 @@
        third below. The height term is the guard: on a laptop, and on a phone
        held sideways, it is the short axis that decides whether the sentence
        still fits without scrolling. */
-    font-size: clamp(1.35rem, min(6vw, 5.2vh), 2.6rem);
+    font-size: clamp(1.15rem, min(4.4vw, 3.4vh), 1.7rem);
     line-height: 1.25;
     letter-spacing: -0.012em;
     font-weight: 400;
@@ -220,7 +254,7 @@
 
   .island {
     position: fixed;
-    top: clamp(1rem, 3vh, 1.75rem);
+    top: max(var(--edge), env(safe-area-inset-top, 0px));
     left: 50%;
     z-index: 5;
     /* The open size is CSS's, because CSS can know it: it is the column the
@@ -245,7 +279,10 @@
     overflow: hidden;
     opacity: 0;
     transform: translate(-50%, 0);
-    animation: island-in 520ms var(--rise) 300ms forwards;
+    /* The delay is set from the statement's own settle time once the words are
+       split; 300ms is the fallback for a page with no statement to wait for,
+       and for reduced motion, where there is no roll to follow. */
+    animation: island-in 520ms var(--rise) var(--island-delay, 300ms) forwards;
     /* One duration and one curve for both axes: run them apart and the corner
        arrives before the edge, which is what made the morph look loose. */
     transition: width 420ms var(--rise), height 420ms var(--rise),
@@ -288,7 +325,7 @@
   .island-pill {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--s2);
     /* Sized to its own label rather than to the frame, so the shut capsule can
        be measured without shutting anything, and the label never sits in a
        wide box waiting to be clipped. */
@@ -421,7 +458,7 @@
     transition: color var(--invert) ease;
   }
   .is-prose .m-list {
-    margin: 0.35rem 0 1.4rem;
+    margin: var(--s1) 0 1.4rem;
     padding-left: 1.35rem;
     font-size: 1.05rem;
     line-height: 1.62;
@@ -432,7 +469,7 @@
 
   /* Recognition and press: stacked lines, not bullets. A record, read down. */
   .is-prose .m-lines {
-    margin: 0.35rem 0 1.4rem;
+    margin: var(--s1) 0 1.4rem;
     padding: 0;
     list-style: none;
     font-size: 0.95rem;
@@ -447,7 +484,7 @@
   .w-item:last-child { margin-bottom: 0; }
   .w-meta { margin: 0 0 0.2rem; font-size: 0.82rem; color: var(--dim);
             transition: color var(--invert) ease; }
-  .w-title { margin: 0 0 0.35rem; font-size: 1.05rem; font-weight: 400;
+  .w-title { margin: 0 0 var(--s1); font-size: 1.05rem; font-weight: 400;
              letter-spacing: -0.005em; }
   .w-blurb { margin: 0; font-size: 0.95rem; line-height: 1.55; color: var(--dim);
              transition: color var(--invert) ease; }
@@ -463,7 +500,7 @@
   }
 
   .is-prose .m-sign {
-    margin: 3rem 0 0;
+    margin: var(--s7) 0 0;
     font-size: 0.72rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
@@ -472,7 +509,7 @@
   }
 
   .row-meta {
-    margin: 0 0 0.5rem;
+    margin: 0 0 var(--s2);
     font-size: 0.82rem;
     color: var(--dim);
     transition: color var(--invert) ease;
@@ -486,7 +523,7 @@
      unrelated things stop reading as one block of text. Their colours are
      literal rather than var-driven: the sheet inverts around them and these
      stay light, which is the whole point of them. */
-  .upcoming { margin: 0 0 clamp(3rem, 8vh, 4.5rem); }
+  .upcoming { margin: 0 0 clamp(var(--s7), 8vh, var(--s8)); }
   /* The two halves of the index are each announced the same way. */
   .up-label, .past-label {
     margin: 0 0 0.9rem;
@@ -498,10 +535,10 @@
   }
   /* .row would give it the list's full bottom margin; the label belongs to the
      entries under it, not apart from them. */
-  .past-label { margin: 0 0 1.5rem; }
+  .past-label { margin: 0 0 var(--s5); }
 
   .up-item {
-    margin: 0 0 0.75rem;
+    margin: 0 0 var(--s3);
     padding: clamp(1.15rem, 2.6vw, 1.6rem) clamp(1.2rem, 2.8vw, 1.75rem);
     border-radius: 0.9rem;
     background: #F7F7F5;
@@ -522,7 +559,7 @@
      flush with the card rather than adding a browser margin on top of the
      padding. */
   .up-body > p, .row-body > p { margin: 0; }
-  .up-body > p + p, .row-body > p + p { margin-top: 1rem; }
+  .up-body > p + p, .row-body > p + p { margin-top: var(--s4); }
   /* Inside a card the ink is dark whichever way the page has gone, so links
      cannot inherit the page's colour. */
   .up-item a { color: #101010; }
@@ -566,7 +603,11 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     border-radius: 0.9rem 0.9rem 0 0;
-    box-shadow: 0 -1px 0 var(--glass-edge);
+    /* No hairline along the top. It drew a hard 1px lid directly above a
+       header whose whole point is that it dissolves, and being a box-shadow
+       it sat outside the border box, so the rounded corners clipped it into a
+       line that stopped short of each end. The scrim already separates the
+       panel from the page behind it. */
     overflow-y: auto;
     outline: none;
     overscroll-behavior: contain;
@@ -594,7 +635,7 @@
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    padding-top: 0.75rem;
+    padding-top: var(--s3);
     cursor: grab;
     touch-action: none;
     /* Sits over the first 3.6rem of content rather than pushing it down. */
@@ -683,7 +724,7 @@
   .sheet-close:hover { opacity: 1; transform: scale(1.06); }
   .sheet-close:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
-  .sheet-body { padding: 4.2rem 1.5rem clamp(3rem, 8vh, 5rem); }
+  .sheet-body { padding: 4.2rem var(--s5) clamp(var(--s7), 8vh, 5rem); }
 
   @media (prefers-reduced-motion: reduce) {
     .sheet-panel, .sheet-scrim { transition: none !important; }
@@ -696,14 +737,14 @@
   .pj-head { max-width: 40rem; margin: 0 auto clamp(2.5rem, 6vh, 4rem); }
   .pj-year { margin: 0 0 0.4rem; font-size: 0.82rem; color: var(--dim);
              transition: color var(--invert) ease; }
-  .pj-title { margin: 0 0 1rem; font-size: clamp(1.5rem, 4vw, 2.1rem);
+  .pj-title { margin: 0 0 var(--s4); font-size: clamp(1.5rem, 4vw, 2.1rem);
               font-weight: 400; letter-spacing: -0.015em; }
   .pj-desc { margin: 0; font-size: 1.05rem; line-height: 1.62; }
-  .pj-desc p { margin: 0 0 1rem; }
+  .pj-desc p { margin: 0 0 var(--s4); }
   .pj-desc p:last-child { margin-bottom: 0; }
   .pj-visit { margin: 1.1rem 0 0; font-size: 0.95rem; }
 
-  .pj-shot { margin: 0 0 clamp(1.5rem, 4vh, 2.5rem); text-align: center; }
+  .pj-shot { margin: 0 0 clamp(var(--s5), 4vh, 2.5rem); text-align: center; }
   .pj-shot:last-child { margin-bottom: 0; }
   .pj-shot img { max-width: 100%; height: auto; border-radius: 2px; }
 
@@ -736,7 +777,7 @@
   .gallery {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: clamp(2rem, 4vw, 3rem) clamp(1rem, 2.2vw, 1.75rem);
+    gap: clamp(var(--s6), 4vw, var(--s7)) clamp(var(--s4), 2.2vw, 1.75rem);
     margin: 0 0 clamp(4rem, 9vh, 6rem);
   }
   .gallery:last-child { margin-bottom: 0; }
@@ -815,7 +856,7 @@
   }
 
   .row-title {
-    margin: 0 0 0.35rem;
+    margin: 0 0 var(--s1);
     font-size: 1.28rem;
     font-weight: 400;
     letter-spacing: -0.01em;
@@ -827,7 +868,7 @@
     color: var(--ink);
     transition: color var(--invert) ease;
   }
-  .row-body + .row-body { margin-top: 1rem; }
+  .row-body + .row-body { margin-top: var(--s4); }
 
   /* The Index is a log: every entry is a solid block of three or four lines
      with a lot of air between entries, where Info is short paragraphs with
@@ -945,7 +986,9 @@
     z-index: 3;
     display: flex;
     justify-content: center;
-    padding: 2.5rem 1rem clamp(1.5rem, 5vh, 3rem);
+    /* The top figure is the run-up the fade band needs, not an edge. The
+       bottom is the edge, and it matches the island's at the other end. */
+    padding: var(--s7) var(--s4) max(var(--edge), env(safe-area-inset-bottom, 0px));
     pointer-events: none;
   }
   /* Mirror of the top band. It sits under the bar, which does its own blur on
@@ -1086,15 +1129,7 @@
   @keyframes fadeOut { to { opacity: 0; } }
 
   @media (max-width: 30rem) {
-    .navwrap { padding-left: 0.6rem; padding-right: 0.6rem; }
-    /* On a phone the bar should sit near the bottom edge, not float a third of
-       an inch above it. 5vh of a tall screen was reading as a gap between the
-       bar and the browser's own chrome. The inset keeps it clear of the home
-       indicator on hardware that has one, and resolves to 0 where there is
-       none — so this is close to the edge without ever being under it. */
-    .navwrap {
-      padding-bottom: max(0.55rem, env(safe-area-inset-bottom, 0px));
-    }
+    .navwrap { padding-left: var(--s3); padding-right: var(--s3); }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1116,15 +1151,15 @@
 /* Writing lives on Info; a single piece gets the same reading measure as
    the prose there, and its images run to the column's full width. */
 .post-title { margin-top: 0; }
-.post-note { margin: -0.4rem 0 2rem; }
+.post-note { margin: -0.4rem 0 var(--s6); }
 .post-body { font-size: 1.05rem; line-height: 1.62; }
 .post-body p { margin: 0 0 1.15rem; }
 .post-body h2, .post-body h3 { margin: 2.4rem 0 0.8rem; font-weight: 400; letter-spacing: -0.012em; }
 .post-body h2 { font-size: 1.4rem; }
 .post-body h3 { font-size: 1.1rem; }
-.post-body figure { margin: 2rem 0; }
+.post-body figure { margin: var(--s6) 0; }
 .post-body img { max-width: 100%; height: auto; border-radius: 2px; }
-.post-body figcaption { margin-top: 0.5rem; font-size: 0.82rem; color: var(--dim); }
+.post-body figcaption { margin-top: var(--s2); font-size: 0.82rem; color: var(--dim); }
 .post-body blockquote {
   margin: 1.6rem 0;
   padding-left: 1.1rem;
@@ -1185,6 +1220,10 @@
 /* a chip: opens in place, one way */
 .bio-block .chip {
   display: inline;
+  /* Fragmenting is the point — see bio.js. Clone so each fragment draws its
+     own rounded box instead of one long box left open at the line end. */
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
   margin: 0;
   padding: 0.1em 0.16em 0.12em 0.26em;
   border: 0;
@@ -1197,6 +1236,16 @@
   transition: background 160ms ease;
   -webkit-tap-highlight-color: transparent;
 }
+/* Holds an element and the punctuation that follows it on the same line. It
+   must not stop the chip inside it from breaking, so only white-space is set
+   — no new box. */
+/* Holds a pill and the punctuation after it together. A pill is inline-block
+   and cannot fragment anyway, so nowrap costs it nothing. A chip must still be
+   able to wrap between its own words, and no longer needs the help: its glyph
+   stopped being an atomic box. */
+.bio-block .knit, .rec .knit { white-space: nowrap; }
+.bio-block .knit .chip { white-space: normal; }
+
 .bio-block .chip:hover { background: var(--bio-chip-hover); }
 .bio-block .chip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
@@ -1248,14 +1297,24 @@
    the lists, whatever the measure. */
 .pill .arw { display: inline; margin-left: 0.5em; font-size: 0.9em; }
 
+/* Inline, not inline-block, and the drawing lifted out of the flow behind it.
+   An inline-block is atomic, and the layout will happily break a line after an
+   atomic box — which is how a sentence ended up with its full stop alone on the
+   last line. An inline box with padding reserves exactly the same width and
+   opens no break at all, so the punctuation stays put and the chip around it is
+   still free to wrap between its own words. */
 .bio-block .mark {
-  display: inline-block;
-  width: 0.82em; height: 0.82em;
-  margin: 0 0.1em 0 0.32em;
-  position: relative; top: 0.01em;
-  vertical-align: baseline;
+  display: inline;
+  position: relative;
+  padding-left: 1.24em;             /* the glyph's width plus the space either side */
 }
-.bio-block .mark svg { display: block; width: 100%; height: 100%; }
+.bio-block .mark svg {
+  position: absolute;
+  left: 0.32em;
+  top: 0.09em;
+  width: 0.82em;
+  height: 0.82em;
+}
 
 /* the run that just opened */
 .bio-block .fresh {
@@ -1271,7 +1330,7 @@
    itself is left. Only the way back, and only once there is one. */
 .bio-block .foot {
   display: flex;
-  margin: 2rem 0 0;
+  margin: var(--s6) 0 0;
   font-size: 0.7rem;
   font-weight: 500;
   letter-spacing: 0.1em;
@@ -1303,7 +1362,7 @@
 /* ---- the record --------------------------------------------------------- */
 /* Lists, not prose: the bio above is the readable version, these are the
    crawlable one. Year in its own column, tabular so the digits line up. */
-.rec { margin: clamp(3rem, 7vh, 4.5rem) 0 0; }
+.rec { margin: clamp(var(--s7), 7vh, var(--s8)) 0 0; }
 .rec-head {
   margin: 0 0 1.25rem;
   font-size: 0.72rem;
@@ -1325,7 +1384,7 @@
    Index — same size, same dim, same drop to the line below. */
 .rec-year {
   display: block;
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--s2);
   font-variant-numeric: tabular-nums;
   font-size: 0.82rem;
   color: var(--dim);

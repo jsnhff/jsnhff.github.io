@@ -120,7 +120,10 @@
 
   var statement = document.querySelector('.statement');
   if (statement && !reduce) {
-    var words = statement.textContent.trim().split(/\s+/);
+    // Split on ordinary whitespace only. A non-breaking space in the statement
+    // is a deliberate bind — "Los Angeles" is one thing and must not be dealt
+    // across two lines — so it has to survive into a single span.
+    var words = statement.textContent.trim().split(/[^\S ]+/);
     statement.textContent = '';
     words.forEach(function (word, i) {
       var span = el('span', 'w', word);
@@ -128,6 +131,19 @@
       statement.appendChild(span);
       if (i < words.length - 1) statement.appendChild(document.createTextNode(' '));
     });
+
+    // The island waits for the sentence to finish arriving, so it lands on a
+    // still page and is actually noticed. Read off the last word rather than
+    // recomputing the stagger here: the timing lives in the stylesheet, and a
+    // second copy of it in JS would drift the moment either changed.
+    var all = statement.querySelectorAll('.w');
+    var last = all[all.length - 1];
+    if (last) {
+      var t = getComputedStyle(last);
+      var ms = function (v) { return parseFloat(v) * (/\dms$/.test(v) ? 1 : 1000); };
+      var settled = ms(t.animationDelay) + ms(t.animationDuration);
+      root.style.setProperty('--island-delay', Math.round(settled + 160) + 'ms');
+    }
   }
 
   // ---- nav ----------------------------------------------------------------
