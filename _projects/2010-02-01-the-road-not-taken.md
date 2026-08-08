@@ -13,8 +13,14 @@ plate_h: 1078
 section: studio
 dark: true
 ---
-{% for num in (1..1) %}
+{%- comment -%}
+  1 the book, 2 Frost's poem as printed, 3 and 4 the first and last of the five
+  recodings, 5 the appendix: every autocomplete capture the book was built from.
+{%- endcomment -%}
+{%- comment -%} Split on a pipe: the captions carry commas of their own. {%- endcomment -%}
+{% assign shots = "The book|The poem as Frost wrote it|The first recoding — Thesaurus Roadrunner Notre Dame Taken|The fifth recoding — The Road Not Taken for Granted|The appendix: Google's autocomplete suggestions, captured in 2010" | split: "|" %}
+{% for shot in shots %}
 <div class="row pj-shot">
-<img src="{{ page.image_path }}{{ num }}.jpg" alt="{{ page.title }}" loading="lazy" decoding="async">
+<img src="{{ page.image_path }}{{ forloop.index }}.jpg" alt="{{ shot }}" loading="lazy" decoding="async">
 </div>
 {% endfor %}
