@@ -1,7 +1,7 @@
 ---
 layout: update
 update-type: Panel
-date: 2015-03-01
+date: 2015-03-27
 ---
 
 I'm speaking on a panel titled <a title="Narrative Fragments" href="http://andnow2015a.sched.org/event/304c9fa564e5358b57b15998abd861dd" target="_blank">Narrative Fragments: Art, Language, and Algorithm</a> about <a title="American Psycho" href="/projects/american-psycho/" target="_blank">American Psycho</a> and new work with <a title="Mimi Cabell" href="http://mimicabell.com" target="_blank">Mimi Cabell</a>, <a title="Nicholas O'Brien" href="http://doubleunderscore.net" target="_blank">Nicholas O'Brien</a>, and <a title="Liat Berdugo" href="http://digikits.ch" target="_blank">Liat Berdugo</a> at <a href="http://andnow2015.com" title="&Now" target="_blank">&Now: Blast Radius</a> at CalArts in Santa Clarita, CA on March 27, 2015.
