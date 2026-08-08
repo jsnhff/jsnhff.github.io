@@ -86,6 +86,11 @@ real-beauty-pics:
     items:
       - name: "Printed Web 3"
         note: "2015. Curated by Paul Soulellis"
+cable:
+  - head: "Published in"
+    items:
+      - name: "Printed Web 3"
+        note: "2015. Curated by Paul Soulellis"
 endless-opportunities:
   - head: "Published in"
     items:

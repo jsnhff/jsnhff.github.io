@@ -63,7 +63,7 @@ export const ANTHOLOGIES = [
     href:"https://www.kunstforum.de/band/2016-243-postdigital2/",
     works:["american-psycho"] },
   { year:"2015", title:"Printed Web 3", note:"Curated by Paul Soulellis",
-    works:["real-beauty-pics"] },
+    works:["real-beauty-pics", "cable"] },
   { year:"2014", title:"The Enemy, Issue 1", note:"Edited by Charlie White" },
   { year:"2013", title:"Best of Rhizome 2012", note:"Link Editions" },
   { year:"2011", title:"Collect the WWWorld", note:"Link Editions, catalogue",
