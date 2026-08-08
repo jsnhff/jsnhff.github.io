@@ -23,8 +23,11 @@ collections:
     projects:
         output: true
         permalink: /projects/:title/
+    # The Index page renders these inline off `site.updates`, so they never
+    # needed pages of their own. Publishing them put 39 layout-less fragments
+    # in the sitemap that duplicated the Index and nothing linked to.
     updates:
-        output: true
+        output: false
 
 # Handling Reading
 include:      ['_pages']
