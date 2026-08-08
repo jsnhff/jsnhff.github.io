@@ -15,6 +15,25 @@ layout: site
         <a href="{{ page.live_url }}" target="_blank" rel="noopener">Visit {{ page.title }} &rarr;</a>
       </p>
     {% endif %}
+
+    {%- comment -%}
+      Where copies of this work are held. Keyed off the project's slug in
+      _data/collections.yml, which _bio/build.mjs generates from the same list
+      the Info page reads — so a holding is recorded once and shows up in both
+      places, or in neither.
+    {%- endcomment -%}
+    {%- assign slug = page.url | split: "/" | last -%}
+    {%- assign held = site.data.collections[slug] -%}
+    {% if held %}
+      <div class="pj-held">
+        <p class="pj-held-head">Held in</p>
+        <ul>
+          {% for c in held %}
+            <li><a href="{{ c.href }}" target="_blank" rel="noopener">{{ c.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
   </div>
   {{ content }}
 </article>

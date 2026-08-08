@@ -9,19 +9,28 @@
    Items marked TODO need a fact or a URL before they go live.
 --------------------------------------------------------------- */
 
+/* `works` lists the project slugs a collection holds, so a project page can
+   say where its copies live without that fact being written down twice. Only
+   what the note already claims — nothing inferred. Leave it off where the
+   holding is not attributable to a specific work. */
 export const COLLECTIONS = [
   { name:"MoMA Library, Museum of Modern Art",
     note:"AutoSummarize and American Psycho, acquired 2017 with the Library of the Printed Web",
-    href:"https://library.moma.org/permalink/01NYA_INST/13u92is/alma991013562918507141" },
+    href:"https://library.moma.org/permalink/01NYA_INST/13u92is/alma991013562918507141",
+    works:["autosummarize", "american-psycho"] },
   { name:"Library of the Printed Web, full index",
     note:"Paul Soulellis's list of every title in the collection",
     href:"https://docs.google.com/spreadsheets/d/1kk7dYKk12ON7RgtZ-wg7Vmp44Fqv7OEi6Z90nu7WNpU/edit?gid=0#gid=0" },
   { name:"Whitney Museum of American Art, Special Collections",
     note:"AutoSummarize. Call no. N6537.H8251 A8 2010",
-    href:"http://library.whitney.org/cgi-bin/koha/opac-detail.pl?biblionumber=46618" },
+    href:"http://library.whitney.org/cgi-bin/koha/opac-detail.pl?biblionumber=46618",
+    works:["autosummarize"] },
   { name:"Bayerische Staatsbibliothek, Munich",
     note:"Three works in the Library of Artistic Print on Demand collection",
-    href:"https://apod.li/auto-summarize" },
+    href:"https://apod.li/auto-summarize",
+    /* The note says three; two are named in the archive itself. The third is
+       not recorded here rather than guessed at. */
+    works:["autosummarize", "american-psycho"] },
 ];
 
 export const ANTHOLOGIES = [

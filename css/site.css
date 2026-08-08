@@ -1448,3 +1448,20 @@
   }
   .lost-nav a { color: var(--ink); transition: color var(--invert) ease; }
 
+  /* Where the work is held. A short list under the description, set at the
+     Index's meta size so it reads as a fact about the work rather than more
+     of its description. */
+  .pj-held { margin: var(--s5) 0 0; }
+  .pj-held-head {
+    margin: 0 0 var(--s2);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dim);
+    transition: color var(--invert) ease;
+  }
+  .pj-held ul { margin: 0; padding: 0; list-style: none; }
+  .pj-held li { margin: 0 0 0.3rem; font-size: 0.9rem; line-height: 1.45; }
+  .pj-held li:last-child { margin-bottom: 0; }
+
