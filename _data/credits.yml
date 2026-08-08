@@ -4,6 +4,8 @@ autosummarize:
     items:
       - name: "MoMA Library, Museum of Modern Art"
         href: "https://library.moma.org/permalink/01NYA_INST/13u92is/alma991013562918507141"
+      - name: "Library of the Printed Web, full index"
+        href: "https://docs.google.com/spreadsheets/d/1kk7dYKk12ON7RgtZ-wg7Vmp44Fqv7OEi6Z90nu7WNpU/edit?gid=0#gid=0"
       - name: "Whitney Museum of American Art, Special Collections"
         href: "http://library.whitney.org/cgi-bin/koha/opac-detail.pl?biblionumber=46618"
       - name: "Bayerische Staatsbibliothek, Munich"
@@ -20,6 +22,9 @@ autosummarize:
     items:
       - name: "Inverse"
         note: "2016. Gabe Bergado"
+      - name: "The New Yorker"
+        note: "2010. Madeleine Schwartz"
+        href: "https://www.newyorker.com/books/page-turner/rise-of-the-literature-machines"
       - name: "The Rumpus"
         note: "2010. Jeremy Hatch"
         href: "https://therumpus.net/2010/08/02/autosummarize-applied-to-popular-works/"
@@ -28,6 +33,8 @@ american-psycho:
     items:
       - name: "MoMA Library, Museum of Modern Art"
         href: "https://library.moma.org/permalink/01NYA_INST/13u92is/alma991013562918507141"
+      - name: "Library of the Printed Web, full index"
+        href: "https://docs.google.com/spreadsheets/d/1kk7dYKk12ON7RgtZ-wg7Vmp44Fqv7OEi6Z90nu7WNpU/edit?gid=0#gid=0"
       - name: "Bayerische Staatsbibliothek, Munich"
         href: "https://www.apod.li/american-psycho"
   - head: "Published in"
@@ -38,6 +45,9 @@ american-psycho:
       - name: "Output: An Anthology of Computer-Generated Text, 1953–2023"
         note: "2024. MIT Press / Counterpath, p. 64"
         href: "https://mitpress.mit.edu/9780262549813/output/"
+      - name: "KUNSTFORUM International, Band 243"
+        note: "2016. Postdigital 2"
+        href: "https://www.kunstforum.de/band/2016-243-postdigital2/"
   - head: "Press"
     items:
       - name: "Dazed"
