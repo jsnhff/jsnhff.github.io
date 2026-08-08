@@ -9,10 +9,15 @@
    Items marked TODO need a fact or a URL before they go live.
 --------------------------------------------------------------- */
 
-/* `works` lists the project slugs a collection holds, so a project page can
-   say where its copies live without that fact being written down twice. Only
-   what the note already claims — nothing inferred. Leave it off where the
-   holding is not attributable to a specific work. */
+/* `works` lists the project slugs an entry belongs to, so a project page can
+   carry its own credentials without that fact being written down twice. Only
+   what the entry itself already claims — nothing inferred. Leave it off where
+   the credit is not attributable to a specific work.
+
+   A bare string uses the entry's own href. An object takes a per-work href
+   instead, for archives that give each title its own page: without that, every
+   work in a collection points at whichever one happened to be linked from the
+   record, which is how American Psycho ended up pointing at AutoSummarize. */
 export const COLLECTIONS = [
   { name:"MoMA Library, Museum of Modern Art",
     note:"AutoSummarize and American Psycho, acquired 2017 with the Library of the Printed Web",
@@ -28,28 +33,39 @@ export const COLLECTIONS = [
   { name:"Bayerische Staatsbibliothek, Munich",
     note:"Three works in the Library of Artistic Print on Demand collection",
     href:"https://apod.li/auto-summarize",
-    /* The note says three; two are named in the archive itself. The third is
-       not recorded here rather than guessed at. */
-    works:["autosummarize", "american-psycho"] },
+    works:[
+      { slug:"autosummarize",   href:"https://www.apod.li/auto-summarize" },
+      { slug:"american-psycho", href:"https://www.apod.li/american-psycho" },
+      { slug:"best-fight-ever", href:"https://www.apod.li/best-fight-ever-worst-fight-ever" },
+    ] },
 ];
 
 export const ANTHOLOGIES = [
   { year:"2025", title:"Library of Artistic Print on Demand",
     note:"Spector Books. Dedicated entries for three works",
-    href:"https://apod.li/american-psycho" },
+    href:"https://apod.li/american-psycho",
+    works:[
+      { slug:"autosummarize",   href:"https://www.apod.li/auto-summarize" },
+      { slug:"american-psycho", href:"https://www.apod.li/american-psycho" },
+      { slug:"best-fight-ever", href:"https://www.apod.li/best-fight-ever-worst-fight-ever" },
+    ] },
   { year:"2024", title:"Output: An Anthology of Computer-Generated Text, 1953\u20132023",
     note:"MIT Press / Counterpath, p. 64",
-    href:"https://mitpress.mit.edu/9780262549813/output/" },
+    href:"https://mitpress.mit.edu/9780262549813/output/",
+    works:["american-psycho"] },
   { year:"2022", title:"Conceptualisms",
     note:"University of Alabama Press, p. 247",
-    href:"https://conceptualisms.info" },
+    href:"https://conceptualisms.info",
+    works:["autosummarize"] },
   { year:"2016", title:"KUNSTFORUM International, Band 243",
     note:"Postdigital 2",
     href:"https://www.kunstforum.de/band/2016-243-postdigital2/" },
-  { year:"2015", title:"Printed Web 3", note:"Curated by Paul Soulellis" },
+  { year:"2015", title:"Printed Web 3", note:"Curated by Paul Soulellis",
+    works:["real-beauty-pics"] },
   { year:"2014", title:"The Enemy, Issue 1", note:"Edited by Charlie White" },
   { year:"2013", title:"Best of Rhizome 2012", note:"Link Editions" },
-  { year:"2011", title:"Collect the WWWorld", note:"Link Editions, catalogue" },
+  { year:"2011", title:"Collect the WWWorld", note:"Link Editions, catalogue",
+    works:["endless-opportunities"] },
 ];
 
 export const WRITING = [
@@ -75,18 +91,24 @@ export const WRITING = [
 ];
 
 export const PRESS = [
-  { year:"2016", outlet:"Inverse", author:"Gabe Bergado", note:"AutoSummarize at Internet Yami-Ichi" },
+  { year:"2016", outlet:"Inverse", author:"Gabe Bergado", note:"AutoSummarize at Internet Yami-Ichi",
+    works:["autosummarize"] },
   { year:"2014", outlet:"Dazed", author:"Thomas Gorton", note:"American Psycho",
-    href:"https://www.dazeddigital.com/artsandculture/article/21553/1/download-american-psycho-reimagined-using-google-ads" },
-  { year:"2014", outlet:"Daily Dot", author:"Miles Klee", note:"American Psycho" },
-  { year:"2014", outlet:"Adweek", author:"Miles Klee", note:"American Psycho" },
+    href:"https://www.dazeddigital.com/artsandculture/article/21553/1/download-american-psycho-reimagined-using-google-ads",
+    works:["american-psycho"] },
+  { year:"2014", outlet:"Daily Dot", author:"Miles Klee", note:"American Psycho",
+    works:["american-psycho"] },
+  { year:"2014", outlet:"Adweek", author:"Miles Klee", note:"American Psycho",
+    works:["american-psycho"] },
   { year:"2014", outlet:"Electric Literature", author:"Maru Pab\u00f3n", note:"American Psycho",
-    href:"https://electricliterature.com/rewriting-through-google-ads-mimi-cabell-and-jason-huffs-american-psycho/" },
+    href:"https://electricliterature.com/rewriting-through-google-ads-mimi-cabell-and-jason-huffs-american-psycho/",
+    works:["american-psycho"] },
   { year:"2010", outlet:"The New Yorker", author:"Madeleine Schwartz",
     note:"Rise of the Literature Machines",
     href:"https://www.newyorker.com/books/page-turner/rise-of-the-literature-machines" },
   { year:"2010", outlet:"The Rumpus", author:"Jeremy Hatch", note:"AutoSummarize",
-    href:"https://therumpus.net/2010/08/02/autosummarize-applied-to-popular-works/" },
+    href:"https://therumpus.net/2010/08/02/autosummarize-applied-to-popular-works/",
+    works:["autosummarize"] },
   { year:"2010", outlet:"Hyperallergic", author:"Liz Hall", note:"Black Sheep Projects",
     href:"https://hyperallergic.com/risd-black-sheep-projects/" },
 ];
@@ -96,14 +118,17 @@ export const SCHOLARSHIP = [
     title:"Print on Demand as Strategy and Genre", venue:"Library of Artistic Print on Demand" },
   { year:"2019", author:"Karl Wolfgang Flender",
     title:"American Psycho: Reading an Algorithm in Reverse", venue:"Interface Critique 2",
-    href:"https://interfacecritique.net" },
+    href:"https://interfacecritique.net",
+    works:["american-psycho"] },
   { year:"2015", author:"Lea Muldtofte Olsen",
     title:"Grammatized Psychopath: American Psycho Online and Offline",
     venue:"A Peer-Reviewed Journal About (APRJA), Vol. 4 No. 1, pp. 78–86. Aarhus University / transmediale. DOI 10.7146/aprja.v4i1.116107",
-    href:"https://aprja.net/article/view/116107" },
+    href:"https://aprja.net/article/view/116107",
+    works:["american-psycho"] },
   { year:"2015", author:"Kaja Marczewska",
     title:"Erasing in the Algorithmic Extreme", venue:"Media-N, Vol. 11 No. 1",
-    href:"https://median.newmediacaucus.org/the_aesthetics_of_erasure/erasing-in-the-algorithmic-extreme-mimi-cabell-and-jason-huffs-american-psycho/" },
+    href:"https://median.newmediacaucus.org/the_aesthetics_of_erasure/erasing-in-the-algorithmic-extreme-mimi-cabell-and-jason-huffs-american-psycho/",
+    works:["american-psycho"] },
   { author:"Scott Rettberg", title:"Electronic Literature, ch. 6: Network Writing",
     venue:"TODO \u2014 publisher, year, page range" },
 ];

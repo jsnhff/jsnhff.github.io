@@ -1448,11 +1448,12 @@
   }
   .lost-nav a { color: var(--ink); transition: color var(--invert) ease; }
 
-  /* Where the work is held. A short list under the description, set at the
-     Index's meta size so it reads as a fact about the work rather than more
-     of its description. */
-  .pj-held { margin: var(--s5) 0 0; }
-  .pj-held-head {
+  /* What the work carries — held in, published in, press, scholarship. Short
+     lists under the description, set at the Index's meta size so they read as
+     facts about the work rather than more of its description. */
+  .pj-credits { margin: var(--s5) 0 0; }
+  .pj-cred + .pj-cred { margin-top: var(--s4); }
+  .pj-cred-head {
     margin: 0 0 var(--s2);
     font-size: 0.72rem;
     font-weight: 500;
@@ -1461,7 +1462,15 @@
     color: var(--dim);
     transition: color var(--invert) ease;
   }
-  .pj-held ul { margin: 0; padding: 0; list-style: none; }
-  .pj-held li { margin: 0 0 0.3rem; font-size: 0.9rem; line-height: 1.45; }
-  .pj-held li:last-child { margin-bottom: 0; }
+  .pj-cred ul { margin: 0; padding: 0; list-style: none; }
+  .pj-cred li { margin: 0 0 0.35rem; font-size: 0.9rem; line-height: 1.45; }
+  .pj-cred li:last-child { margin-bottom: 0; }
+  /* The gloss sits on its own line so a wrapped title cannot be mistaken for
+     running into the publisher. */
+  .pj-cred-note {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--dim);
+    transition: color var(--invert) ease;
+  }
 

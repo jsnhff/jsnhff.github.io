@@ -17,21 +17,35 @@ layout: site
     {% endif %}
 
     {%- comment -%}
-      Where copies of this work are held. Keyed off the project's slug in
-      _data/collections.yml, which _bio/build.mjs generates from the same list
-      the Info page reads — so a holding is recorded once and shows up in both
-      places, or in neither.
+      What this work carries: where it is held, what it is published in, who
+      wrote about it. Keyed off the project's slug in _data/credits.yml, which
+      _bio/build.mjs generates from the same lists the Info page reads — so a
+      credential is recorded once and shows up in both places, or in neither.
+
+      An item without an href is still listed. A credit with no surviving URL
+      is a credit, and dropping it would make the record look thinner than it is.
     {%- endcomment -%}
     {%- assign slug = page.url | split: "/" | last -%}
-    {%- assign held = site.data.collections[slug] -%}
-    {% if held %}
-      <div class="pj-held">
-        <p class="pj-held-head">Held in</p>
-        <ul>
-          {% for c in held %}
-            <li><a href="{{ c.href }}" target="_blank" rel="noopener">{{ c.name }}</a></li>
-          {% endfor %}
-        </ul>
+    {%- assign credits = site.data.credits[slug] -%}
+    {% if credits %}
+      <div class="pj-credits">
+        {% for group in credits %}
+          <div class="pj-cred">
+            <p class="pj-cred-head">{{ group.head }}</p>
+            <ul>
+              {% for c in group.items %}
+                <li>
+                  {%- if c.href -%}
+                    <a href="{{ c.href }}" target="_blank" rel="noopener">{{ c.name }}</a>
+                  {%- else -%}
+                    {{ c.name }}
+                  {%- endif -%}
+                  {% if c.note %}<span class="pj-cred-note">{{ c.note }}</span>{% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endfor %}
       </div>
     {% endif %}
   </div>
