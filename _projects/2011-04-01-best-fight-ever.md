@@ -12,17 +12,14 @@ section: studio
 dark: true
 ---
 {%- comment -%}
-  Numbered explicitly rather than by loop index: the cover was shot last and
-  belongs first, and renaming files to sort them is a worse trade than saying
-  the order out loud. Split on a pipe — the captions carry commas.
+  Split on a pipe: the captions carry commas.
 
   The Best Fight pages are printed upside down in the book, which is what a
   flip binding is; they are turned here so they read as they do in the hand.
 {%- endcomment -%}
-{% assign shots = "2|1|3|4|5|6" | split: "|" %}
-{% assign caps = "The cover flat: two front covers and a spine|The book|Worst Fight Ever, from a 1967 episode of Star Trek|Worst Fight Ever: 9,795,566 views, 38 anonymous writers|Best Fight Ever, from a 1993 Hong Kong martial arts film|Best Fight Ever: 8,189,047 views, 65 anonymous writers" | split: "|" %}
-{% for n in shots %}
+{% assign caps = "The cover flat: two front covers and a spine|Worst Fight Ever, from a 1967 episode of Star Trek|Worst Fight Ever: 9,795,566 views, 38 anonymous writers|Best Fight Ever, from a 1993 Hong Kong martial arts film|Best Fight Ever: 8,189,047 views, 65 anonymous writers" | split: "|" %}
+{% for cap in caps %}
 <div class="row pj-shot">
-<img src="{{ page.image_path }}{{ n }}.jpg" alt="{{ caps[forloop.index0] }}" loading="lazy" decoding="async">
+<img src="{{ page.image_path }}{{ forloop.index }}.jpg" alt="{{ cap }}" loading="lazy" decoding="async">
 </div>
 {% endfor %}
