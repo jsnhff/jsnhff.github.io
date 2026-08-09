@@ -607,7 +607,15 @@
        header whose whole point is that it dissolves, and being a box-shadow
        it sat outside the border box, so the rounded corners clipped it into a
        line that stopped short of each end. The scrim already separates the
-       panel from the page behind it. */
+       panel from the page behind it.
+
+       This ring is the opposite of that lid: it is the panel's own ground
+       colour, so it is not a line, it is 1px more panel. The panel is centred
+       on a half pixel and sized in vh, which puts its top edge on fractional
+       device pixels — measured at .094, .250 and .406 across ordinary window
+       sizes — and an edge landing there is antialiased, letting the scrim
+       bleed through as a pale seam. The ring follows the radius and fills it. */
+    box-shadow: 0 0 0 1px var(--ground);
     overflow-y: auto;
     outline: none;
     overscroll-behavior: contain;
@@ -641,10 +649,12 @@
     /* Sits over the first 3.6rem of content rather than pushing it down. */
     margin-bottom: -3.6rem;
   }
+  /* Overscanned past the top of the panel, same reason as .topfade — and here
+     the overscan costs nothing at all, because the panel clips it. */
   .sheet-veil {
     position: absolute;
-    left: 0; right: 0; top: 0;
-    height: 5.2rem;
+    left: 0; right: 0; top: -2px;
+    height: calc(5.2rem + 2px);
     pointer-events: none;
     background: linear-gradient(to bottom, var(--ground) 34%, transparent);
     -webkit-backdrop-filter: blur(7px);
@@ -950,10 +960,17 @@
   .fadeband > * { position: absolute; inset: 0; display: block; }
   .fb1, .fb2, .fb3 { will-change: backdrop-filter; }
 
+  /* The band runs 2px past the top of the screen. A backdrop-filter is
+     sampled and composited on device-pixel boundaries, so when the layer's
+     own edge lands on a fractional one — which it does at any DPR that is not
+     a whole number, and in Safari at 2 as well — the outermost row can come
+     back unfiltered. That row read as a 1–2px hairline of sharp, untinted
+     content above the fade. Starting the band off-screen puts the row that
+     might be dropped where nobody can see it. */
   .topfade {
     position: fixed;
-    top: 0; left: 0; right: 0;
-    height: clamp(4.5rem, 11vh, 7rem);
+    top: -2px; left: 0; right: 0;
+    height: calc(clamp(4.5rem, 11vh, 7rem) + 2px);
     z-index: 2;
     pointer-events: none;
   }
@@ -1004,9 +1021,8 @@
     padding: var(--s7) var(--s4) max(var(--edge), env(safe-area-inset-bottom, 0px));
     pointer-events: none;
   }
-  /* Mirror of the top band. It sits under the bar, which does its own blur on
-     top of this one. */
-  .botfade { z-index: -1; }
+  /* Mirror of the top band, overscanned at its own edge for the same reason. */
+  .botfade { z-index: -1; bottom: -2px; }
   .botfade .fb1 {
     -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
     -webkit-mask-image: linear-gradient(to top, #000 0%, #000 12%, transparent 34%);
