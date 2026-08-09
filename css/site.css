@@ -955,10 +955,18 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    overflow: hidden;
+    /* No overflow clip. The children are inset: 0, so there was never anything
+       to clip, and clipping a composited backdrop layer is the fragile part —
+       it is what the snapshot is taken against. */
   }
   .fadeband > * { position: absolute; inset: 0; display: block; }
-  .fb1, .fb2, .fb3 { will-change: backdrop-filter; }
+  /* No will-change here. It used to say `backdrop-filter` on all three layers,
+     permanently, which promoted three stacked layers over a scrolling backdrop
+     for the whole life of the page — and nothing about these layers ever
+     animates, so it bought nothing. Safari kept a snapshot of the backdrop for
+     a promoted layer and did not always retake it when the page scrolled back
+     to the top and down again: the band came back holding a stale slice of
+     whatever had been behind it, and grew as the dirty region accumulated. */
 
   /* The band runs 2px past the top of the screen. A backdrop-filter is
      sampled and composited on device-pixel boundaries, so when the layer's
