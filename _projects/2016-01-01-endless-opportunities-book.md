@@ -28,9 +28,6 @@ description: |
   in the background of every photograph, and nobody notices it move. Where is
   the image you liked last year? Last month? Here is a more useful and
   relevant one. Isn't that better.
-
-  I would like people to watch the algorithms the way a shaman watches a
-  mountain.
 plate: "/images/plates/endless-opportunities-book.webp"
 plate_w: 1200
 plate_h: 1561
