@@ -855,6 +855,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    /* The frame the picture is laid out against. */
+    position: relative;
     /* Each slide clips its own picture. Without this the lag that gives the
        swipe its depth pushed the neighbours *inward* — a slide sitting off to
        the right is translated left — so both of them poked past the photo you
@@ -880,14 +882,25 @@
 
      The lag is smaller than the travel, so a slide drifts against the swipe
      instead of tracking it — that difference is what reads as depth. */
+  /* Laid out against the slide's own edges rather than sized as a percentage
+     of it. A percentage height has to resolve against the parent's height, and
+     the parent's height here comes from aspect-ratio — which Safari does not
+     reliably resolve percentages against. When it failed, the picture fell back
+     to width-only sizing, grew taller than its slide, and the overflow clip
+     that stops the swipe leaking past the frame turned that into a crop: the
+     Occupy piece lost the date off the bottom of its own plinth.
+
+     inset: 0 needs no such resolution — the box simply is the slide — and
+     object-fit does the fitting, so the picture cannot exceed its frame in any
+     engine, whatever the plate's proportions turn out to be. */
   .shot img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
     border-radius: 2px;
-    transform: translateX(calc(var(--d, 0) * -13%)) scale(calc(1 - 0.13 * var(--a, 0)));
+    transform: translateX(calc(var(--d, 0) * -9%)) scale(calc(1 - 0.13 * var(--a, 0)));
     /* Gentle on purpose. A neighbour at rest is off-screen anyway — every slide
        is exactly one track wide — so a deeper fade bought nothing at either end
        and only greyed out the middle of the gesture, where both halves are in
