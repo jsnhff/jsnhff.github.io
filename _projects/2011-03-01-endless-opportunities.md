@@ -5,6 +5,8 @@ date:   2011-05-01
 category: installation
 image_path: "/images/endless-opportunities/jhuff-endless-opportunities-"
 shots: 5
+# The plate is this shot re-encoded, so the wall does not show it twice.
+plate_shot: 1
 description: "Searching for changes in image results algorithms. Printing the results onto paper. Looping. Searching. Finding. Printing. Endless opportunities."
 plate: "/images/plates/endless-opportunties.webp"
 plate_w: 1302

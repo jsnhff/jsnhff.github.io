@@ -855,6 +855,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    /* Each slide clips its own picture. Without this the lag that gives the
+       swipe its depth pushed the neighbours *inward* — a slide sitting off to
+       the right is translated left — so both of them poked past the photo you
+       were looking at and stood at its edges as grey bars. The parallax is
+       meant to happen inside the frame, not across it. */
+    overflow: hidden;
     scroll-snap-align: center;
     scroll-snap-stop: always;
     text-decoration: none;

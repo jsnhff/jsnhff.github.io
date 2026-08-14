@@ -41,15 +41,24 @@ redirect_from:
             The plate's proportions set the track's box, so the wall still gives
             each work the height its own cover asks for.
           {%- endcomment -%}
-          <div class="shots{% if p.shots == 0 %} is-one{% endif %}"
+          {%- comment -%}
+            Several plates are just the work's first shot re-encoded, which put
+            the same picture on the wall twice in a row. Where that is so the
+            project says which shot it is and the track skips it; the project
+            page still shows the full run.
+          {%- endcomment -%}
+          {%- assign total = p.shots | plus: 1 -%}
+          {%- if p.plate_shot %}{% assign total = total | minus: 1 %}{% endif -%}
+          <div class="shots{% if total < 2 %} is-one{% endif %}"
                style="--pw: {{ p.plate_w }}; --ph: {{ p.plate_h }};"
-               {% if p.shots > 0 %}tabindex="0" role="group"
-               aria-label="{{ p.title }}, {{ p.shots | plus: 1 }} photos — scroll for more"{% endif %}>
+               {% if total > 1 %}tabindex="0" role="group"
+               aria-label="{{ p.title }}, {{ total }} photos — scroll for more"{% endif %}>
             <a class="shot" href="{{ href }}"{{ ext }} aria-label="{{ p.title }}">
               <img src="{{ p.plate }}" width="{{ p.plate_w }}" height="{{ p.plate_h }}"
                    alt="{{ p.title }}" loading="lazy" decoding="async" draggable="false">
             </a>
             {%- for num in (1..p.shots) %}
+            {%- if num == p.plate_shot %}{% continue %}{% endif %}
             <a class="shot" href="{{ href }}"{{ ext }} tabindex="-1" aria-hidden="true">
               <img src="{{ p.image_path }}{{ num }}.jpg" alt="" loading="lazy"
                    decoding="async" draggable="false">
