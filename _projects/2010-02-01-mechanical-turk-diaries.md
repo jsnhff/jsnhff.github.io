@@ -4,7 +4,10 @@ title:  "Mechanical Turk Diaries"
 date:   2009-02-01
 category: website
 image_path: "/images/mechanical-turk-diaries/jhuff-mechanical-turk-diaries-"
-shots: 5
+# A website is best seen running, so the wall shows its plate and links
+# straight out to it. The screenshots are still in /images; nothing renders
+# them. Put a count back here and they return, on the wall and the page both.
+shots: 0
 description: "<a title='The Mechanical Turk Diaries' href='https://mechanicalturkdiaries.tumblr.com'>Stories from Amazon's Anonymous Workforce</a>. Are crowdsourcing platforms like Amazon's Mechanical Turk as bleak as the company's shipping warehouses? Read my essay for The New Inquiry, <a title='Serf Boards' href='https://thenewinquiry.com/serf-boards/'>Serf Boards</a>, to find out more about this project."
 plate: "/images/plates/mechanical-turk-diaries.webp"
 plate_w: 640

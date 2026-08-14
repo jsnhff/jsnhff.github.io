@@ -4,7 +4,10 @@ title:  "work-life.tips"
 date:   2015-02-01
 category: website
 image_path: "/images/work-life-tips/jhuff-work-life-tips-"
-shots: 4
+# A website is best seen running, so the wall shows its plate and links
+# straight out to it. The screenshots are still in /images; nothing renders
+# them. Put a count back here and they return, on the wall and the page both.
+shots: 0
 description: "Visit <a title='work-life.tips' href='http://www.work-life.tips'>work-life.tips</a>. Relax your mind and optimize your life."
 plate: "/images/plates/work-life-tips.webp"
 plate_w: 640
