@@ -4,6 +4,7 @@ title:  "Endless Opportunities"
 date:   2016-01-01
 category: book
 image_path: "/images/endless-opportunities-book/jhuff-endless-opportunities-book-"
+shots: 5
 description: |
   This is an essay about a project, and about algorithms.
 
@@ -34,7 +35,7 @@ plate_h: 1561
 section: studio
 dark: true
 ---
-{% for num in (1..5) %}
+{% for num in (1..page.shots) %}
 <div class="row pj-shot">
 <img src="{{ page.image_path }}{{ num }}.jpg" alt="{{ page.title }}" loading="lazy" decoding="async">
 </div>

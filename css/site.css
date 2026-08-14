@@ -804,7 +804,7 @@
      can take whatever height is left above the tag. Everything in a row then
      stands on one baseline and the tags line up across it — the shelf, kept,
      but drawn per row instead of once for the whole wall. */
-  .gal-cell { display: flex; margin-bottom: 0; }
+  .gal-cell { display: flex; flex-direction: column; margin-bottom: 0; }
 
   /* One band held every plate at a common scale, which was right when the wall
      was sorted into sets and a shelf of books could be compared like for like.
@@ -812,45 +812,124 @@
      where relative scale means nothing and a tall band just leaves a hole above
      anything short. Each plate now takes the height its own image needs, capped
      so nothing towers, and still stands on the row's baseline. */
-  .plate {
+  /* The frame holds the track and the controls that sit over it. It sits at
+     the bottom of the cell so the tags across a row still line up. */
+  .gal-frame {
+    position: relative;
     display: flex;
-    flex: 1;
     align-items: flex-end;
-    justify-content: center;
-    margin-bottom: 0;
+    flex: 1;
+    min-height: 0;
   }
-  .plate img {
-    max-width: 100%;
+
+  /* The work's photos run sideways inside the cell. Snap is mandatory so a
+     flick always lands on a picture rather than between two, and the bar is
+     hidden because the dots already say how many there are.
+
+     The track takes its height from the plate's own proportions, capped — so
+     the wall keeps giving each work the height its cover asks for rather than
+     one band for everything, and every other shot of that work is contained
+     inside the box the cover made. Without a stated height the track grew to
+     whatever its tallest interior shot needed and left a hole above the cover. */
+  .shots {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    aspect-ratio: var(--pw) / var(--ph);
     max-height: clamp(13rem, 38vh, 24rem);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .shots::-webkit-scrollbar { display: none; }
+  .shots:focus-visible { outline: 2px solid var(--focus); outline-offset: 6px; border-radius: 4px; }
+  /* One picture and nothing to scroll: no track behaviour at all. */
+  .shots.is-one { overflow-x: visible; scroll-snap-type: none; }
+
+  .shot {
+    flex: 0 0 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 200ms ease;
+  }
+  .shot:hover { opacity: 0.72; }
+  .shot:focus-visible { outline: 2px solid var(--focus); outline-offset: 6px; border-radius: 4px; }
+  .shot img {
+    max-width: 100%;
+    max-height: 100%;
     width: auto;
     height: auto;
     object-fit: contain;
     border-radius: 2px;
+    /* A picture inside a link is a drag handle by default, which fights the
+       swipe on a trackpad and shows a ghost image on a mouse. */
+    -webkit-user-drag: none;
+    user-select: none;
   }
-  /* A wall with a hole in it reads as broken, so the one project without a
-     picture yet holds its place. */
-  .plate.is-empty {
+
+  /* ---- track controls -------------------------------------------------- */
+  /* Both are written by js/site.js and only where a track really overflows,
+     so nothing here promises a control that is not there. */
+
+  .shot-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    display: flex;
     align-items: center;
-    width: 100%;
-    max-width: 13rem;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 3px;
-    box-shadow: inset 0 0 0 1px var(--glass-edge);
-    font-size: 0.9rem;
-    text-align: center;
-    line-height: 1.5;
-    color: var(--dim);
-    transition: box-shadow var(--invert) ease, color var(--invert) ease;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: var(--glass);
+    color: var(--ink);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 180ms ease, background var(--invert) ease, color var(--invert) ease;
   }
-  .plate.is-empty small { display: block; font-size: 0.78rem; opacity: 0.75; }
+  .shot-nav.prev { left: 0; }
+  .shot-nav.next { right: 0; }
+  .shot-nav:hover { background: var(--glass-hover); }
+  .shot-nav[disabled] { opacity: 0 !important; pointer-events: none; }
+  .gal-frame:hover .shot-nav,
+  .shot-nav:focus-visible { opacity: 1; }
+  .shot-nav:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .shot-nav svg { display: block; }
+  /* Touch has the swipe itself, and no hover to reveal an arrow with. */
+  @media (hover: none) { .shot-nav { display: none; } }
+
+  .shot-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.34rem;
+    margin: 0.7rem 0 0;
+  }
+  .shot-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--ink);
+    opacity: 0.22;
+    transition: opacity 200ms ease, background var(--invert) ease;
+  }
+  .shot-dot.on { opacity: 0.8; }
 
   /* A live site is reachable through its own picture, so the wall needs no
      "Visit" line to carry the link. */
   .gal-link {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+    display: block;
     text-decoration: none;
     color: inherit;
     transition: opacity 200ms ease;
@@ -872,10 +951,8 @@
       grid-template-columns: 1fr;
       gap: clamp(2.5rem, 9vw, 3.5rem);
     }
-    .plate { height: auto; margin-bottom: 0; }
     /* A tall picture would otherwise run past the screen it is meant to fit. */
-    .plate img { max-height: 62vh; }
-    .plate.is-empty { height: 9rem; max-width: none; }
+    .shots { max-height: 62vh; }
   }
 
   .row-title {

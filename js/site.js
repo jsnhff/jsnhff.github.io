@@ -289,7 +289,9 @@
     // Only the wall opens sheets. Anywhere else, a project link is a link.
     if (document.querySelector('.gallery')) {
       document.addEventListener('click', function (e) {
-        var a = e.target.closest && e.target.closest('a.gal-link[href^="/projects/"]');
+        // The tag line and every photo in the cell's track are the same door.
+        var a = e.target.closest && e.target.closest(
+          'a.gal-link[href^="/projects/"], a.shot[href^="/projects/"]');
         if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
         e.preventDefault();
         openSheet(a.getAttribute('href'), true);
@@ -574,6 +576,95 @@
     window.addEventListener('resize', remeasure);
   }
 
+  // ---- the wall's photos, sideways ----------------------------------------
+  // Each cell already ships every shot of its work as a snapping row. What is
+  // added here is only what a row cannot do for itself: arrows for a mouse,
+  // dots to say how far along you are, and the rule that a swipe which moved
+  // the track does not also count as opening the project.
+  function initShots() {
+    [].forEach.call(document.querySelectorAll('.gallery .shots'), function (track) {
+      var slides = track.querySelectorAll('.shot');
+      if (slides.length < 2) return;
+      var frame = track.parentNode;
+
+      // A gesture that scrolled is a look, not a click. Measured on the track
+      // itself rather than on pointer distance, so a two-finger trackpad push
+      // and a thumb swipe are both caught, and a still tap never is. Capture,
+      // so this beats the delegated handler that opens the sheet.
+      var at = 0;
+      track.addEventListener('pointerdown', function () { at = track.scrollLeft; });
+      track.addEventListener('click', function (e) {
+        if (Math.abs(track.scrollLeft - at) > 4) { e.preventDefault(); e.stopPropagation(); }
+      }, true);
+
+      function arrow(dir, label, d) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'shot-nav ' + dir;
+        b.setAttribute('aria-label', label);
+        b.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"'
+          + ' fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"'
+          + ' stroke-linejoin="round"><path d="' + d + '"/></svg>';
+        b.addEventListener('click', function (e) {
+          e.preventDefault(); e.stopPropagation();
+          track.scrollBy({ left: (dir === 'next' ? 1 : -1) * track.clientWidth,
+                           behavior: reduce ? 'auto' : 'smooth' });
+        });
+        frame.appendChild(b);
+        return b;
+      }
+      var prev = arrow('prev', 'Previous photo', 'M9 2 4 7l5 5');
+      var next = arrow('next', 'Next photo', 'M5 2l5 5-5 5');
+
+      var dots = document.createElement('p');
+      dots.className = 'shot-dots';
+      // The count is decoration; the track itself already carries the label.
+      dots.setAttribute('aria-hidden', 'true');
+      for (var i = 0; i < slides.length; i++) {
+        var dot = document.createElement('span');
+        dot.className = 'shot-dot' + (i ? '' : ' on');
+        dots.appendChild(dot);
+      }
+      frame.parentNode.insertBefore(dots, frame.nextSibling);
+
+      var pending = 0;
+      // Which slide, by index. Every slide is exactly the width of the track,
+      // so this needs no measurement of the content — which matters, because
+      // the first sync runs before the lazy images have laid themselves out,
+      // and scrollWidth still reads as one slide wide at that moment. Asking
+      // scrollWidth then disabled the next arrow on load, and a disabled arrow
+      // is pointer-events: none, so the click fell through to the photo behind
+      // it and opened the project instead of advancing.
+      function sync() {
+        var i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+        [].forEach.call(dots.children, function (d, n) {
+          d.classList.toggle('on', n === i);
+        });
+        prev.disabled = i <= 0;
+        next.disabled = i >= slides.length - 1;
+      }
+      var at_slide = 0;
+      track.addEventListener('scroll', function () {
+        if (pending) return;
+        pending = requestAnimationFrame(function () {
+          pending = 0;
+          at_slide = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+          sync();
+        });
+      });
+
+      // A resize keeps the pixel offset, which stops being a slide boundary the
+      // moment the column changes width — the track ends up parked between two
+      // photos with a sliver of the neighbour showing. Put it back on the slide
+      // it was on. Not smooth: this is a correction, not a move the reader made.
+      window.addEventListener('resize', function () {
+        track.scrollLeft = at_slide * track.clientWidth;
+        sync();
+      });
+      sync();
+    });
+  }
+
   // ---- go -----------------------------------------------------------------
 
   // Shared so anything that writes its own prose after load — the bio on the
@@ -584,6 +675,8 @@
   holdVideo(document);
   collect(document.body);
   placeThumb(false);
+
+  initShots();
 
   var island = document.getElementById('island');
   if (island) initIsland(island);

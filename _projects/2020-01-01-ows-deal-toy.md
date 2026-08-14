@@ -4,6 +4,7 @@ title:  "OWS 10th Anniversary Deal Toy"
 date:   2020-01-01
 category: sculpture
 image_path: "/images/ows-deal-toy/jhuff-ows-deal-toy-"
+shots: 6
 video: "/images/ows-deal-toy/jhuff-ows-deal-toy.mp4"
 video_poster: "/images/ows-deal-toy/jhuff-ows-deal-toy-poster.jpg"
 description: |

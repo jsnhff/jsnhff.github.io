@@ -22,16 +22,48 @@ redirect_from:
   <div class="gallery">
     {%- assign works = site.projects | sort: "date" | reverse -%}
     {%- for p in works %}
+      {%- comment -%}
+        The plate is the first photo, not the only one: the rest of the work's
+        shots run to the right of it, so the wall can be browsed sideways before
+        anyone commits to opening anything. Each shot is its own link, so a tap
+        still goes into the project — js/site.js swallows the click that ends a
+        swipe so a drag never opens something.
+
+        `shots` is the project's own count, the same one its page loops over,
+        so a work cannot show a photo here that its page does not have.
+      {%- endcomment -%}
+      {%- capture href -%}{% if p.live_url %}{{ p.live_url }}{% else %}{{ p.url }}{% endif %}{%- endcapture -%}
+      {%- assign ext = ' target="_blank" rel="noopener"' -%}
+      {%- unless p.live_url %}{% assign ext = '' %}{% endunless -%}
       <article class="row gal-cell">
-        {%- if p.live_url -%}
-        <a class="gal-link" href="{{ p.live_url }}" target="_blank" rel="noopener">
-        {%- else -%}
-        <a class="gal-link" href="{{ p.url }}">
-        {%- endif -%}
-          <div class="plate">
-            <img src="{{ p.plate }}" width="{{ p.plate_w }}" height="{{ p.plate_h }}"
-                 alt="{{ p.title }}" loading="lazy" decoding="async">
+        <div class="gal-frame">
+          {%- comment -%}
+            The plate's proportions set the track's box, so the wall still gives
+            each work the height its own cover asks for.
+          {%- endcomment -%}
+          <div class="shots{% if p.shots == 0 %} is-one{% endif %}"
+               style="--pw: {{ p.plate_w }}; --ph: {{ p.plate_h }};"
+               {% if p.shots > 0 %}tabindex="0" role="group"
+               aria-label="{{ p.title }}, {{ p.shots | plus: 1 }} photos — scroll for more"{% endif %}>
+            <a class="shot" href="{{ href }}"{{ ext }} aria-label="{{ p.title }}">
+              <img src="{{ p.plate }}" width="{{ p.plate_w }}" height="{{ p.plate_h }}"
+                   alt="{{ p.title }}" loading="lazy" decoding="async" draggable="false">
+            </a>
+            {%- for num in (1..p.shots) %}
+            <a class="shot" href="{{ href }}"{{ ext }} tabindex="-1" aria-hidden="true">
+              <img src="{{ p.image_path }}{{ num }}.jpg" alt="" loading="lazy"
+                   decoding="async" draggable="false">
+            </a>
+            {%- endfor %}
           </div>
+          {%- if p.shots > 0 %}
+          {%- comment -%}
+            Added by js/site.js only where a track actually overflows, so a
+            wall without JavaScript is still a wall of scrollable photos.
+          {%- endcomment -%}
+          {%- endif %}
+        </div>
+        <a class="gal-link" href="{{ href }}"{{ ext }}>
           <p class="gal-tag">
             <span class="gal-kind">{{ p.category }}</span>
             <span class="gal-year">{{ p.date | date: "%Y" }}</span>

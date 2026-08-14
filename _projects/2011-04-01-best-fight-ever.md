@@ -4,6 +4,7 @@ title:  "Best Fight Ever / Worst Fight Ever"
 date:   2011-04-01
 category: book
 image_path: "/images/best-fight-ever/jhuff-best-fight-ever-"
+shots: 5
 plate: "/images/plates/best-fight-ever-worst-fight-ever.webp"
 plate_w: 800
 plate_h: 1078

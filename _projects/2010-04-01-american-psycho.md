@@ -6,6 +6,7 @@ redirect_from:
   - /projects/american-pyscho/
 category: book
 image_path: "/images/american-psycho/jhuff-american-psycho-"
+shots: 4
 description: |
     <p>Google reads our emails, garners information from our personal messages and uses that profiling strategy to select "relevant" ads. It then displays those ads on the screen next to the very emails from which the information was initially taken.</p>
 
@@ -20,7 +21,7 @@ plate_h: 1078
 section: studio
 dark: true
 ---
-{% for num in (1..4) %}
+{% for num in (1..page.shots) %}
 <div class="row pj-shot">
 <img src="{{ page.image_path }}{{ num }}.jpg" alt="{{ page.title }}" loading="lazy" decoding="async">
 </div>

@@ -4,6 +4,7 @@ title:  "Mechanical Turk Diaries"
 date:   2009-02-01
 category: website
 image_path: "/images/mechanical-turk-diaries/jhuff-mechanical-turk-diaries-"
+shots: 5
 description: "<a title='The Mechanical Turk Diaries' href='https://mechanicalturkdiaries.tumblr.com'>Stories from Amazon's Anonymous Workforce</a>. Are crowdsourcing platforms like Amazon's Mechanical Turk as bleak as the company's shipping warehouses? Read my essay for The New Inquiry, <a title='Serf Boards' href='https://thenewinquiry.com/serf-boards/'>Serf Boards</a>, to find out more about this project."
 plate: "/images/plates/mechanical-turk-diaries.webp"
 plate_w: 640
@@ -12,7 +13,7 @@ section: studio
 dark: true
 live_url: "https://mechanicalturkdiaries.tumblr.com"
 ---
-{% for num in (1..5) %}
+{% for num in (1..page.shots) %}
 <div class="row pj-shot">
 <img src="{{ page.image_path }}{{ num }}.jpg" srcset="{{ page.image_path }}{{ num }}.jpg 1x, {{ page.image_path }}{{ num }}-2x.jpg 2x" alt="{{ page.title }}" loading="lazy" decoding="async">
 </div>

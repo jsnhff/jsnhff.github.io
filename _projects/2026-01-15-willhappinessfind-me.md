@@ -4,6 +4,7 @@ title:  "willhappinessfind.me"
 date:   2026-01-15
 category: website
 image_path: "/images/willhappinessfind-me/jhuff-willhappinessfind-me-"
+shots: 0
 plate: "/images/plates/willhappinessfind-me.webp"
 plate_w: 640
 plate_h: 550
