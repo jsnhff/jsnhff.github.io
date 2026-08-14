@@ -863,6 +863,17 @@
   }
   .shot:hover { opacity: 0.72; }
   .shot:focus-visible { outline: 2px solid var(--focus); outline-offset: 6px; border-radius: 4px; }
+  /* The push. js/site.js writes two numbers on each slide as it scrolls: --d is
+     how far the slide's centre is from the track's, signed, in track widths,
+     and --a is that distance without the sign. So the picture under the thumb
+     is at 1 and opaque, and its neighbours shrink, fade and lag toward the edge
+     they are leaving by — coming back as they arrive. Driven from scroll
+     position rather than an animation-timeline because scroll-driven CSS
+     animations are not something Safari can be relied on for yet, and this is
+     a phone gesture first.
+
+     The lag is smaller than the travel, so a slide drifts against the swipe
+     instead of tracking it — that difference is what reads as depth. */
   .shot img {
     max-width: 100%;
     max-height: 100%;
@@ -870,61 +881,58 @@
     height: auto;
     object-fit: contain;
     border-radius: 2px;
+    transform: translateX(calc(var(--d, 0) * -13%)) scale(calc(1 - 0.13 * var(--a, 0)));
+    /* Gentle on purpose. A neighbour at rest is off-screen anyway — every slide
+       is exactly one track wide — so a deeper fade bought nothing at either end
+       and only greyed out the middle of the gesture, where both halves are in
+       view at once and the movement is the thing worth looking at. */
+    opacity: calc(1 - 0.5 * var(--a, 0));
     /* A picture inside a link is a drag handle by default, which fights the
        swipe on a trackpad and shows a ghost image on a mouse. */
     -webkit-user-drag: none;
     user-select: none;
+  }
+  /* Asked for less motion: the pictures simply sit there, all of them. */
+  @media (prefers-reduced-motion: reduce) {
+    .shot img { transform: none; opacity: 1; }
   }
 
   /* ---- track controls -------------------------------------------------- */
   /* Both are written by js/site.js and only where a track really overflows,
      so nothing here promises a control that is not there. */
 
-  .shot-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.2rem;
-    height: 2.2rem;
-    padding: 0;
-    border: 0;
-    border-radius: 999px;
-    background: var(--glass);
-    color: var(--ink);
-    cursor: pointer;
-    opacity: 0;
-    transition: opacity 180ms ease, background var(--invert) ease, color var(--invert) ease;
-  }
-  .shot-nav.prev { left: 0; }
-  .shot-nav.next { right: 0; }
-  .shot-nav:hover { background: var(--glass-hover); }
-  .shot-nav[disabled] { opacity: 0 !important; pointer-events: none; }
-  .gal-frame:hover .shot-nav,
-  .shot-nav:focus-visible { opacity: 1; }
-  .shot-nav:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-  .shot-nav svg { display: block; }
-  /* Touch has the swipe itself, and no hover to reveal an arrow with. */
-  @media (hover: none) { .shot-nav { display: none; } }
-
+  /* With the arrows gone the dots are the only thing a mouse can aim at, so
+     they are real buttons. The mark stays 4px; the target around it does not. */
   .shot-dots {
     display: flex;
     justify-content: center;
-    gap: 0.34rem;
-    margin: 0.7rem 0 0;
+    gap: 0;
+    margin: 0.55rem 0 0;
   }
   .shot-dot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.1rem;
+    height: 1.1rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .shot-dot::after {
+    content: "";
     width: 4px;
     height: 4px;
     border-radius: 999px;
     background: var(--ink);
     opacity: 0.22;
-    transition: opacity 200ms ease, background var(--invert) ease;
+    transition: opacity 200ms ease, transform 200ms ease, background var(--invert) ease;
   }
-  .shot-dot.on { opacity: 0.8; }
+  .shot-dot.on::after { opacity: 0.8; }
+  .shot-dot:hover::after { opacity: 0.55; }
+  .shot-dot.on:hover::after { opacity: 0.8; }
+  .shot-dot:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; border-radius: 999px; }
 
   /* A live site is reachable through its own picture, so the wall needs no
      "Visit" line to carry the link. */

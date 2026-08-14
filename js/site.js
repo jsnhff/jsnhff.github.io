@@ -597,60 +597,48 @@
         if (Math.abs(track.scrollLeft - at) > 4) { e.preventDefault(); e.stopPropagation(); }
       }, true);
 
-      function arrow(dir, label, d) {
-        var b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'shot-nav ' + dir;
-        b.setAttribute('aria-label', label);
-        b.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"'
-          + ' fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"'
-          + ' stroke-linejoin="round"><path d="' + d + '"/></svg>';
-        b.addEventListener('click', function (e) {
-          e.preventDefault(); e.stopPropagation();
-          track.scrollBy({ left: (dir === 'next' ? 1 : -1) * track.clientWidth,
-                           behavior: reduce ? 'auto' : 'smooth' });
-        });
-        frame.appendChild(b);
-        return b;
-      }
-      var prev = arrow('prev', 'Previous photo', 'M9 2 4 7l5 5');
-      var next = arrow('next', 'Next photo', 'M5 2l5 5-5 5');
-
+      // The dots are the whole control now — no arrows over the picture.
       var dots = document.createElement('p');
       dots.className = 'shot-dots';
-      // The count is decoration; the track itself already carries the label.
-      dots.setAttribute('aria-hidden', 'true');
-      for (var i = 0; i < slides.length; i++) {
-        var dot = document.createElement('span');
+      [].forEach.call(slides, function (slide, i) {
+        var dot = document.createElement('button');
+        dot.type = 'button';
         dot.className = 'shot-dot' + (i ? '' : ' on');
+        dot.setAttribute('aria-label', 'Photo ' + (i + 1) + ' of ' + slides.length);
+        dot.addEventListener('click', function (e) {
+          e.preventDefault(); e.stopPropagation();
+          track.scrollTo({ left: i * track.clientWidth,
+                           behavior: reduce ? 'auto' : 'smooth' });
+        });
         dots.appendChild(dot);
-      }
+      });
       frame.parentNode.insertBefore(dots, frame.nextSibling);
 
-      var pending = 0;
-      // Which slide, by index. Every slide is exactly the width of the track,
-      // so this needs no measurement of the content — which matters, because
-      // the first sync runs before the lazy images have laid themselves out,
-      // and scrollWidth still reads as one slide wide at that moment. Asking
-      // scrollWidth then disabled the next arrow on load, and a disabled arrow
-      // is pointer-events: none, so the click fell through to the photo behind
-      // it and opened the project instead of advancing.
-      function sync() {
-        var i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
-        [].forEach.call(dots.children, function (d, n) {
-          d.classList.toggle('on', n === i);
-        });
-        prev.disabled = i <= 0;
-        next.disabled = i >= slides.length - 1;
+      var pending = 0, at_slide = 0;
+
+      // How far each slide sits from the middle of the track, in track widths,
+      // signed. CSS turns that into the scale, the fade and the lag. Derived
+      // from scrollLeft rather than each slide's own geometry, so it costs no
+      // layout read per frame and is already right before the lazy images have
+      // sized themselves — every slide is exactly one track wide by construction.
+      function paint() {
+        var w = track.clientWidth || 1;
+        var here = track.scrollLeft / w;
+        for (var i = 0; i < slides.length; i++) {
+          var d = i - here;
+          if (d < -1) d = -1; else if (d > 1) d = 1;
+          slides[i].style.setProperty('--d', d.toFixed(4));
+          slides[i].style.setProperty('--a', Math.abs(d).toFixed(4));
+        }
+        at_slide = Math.round(here);
+        for (var n = 0; n < dots.children.length; n++) {
+          dots.children[n].classList.toggle('on', n === at_slide);
+        }
       }
-      var at_slide = 0;
+
       track.addEventListener('scroll', function () {
         if (pending) return;
-        pending = requestAnimationFrame(function () {
-          pending = 0;
-          at_slide = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
-          sync();
-        });
+        pending = requestAnimationFrame(function () { pending = 0; paint(); });
       });
 
       // A resize keeps the pixel offset, which stops being a slide boundary the
@@ -659,9 +647,9 @@
       // it was on. Not smooth: this is a correction, not a move the reader made.
       window.addEventListener('resize', function () {
         track.scrollLeft = at_slide * track.clientWidth;
-        sync();
+        paint();
       });
-      sync();
+      paint();
     });
   }
 
