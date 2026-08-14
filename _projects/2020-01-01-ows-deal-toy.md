@@ -4,7 +4,10 @@ title:  "OWS 10th Anniversary Deal Toy"
 date:   2020-01-01
 category: sculpture
 image_path: "/images/ows-deal-toy/jhuff-ows-deal-toy-"
+# The plate is shot 1 recropped around the object, so the wall does not
+# show the same view twice.
 shots: 6
+plate_shot: 1
 video: "/images/ows-deal-toy/jhuff-ows-deal-toy.mp4"
 video_poster: "/images/ows-deal-toy/jhuff-ows-deal-toy-poster.jpg"
 description: |
@@ -26,8 +29,8 @@ description: |
   Modelled with Peter Valkanoff. All proceeds assigned to W.A.G.E., Working
   Artists and the Greater Economy.
 plate: "/images/plates/ows-deal-toy.webp"
-plate_w: 1000
-plate_h: 1679
+plate_w: 1100
+plate_h: 1341
 section: studio
 dark: true
 ---
