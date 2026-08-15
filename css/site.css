@@ -804,7 +804,7 @@
      can take whatever height is left above the tag. Everything in a row then
      stands on one baseline and the tags line up across it — the shelf, kept,
      but drawn per row instead of once for the whole wall. */
-  .gal-cell { display: flex; flex-direction: column; margin-bottom: 0; }
+  .gal-cell { display: flex; margin-bottom: 0; }
 
   /* One band held every plate at a common scale, which was right when the wall
      was sorted into sets and a shelf of books could be compared like for like.
@@ -812,151 +812,45 @@
      where relative scale means nothing and a tall band just leaves a hole above
      anything short. Each plate now takes the height its own image needs, capped
      so nothing towers, and still stands on the row's baseline. */
-  /* The frame holds the track and the controls that sit over it. It sits at
-     the bottom of the cell so the tags across a row still line up. */
-  .gal-frame {
-    position: relative;
+  .plate {
     display: flex;
-    align-items: flex-end;
     flex: 1;
-    min-height: 0;
-  }
-
-  /* The work's photos run sideways inside the cell. Snap is mandatory so a
-     flick always lands on a picture rather than between two, and the bar is
-     hidden because the dots already say how many there are.
-
-     The track takes its height from the plate's own proportions, capped — so
-     the wall keeps giving each work the height its cover asks for rather than
-     one band for everything, and every other shot of that work is contained
-     inside the box the cover made. Without a stated height the track grew to
-     whatever its tallest interior shot needed and left a hole above the cover. */
-  .shots {
-    display: flex;
-    width: 100%;
-    min-width: 0;
-    aspect-ratio: var(--pw) / var(--ph);
-    max-height: clamp(13rem, 38vh, 24rem);
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    overscroll-behavior-x: contain;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-  .shots::-webkit-scrollbar { display: none; }
-  .shots:focus-visible { outline: 2px solid var(--focus); outline-offset: 6px; border-radius: 4px; }
-  /* One picture and nothing to scroll: no track behaviour at all. */
-  .shots.is-one { overflow-x: visible; scroll-snap-type: none; }
-
-  .shot {
-    flex: 0 0 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
-    /* The frame the picture is laid out against. */
-    position: relative;
-    /* Each slide clips its own picture. Without this the lag that gives the
-       swipe its depth pushed the neighbours *inward* — a slide sitting off to
-       the right is translated left — so both of them poked past the photo you
-       were looking at and stood at its edges as grey bars. The parallax is
-       meant to happen inside the frame, not across it. */
-    overflow: hidden;
-    scroll-snap-align: center;
-    scroll-snap-stop: always;
-    text-decoration: none;
-    color: inherit;
-    transition: opacity 200ms ease;
+    margin-bottom: 0;
   }
-  .shot:hover { opacity: 0.72; }
-  .shot:focus-visible { outline: 2px solid var(--focus); outline-offset: 6px; border-radius: 4px; }
-  /* The push. js/site.js writes two numbers on each slide as it scrolls: --d is
-     how far the slide's centre is from the track's, signed, in track widths,
-     and --a is that distance without the sign. So the picture under the thumb
-     is at 1 and opaque, and its neighbours shrink, fade and lag toward the edge
-     they are leaving by — coming back as they arrive. Driven from scroll
-     position rather than an animation-timeline because scroll-driven CSS
-     animations are not something Safari can be relied on for yet, and this is
-     a phone gesture first.
-
-     The lag is smaller than the travel, so a slide drifts against the swipe
-     instead of tracking it — that difference is what reads as depth. */
-  /* Laid out against the slide's own edges rather than sized as a percentage
-     of it. A percentage height has to resolve against the parent's height, and
-     the parent's height here comes from aspect-ratio — which Safari does not
-     reliably resolve percentages against. When it failed, the picture fell back
-     to width-only sizing, grew taller than its slide, and the overflow clip
-     that stops the swipe leaking past the frame turned that into a crop: the
-     Occupy piece lost the date off the bottom of its own plinth.
-
-     inset: 0 needs no such resolution — the box simply is the slide — and
-     object-fit does the fitting, so the picture cannot exceed its frame in any
-     engine, whatever the plate's proportions turn out to be. */
-  .shot img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+  .plate img {
+    max-width: 100%;
+    max-height: clamp(13rem, 38vh, 24rem);
+    width: auto;
+    height: auto;
     object-fit: contain;
     border-radius: 2px;
-    transform: translateX(calc(var(--d, 0) * -9%)) scale(calc(1 - 0.13 * var(--a, 0)));
-    /* Gentle on purpose. A neighbour at rest is off-screen anyway — every slide
-       is exactly one track wide — so a deeper fade bought nothing at either end
-       and only greyed out the middle of the gesture, where both halves are in
-       view at once and the movement is the thing worth looking at. */
-    opacity: calc(1 - 0.5 * var(--a, 0));
-    /* A picture inside a link is a drag handle by default, which fights the
-       swipe on a trackpad and shows a ghost image on a mouse. */
-    -webkit-user-drag: none;
-    user-select: none;
   }
-  /* Asked for less motion: the pictures simply sit there, all of them. */
-  @media (prefers-reduced-motion: reduce) {
-    .shot img { transform: none; opacity: 1; }
-  }
-
-  /* ---- track controls -------------------------------------------------- */
-  /* Both are written by js/site.js and only where a track really overflows,
-     so nothing here promises a control that is not there. */
-
-  /* With the arrows gone the dots are the only thing a mouse can aim at, so
-     they are real buttons. The mark stays 4px; the target around it does not. */
-  .shot-dots {
-    display: flex;
-    justify-content: center;
-    gap: 0;
-    margin: 0.55rem 0 0;
-  }
-  .shot-dot {
-    display: flex;
+  /* A wall with a hole in it reads as broken, so the one project without a
+     picture yet holds its place. */
+  .plate.is-empty {
     align-items: center;
-    justify-content: center;
-    width: 1.1rem;
-    height: 1.1rem;
-    padding: 0;
-    border: 0;
-    background: none;
-    cursor: pointer;
+    width: 100%;
+    max-width: 13rem;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 1px var(--glass-edge);
+    font-size: 0.9rem;
+    text-align: center;
+    line-height: 1.5;
+    color: var(--dim);
+    transition: box-shadow var(--invert) ease, color var(--invert) ease;
   }
-  .shot-dot::after {
-    content: "";
-    width: 4px;
-    height: 4px;
-    border-radius: 999px;
-    background: var(--ink);
-    opacity: 0.22;
-    transition: opacity 200ms ease, transform 200ms ease, background var(--invert) ease;
-  }
-  .shot-dot.on::after { opacity: 0.8; }
-  .shot-dot:hover::after { opacity: 0.55; }
-  .shot-dot.on:hover::after { opacity: 0.8; }
-  .shot-dot:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; border-radius: 999px; }
+  .plate.is-empty small { display: block; font-size: 0.78rem; opacity: 0.75; }
 
   /* A live site is reachable through its own picture, so the wall needs no
      "Visit" line to carry the link. */
   .gal-link {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     text-decoration: none;
     color: inherit;
     transition: opacity 200ms ease;
@@ -978,8 +872,10 @@
       grid-template-columns: 1fr;
       gap: clamp(2.5rem, 9vw, 3.5rem);
     }
+    .plate { height: auto; margin-bottom: 0; }
     /* A tall picture would otherwise run past the screen it is meant to fit. */
-    .shots { max-height: 62vh; }
+    .plate img { max-height: 62vh; }
+    .plate.is-empty { height: 9rem; max-width: none; }
   }
 
   .row-title {

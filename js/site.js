@@ -289,9 +289,7 @@
     // Only the wall opens sheets. Anywhere else, a project link is a link.
     if (document.querySelector('.gallery')) {
       document.addEventListener('click', function (e) {
-        // The tag line and every photo in the cell's track are the same door.
-        var a = e.target.closest && e.target.closest(
-          'a.gal-link[href^="/projects/"], a.shot[href^="/projects/"]');
+        var a = e.target.closest && e.target.closest('a.gal-link[href^="/projects/"]');
         if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
         e.preventDefault();
         openSheet(a.getAttribute('href'), true);
@@ -576,83 +574,6 @@
     window.addEventListener('resize', remeasure);
   }
 
-  // ---- the wall's photos, sideways ----------------------------------------
-  // Each cell already ships every shot of its work as a snapping row. What is
-  // added here is only what a row cannot do for itself: arrows for a mouse,
-  // dots to say how far along you are, and the rule that a swipe which moved
-  // the track does not also count as opening the project.
-  function initShots() {
-    [].forEach.call(document.querySelectorAll('.gallery .shots'), function (track) {
-      var slides = track.querySelectorAll('.shot');
-      if (slides.length < 2) return;
-      var frame = track.parentNode;
-
-      // A gesture that scrolled is a look, not a click. Measured on the track
-      // itself rather than on pointer distance, so a two-finger trackpad push
-      // and a thumb swipe are both caught, and a still tap never is. Capture,
-      // so this beats the delegated handler that opens the sheet.
-      var at = 0;
-      track.addEventListener('pointerdown', function () { at = track.scrollLeft; });
-      track.addEventListener('click', function (e) {
-        if (Math.abs(track.scrollLeft - at) > 4) { e.preventDefault(); e.stopPropagation(); }
-      }, true);
-
-      // The dots are the whole control now — no arrows over the picture.
-      var dots = document.createElement('p');
-      dots.className = 'shot-dots';
-      [].forEach.call(slides, function (slide, i) {
-        var dot = document.createElement('button');
-        dot.type = 'button';
-        dot.className = 'shot-dot' + (i ? '' : ' on');
-        dot.setAttribute('aria-label', 'Photo ' + (i + 1) + ' of ' + slides.length);
-        dot.addEventListener('click', function (e) {
-          e.preventDefault(); e.stopPropagation();
-          track.scrollTo({ left: i * track.clientWidth,
-                           behavior: reduce ? 'auto' : 'smooth' });
-        });
-        dots.appendChild(dot);
-      });
-      frame.parentNode.insertBefore(dots, frame.nextSibling);
-
-      var pending = 0, at_slide = 0;
-
-      // How far each slide sits from the middle of the track, in track widths,
-      // signed. CSS turns that into the scale, the fade and the lag. Derived
-      // from scrollLeft rather than each slide's own geometry, so it costs no
-      // layout read per frame and is already right before the lazy images have
-      // sized themselves — every slide is exactly one track wide by construction.
-      function paint() {
-        var w = track.clientWidth || 1;
-        var here = track.scrollLeft / w;
-        for (var i = 0; i < slides.length; i++) {
-          var d = i - here;
-          if (d < -1) d = -1; else if (d > 1) d = 1;
-          slides[i].style.setProperty('--d', d.toFixed(4));
-          slides[i].style.setProperty('--a', Math.abs(d).toFixed(4));
-        }
-        at_slide = Math.round(here);
-        for (var n = 0; n < dots.children.length; n++) {
-          dots.children[n].classList.toggle('on', n === at_slide);
-        }
-      }
-
-      track.addEventListener('scroll', function () {
-        if (pending) return;
-        pending = requestAnimationFrame(function () { pending = 0; paint(); });
-      });
-
-      // A resize keeps the pixel offset, which stops being a slide boundary the
-      // moment the column changes width — the track ends up parked between two
-      // photos with a sliver of the neighbour showing. Put it back on the slide
-      // it was on. Not smooth: this is a correction, not a move the reader made.
-      window.addEventListener('resize', function () {
-        track.scrollLeft = at_slide * track.clientWidth;
-        paint();
-      });
-      paint();
-    });
-  }
-
   // ---- go -----------------------------------------------------------------
 
   // Shared so anything that writes its own prose after load — the bio on the
@@ -663,8 +584,6 @@
   holdVideo(document);
   collect(document.body);
   placeThumb(false);
-
-  initShots();
 
   var island = document.getElementById('island');
   if (island) initIsland(island);
