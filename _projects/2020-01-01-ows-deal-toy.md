@@ -29,8 +29,8 @@ description: |
   Modelled with Peter Valkanoff. All proceeds assigned to W.A.G.E., Working
   Artists and the Greater Economy.
 plate: "/images/plates/ows-deal-toy.webp"
-plate_w: 1100
-plate_h: 1341
+plate_w: 1000
+plate_h: 1690
 section: studio
 dark: true
 ---
