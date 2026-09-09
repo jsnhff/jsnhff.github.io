@@ -22,6 +22,7 @@ autosummarize:
     items:
       - name: "Inverse"
         note: "2016. Gabe Bergado"
+        href: "https://www.inverse.com/article/23376-internet-yami-ichi-new-york-2016-gif-dance-party-sonic-the-hedgehog-meme"
       - name: "The New Yorker"
         note: "2010. Madeleine Schwartz"
         href: "https://www.newyorker.com/books/page-turner/rise-of-the-literature-machines"
@@ -86,13 +87,16 @@ real-beauty-pics:
     items:
       - name: "Printed Web 3"
         note: "2015. Curated by Paul Soulellis"
+        href: "http://libraryoftheprintedweb.tumblr.com/"
 cable:
   - head: "Published in"
     items:
       - name: "Printed Web 3"
         note: "2015. Curated by Paul Soulellis"
+        href: "http://libraryoftheprintedweb.tumblr.com/"
 endless-opportunities:
   - head: "Published in"
     items:
       - name: "Collect the WWWorld"
         note: "2011. Link Editions, catalogue"
+        href: "https://www.linkartcenter.eu/archives/2120"
