@@ -100,3 +100,12 @@ endless-opportunities:
       - name: "Collect the WWWorld"
         note: "2011. Link Editions, catalogue"
         href: "https://www.linkartcenter.eu/archives/2120"
+bad-poetry-one:
+  - head: "Type"
+    items:
+      - name: "BBB Open Sans"
+        note: "Bye Bye Binary; a fork of Steve Matteson’s Open Sans"
+        href: "https://gitlab.com/bye-bye-binary/bbb-open-sans"
+      - name: "EnclavAcadam"
+        note: "Bye Bye Binary"
+        href: "https://gitlab.com/bye-bye-binary/enclavacadam"

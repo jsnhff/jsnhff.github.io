@@ -138,3 +138,15 @@ export const SCHOLARSHIP = [
   { author:"Scott Rettberg", title:"Electronic Literature, ch. 6: Network Writing",
     venue:"TODO \u2014 publisher, year, page range" },
 ];
+
+/* Typefaces a work is set in. Project pages show these under "Type";
+   the bio page does not use this list — a face is a credit on the work,
+   not a credential of the artist. */
+export const TYPE = [
+  { name:"BBB Open Sans", note:"Bye Bye Binary; a fork of Steve Matteson\u2019s Open Sans",
+    href:"https://gitlab.com/bye-bye-binary/bbb-open-sans",
+    works:["bad-poetry-one"] },
+  { name:"EnclavAcadam", note:"Bye Bye Binary",
+    href:"https://gitlab.com/bye-bye-binary/enclavacadam",
+    works:["bad-poetry-one"] },
+];

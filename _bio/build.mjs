@@ -14,7 +14,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderStatic, TOTAL } from "./src/bio.js";
-import { COLLECTIONS, ANTHOLOGIES, WRITING, PRESS, SCHOLARSHIP } from "./src/lists.data.js";
+import { COLLECTIONS, ANTHOLOGIES, WRITING, PRESS, SCHOLARSHIP, TYPE } from "./src/lists.data.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const out = p => path.join(here, "..", "_includes", p);
@@ -110,6 +110,7 @@ const SECTIONS = [
   ["Published in", ANTHOLOGIES,  a => ({ name: a.title,  note: [a.year, a.note].filter(Boolean).join(". ") })],
   ["Press",        PRESS,        p => ({ name: p.outlet, note: [p.year, p.author].filter(Boolean).join(". ") })],
   ["Scholarship",  SCHOLARSHIP,  s => ({ name: s.title,  note: [s.year, s.author].filter(Boolean).join(". ") })],
+  ["Type",         TYPE,         t => ({ name: t.name,   note: t.note })],
 ];
 
 // A `works` entry is either a slug or {slug, href}. The object form exists so
