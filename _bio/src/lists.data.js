@@ -150,6 +150,25 @@ export const TYPE = [
   { name:"EnclavAcadam", note:"Bye Bye Binary",
     href:"https://gitlab.com/bye-bye-binary/enclavacadam",
     works:["bad-poetry-one"] },
+  { name:"Glossy Magazine", note:"Mads Wildgaard, Bold Decisions; the 2023 edition",
+    works:["autosummarize"] },
+  { name:"Everson Mono", note:"Michael Everson; the 2023 edition",
+    works:["autosummarize"] },
+];
+
+/* Later editions of a work: who made them, where they launched. */
+export const EDITIONS = [
+  { name:"Second edition, Specific Ideas",
+    note:"2023. Designed by Adam Swift Lucas; foreword by ChatGPT, barcode by DALL\u00b7E; edition of 100. Launched at Printed Matter\u2019s Los Angeles Art Book Fair",
+    href:"https://specificideas.com/autosummarize",
+    works:["autosummarize"] },
+];
+
+/* Who photographed the work as it appears on these pages. */
+export const PHOTOS = [
+  { name:"Adam Swift Lucas", note:"Photographs of the 2023 edition",
+    href:"https://specificideas.com/autosummarize",
+    works:["autosummarize"] },
 ];
 
 /* Collaborators. The name stays in the description's prose; the link

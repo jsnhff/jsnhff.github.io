@@ -4,9 +4,7 @@ title:  "Endless Opportunities"
 date:   2016-01-01
 category: book
 image_path: "/images/endless-opportunities-book/jhuff-endless-opportunities-book-"
-shots: 5
-# The plate is this shot re-encoded, so the wall does not show it twice.
-plate_shot: 1
+shots: 4
 description: |
   This is an essay about a project, and about algorithms.
 

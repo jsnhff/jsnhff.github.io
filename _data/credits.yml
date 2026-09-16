@@ -47,6 +47,11 @@ american-psycho:
         note: "2015. Kaja Marczewska"
         href: "https://median.newmediacaucus.org/the_aesthetics_of_erasure/erasing-in-the-algorithmic-extreme-mimi-cabell-and-jason-huffs-american-psycho/"
 autosummarize:
+  - head: "Editions"
+    items:
+      - name: "Second edition, Specific Ideas"
+        note: "2023. Designed by Adam Swift Lucas; foreword by ChatGPT, barcode by DALL·E; edition of 100. Launched at Printed Matter’s Los Angeles Art Book Fair"
+        href: "https://specificideas.com/autosummarize"
   - head: "Held in"
     items:
       - name: "MoMA Library, Museum of Modern Art"
@@ -76,6 +81,17 @@ autosummarize:
       - name: "The Rumpus"
         note: "2010. Jeremy Hatch"
         href: "https://therumpus.net/2010/08/02/autosummarize-applied-to-popular-works/"
+  - head: "Photographs"
+    items:
+      - name: "Adam Swift Lucas"
+        note: "Photographs of the 2023 edition"
+        href: "https://specificideas.com/autosummarize"
+  - head: "Type"
+    items:
+      - name: "Glossy Magazine"
+        note: "Mads Wildgaard, Bold Decisions; the 2023 edition"
+      - name: "Everson Mono"
+        note: "Michael Everson; the 2023 edition"
 best-fight-ever:
   - head: "Held in"
     items:
