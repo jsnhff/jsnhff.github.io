@@ -79,7 +79,8 @@ export const WRITING = [
   { year:"2016", title:"Artist Profile: Damon Zucconi", outlet:"Rhizome",
     href:"https://rhizome.org/editorial/2016/nov/01/artist-profile-damon-zucconi/" },
   { year:"2014", title:"Serf Boards", outlet:"The New Inquiry",
-    href:"https://thenewinquiry.com/serf-boards/" },
+    href:"https://thenewinquiry.com/serf-boards/",
+    works:["mechanical-turk-diaries"] },
   { year:"2012", title:"Beyond the Surface: 15 Years of Desktop Aesthetics", outlet:"Rhizome",
     href:"https://rhizome.org/editorial/2012/mar/14/beyond-surface-15-years-desktop-aesthetics/" },
   { year:"2012", title:"Interface Aesthetics: An Introduction", outlet:"Rhizome",
@@ -149,4 +150,18 @@ export const TYPE = [
   { name:"EnclavAcadam", note:"Bye Bye Binary",
     href:"https://gitlab.com/bye-bye-binary/enclavacadam",
     works:["bad-poetry-one"] },
+];
+
+/* Collaborators. The name stays in the description's prose; the link
+   lives here so the paragraph carries no anchors. */
+export const WITH = [
+  { name:"Mimi Cabell", href:"https://www.mimicabell.com/#/american-psycho/",
+    works:["american-psycho"] },
+];
+
+/* What a work answers. Named in prose, linked here. */
+export const AFTER = [
+  { name:"Google Beauty", note:"Joanne McNeil. Medium, The Message, 2014",
+    href:"https://medium.com/message/google-beauty-f73d7bf4e51b",
+    works:["real-beauty-pics"] },
 ];

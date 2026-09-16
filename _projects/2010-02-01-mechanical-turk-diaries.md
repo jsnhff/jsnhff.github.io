@@ -8,7 +8,8 @@ image_path: "/images/mechanical-turk-diaries/jhuff-mechanical-turk-diaries-"
 # straight out to it. The screenshots are still in /images; nothing renders
 # them. Put a count back here and they return, on the wall and the page both.
 shots: 0
-description: "<a title='The Mechanical Turk Diaries' href='https://mechanicalturkdiaries.tumblr.com'>Stories from Amazon's Anonymous Workforce</a>. Are crowdsourcing platforms like Amazon's Mechanical Turk as bleak as the company's shipping warehouses? Read my essay for The New Inquiry, <a title='Serf Boards' href='https://thenewinquiry.com/serf-boards/'>Serf Boards</a>, to find out more about this project."
+description: "Stories from Amazon's anonymous workforce. Are crowdsourcing platforms like Amazon's Mechanical Turk as bleak as the company's shipping warehouses?"
+live_url: "https://mechanicalturkdiaries.tumblr.com"
 plate: "/images/plates/mechanical-turk-diaries.webp"
 plate_w: 640
 plate_h: 550

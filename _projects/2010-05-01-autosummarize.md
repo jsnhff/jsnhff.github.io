@@ -6,10 +6,7 @@ category: book
 image_path: "/images/autosummarize/jhuff-autosummarize-"
 shots: 5
 description: |
-  The top 100 most downloaded copyright free books summarized using Microsoft Word 2008’s AutoSummarize 10-sentence function and organized alphabetically. "Word has examined the document and picked the sentences most relevant to the main theme." ~ Word 2008<br>
-  <a href='https://www.newyorker.com/books/page-turner/rise-of-the-literature-machines'>Mentioned in the <em>New Yorker</em></a>,
-   <a href='https://therumpus.net/2010/08/02/autosummarize-applied-to-popular-works/'>Mentioned on <em>The Rumpus</em></a><br>
-  <a href='http://www.mcnallyjackson.com/bookmachine/autosummarize-jason-huff'>Available at McNally Jackson</a>
+  The top 100 most downloaded copyright free books summarized using Microsoft Word 2008’s AutoSummarize 10-sentence function and organized alphabetically. "Word has examined the document and picked the sentences most relevant to the main theme." ~ Word 2008
 plate: "/images/plates/autosummarize.webp"
 plate_w: 800
 plate_h: 1078

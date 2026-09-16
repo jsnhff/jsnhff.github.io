@@ -8,7 +8,8 @@ image_path: "/images/work-life-tips/jhuff-work-life-tips-"
 # straight out to it. The screenshots are still in /images; nothing renders
 # them. Put a count back here and they return, on the wall and the page both.
 shots: 0
-description: "Visit <a title='work-life.tips' href='http://www.work-life.tips'>work-life.tips</a>. Relax your mind and optimize your life."
+description: "Relax your mind and optimize your life."
+live_url: "http://www.work-life.tips"
 plate: "/images/plates/work-life-tips.webp"
 plate_w: 640
 plate_h: 550

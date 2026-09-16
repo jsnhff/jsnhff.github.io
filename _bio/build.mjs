@@ -14,7 +14,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderStatic, TOTAL } from "./src/bio.js";
-import { COLLECTIONS, ANTHOLOGIES, WRITING, PRESS, SCHOLARSHIP, TYPE } from "./src/lists.data.js";
+import { COLLECTIONS, ANTHOLOGIES, WRITING, PRESS, SCHOLARSHIP, TYPE, WITH, AFTER } from "./src/lists.data.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const out = p => path.join(here, "..", "_includes", p);
@@ -103,13 +103,16 @@ fs.writeFileSync(out("bio-lists.html"), banner("lists.data.js") + parts.join("\n
    the same way on every page. */
 
 const SECTIONS = [
+  ["With",         WITH,         w => ({ name: w.name })],
   // A collection's note glosses the record ("AutoSummarize and American
   // Psycho, acquired 2017…"), which on the AutoSummarize page just names the
   // work you are already looking at. The institution is the credential.
   ["Held in",      COLLECTIONS,  c => ({ name: c.name })],
   ["Published in", ANTHOLOGIES,  a => ({ name: a.title,  note: [a.year, a.note].filter(Boolean).join(". ") })],
   ["Press",        PRESS,        p => ({ name: p.outlet, note: [p.year, p.author].filter(Boolean).join(". ") })],
+  ["Writing",      WRITING,      w => ({ name: w.title,  note: [w.year, w.outlet].filter(Boolean).join(". ") })],
   ["Scholarship",  SCHOLARSHIP,  s => ({ name: s.title,  note: [s.year, s.author].filter(Boolean).join(". ") })],
+  ["After",        AFTER,        a => ({ name: a.name,   note: a.note })],
   ["Type",         TYPE,         t => ({ name: t.name,   note: t.note })],
 ];
 
