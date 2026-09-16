@@ -150,10 +150,10 @@ export const TYPE = [
   { name:"EnclavAcadam", note:"Bye Bye Binary",
     href:"https://gitlab.com/bye-bye-binary/enclavacadam",
     works:["bad-poetry-one"] },
-  { name:"Glossy Magazine", note:"Mads Wildgaard, Bold Decisions; the 2023 edition",
-    works:["autosummarize"] },
-  { name:"Everson Mono", note:"Michael Everson; the 2023 edition",
-    works:["autosummarize"] },
+  { name:"Glossy Magazine", note:"Mads Wildgaard, Bold Decisions",
+    works:["autosummarize-second-edition"] },
+  { name:"Everson Mono", note:"Michael Everson",
+    works:["autosummarize-second-edition"] },
 ];
 
 /* Later editions of a work: who made them, where they launched. */
@@ -166,9 +166,9 @@ export const EDITIONS = [
 
 /* Who photographed the work as it appears on these pages. */
 export const PHOTOS = [
-  { name:"Adam Swift Lucas", note:"Photographs of the 2023 edition",
+  { name:"Adam Swift Lucas", note:"Photographs of the second edition",
     href:"https://specificideas.com/autosummarize",
-    works:["autosummarize"] },
+    works:["autosummarize-second-edition"] },
 ];
 
 /* Collaborators. The name stays in the description's prose; the link
@@ -176,6 +176,9 @@ export const PHOTOS = [
 export const WITH = [
   { name:"Mimi Cabell", href:"https://www.mimicabell.com/#/american-psycho/",
     works:["american-psycho"] },
+  { name:"Adam Swift Lucas, Specific Ideas",
+    href:"https://specificideas.com/autosummarize",
+    works:["autosummarize-second-edition"] },
 ];
 
 /* What a work answers. Named in prose, linked here. */

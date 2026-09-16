@@ -46,6 +46,22 @@ american-psycho:
       - name: "Erasing in the Algorithmic Extreme"
         note: "2015. Kaja Marczewska"
         href: "https://median.newmediacaucus.org/the_aesthetics_of_erasure/erasing-in-the-algorithmic-extreme-mimi-cabell-and-jason-huffs-american-psycho/"
+autosummarize-second-edition:
+  - head: "With"
+    items:
+      - name: "Adam Swift Lucas, Specific Ideas"
+        href: "https://specificideas.com/autosummarize"
+  - head: "Photographs"
+    items:
+      - name: "Adam Swift Lucas"
+        note: "Photographs of the second edition"
+        href: "https://specificideas.com/autosummarize"
+  - head: "Type"
+    items:
+      - name: "Glossy Magazine"
+        note: "Mads Wildgaard, Bold Decisions"
+      - name: "Everson Mono"
+        note: "Michael Everson"
 autosummarize:
   - head: "Editions"
     items:
@@ -81,17 +97,6 @@ autosummarize:
       - name: "The Rumpus"
         note: "2010. Jeremy Hatch"
         href: "https://therumpus.net/2010/08/02/autosummarize-applied-to-popular-works/"
-  - head: "Photographs"
-    items:
-      - name: "Adam Swift Lucas"
-        note: "Photographs of the 2023 edition"
-        href: "https://specificideas.com/autosummarize"
-  - head: "Type"
-    items:
-      - name: "Glossy Magazine"
-        note: "Mads Wildgaard, Bold Decisions; the 2023 edition"
-      - name: "Everson Mono"
-        note: "Michael Everson; the 2023 edition"
 best-fight-ever:
   - head: "Held in"
     items:
