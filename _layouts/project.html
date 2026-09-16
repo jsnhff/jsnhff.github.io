@@ -17,6 +17,18 @@ layout: site
     {% endif %}
 
     {%- comment -%}
+      A work you can own says so, in the same breath and the same voice as the
+      visit link. The href is a Shopify cart permalink: it drops the book in the
+      cart and hands the buyer to Shopify's checkout, so this page stays static
+      and keeps no cart of its own. Gated on shop_open — see _config.yml.
+    {%- endcomment -%}
+    {% if page.buy_url and site.shop_open %}
+      <p class="pj-buy">
+        <a href="{{ page.buy_url }}" target="_blank" rel="noopener">Buy{% if page.buy_price %} &mdash; {{ page.buy_price }}{% endif %} &rarr;</a>
+      </p>
+    {% endif %}
+
+    {%- comment -%}
       What this work carries: where it is held, what it is published in, who
       wrote about it. Keyed off the project's slug in _data/credits.yml, which
       _bio/build.mjs generates from the same lists the Info page reads — so a

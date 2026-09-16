@@ -752,7 +752,7 @@
   .pj-desc { margin: 0; font-size: 1.05rem; line-height: 1.62; }
   .pj-desc p { margin: 0 0 var(--s4); }
   .pj-desc p:last-child { margin-bottom: 0; }
-  .pj-visit { margin: 1.1rem 0 0; font-size: 0.95rem; }
+  .pj-visit, .pj-buy { margin: 1.1rem 0 0; font-size: 0.95rem; }
 
   .pj-shot { margin: 0 0 clamp(var(--s5), 4vh, 2.5rem); text-align: center; }
   .pj-shot:last-child { margin-bottom: 0; }
