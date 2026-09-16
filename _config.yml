@@ -16,6 +16,12 @@ home_statement: "Jason Huff is a design director and artist based in Los Angele
 background_shader: nightfield
 background_grain: 0.5
 
+# Selling. The storefront at regender.xyz is password-protected until launch,
+# and a Buy link that lands on a password wall is worse than no Buy link — so
+# the affordance stays off until the shop is genuinely open. Flip this to true
+# the day the password comes off. Nothing else has to change.
+shop_open: false
+
 # Build settings
 markdown: kramdown
 future: true
