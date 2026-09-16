@@ -6,7 +6,8 @@ category: book
 image_path: "/images/bad-poetry-one/jhuff-bad-poetry-one-"
 shots: 5
 description: |
-  Eleven poems about the strangeness of life now. Five synthetic
+  Eleven poems about the strangeness of life now, written with AI:
+  Claude drafted, the author directed and rewrote. Five synthetic
   critics gave notes before printing. The cover is a found sunset.
 plate: "/images/plates/bad-poetry-one.webp"
 plate_w: 800
