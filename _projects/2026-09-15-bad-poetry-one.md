@@ -7,8 +7,8 @@ image_path: "/images/bad-poetry-one/jhuff-bad-poetry-one-"
 shots: 5
 description: |
   Eleven poems about the strangeness of life now, written with Claude
-  Opus 5: the author directed, Claude drafted, the author edited and
-  cut. Five synthetic critics gave notes before printing. The cover is
+  Opus 5: the author directed, Claude drafted, the author edited,
+  cut, and rewrote. Five synthetic critics gave notes before printing. The cover is
   a found sunset.
 plate: "/images/plates/bad-poetry-one.webp"
 plate_w: 800
