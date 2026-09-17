@@ -7,7 +7,7 @@ image_path: "/images/bad-poetry-one/jhuff-bad-poetry-one-"
 shots: 5
 description: |
   Eleven poems about the strangeness of life now. The author directed,
-  cut, and revised drafts from Claude Opus 5 to create this collection.
+  cut, and revised drafts with Claude Opus 5 to create this collection.
   The cover is a found sunset.
 plate: "/images/plates/bad-poetry-one.webp"
 plate_w: 800
