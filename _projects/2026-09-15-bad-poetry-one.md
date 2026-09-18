@@ -6,8 +6,9 @@ category: book
 image_path: "/images/bad-poetry-one/jhuff-bad-poetry-one-"
 shots: 5
 description: |
-  Eleven poems about the strangeness of life now. Five synthetic
-  critics gave notes before printing. The cover is a found sunset.
+  Eleven poems about the strangeness of life now. The author directed,
+  cut, and revised drafts with Claude Opus 5 to create this collection.
+  The cover is a found sunset.
 plate: "/images/plates/bad-poetry-one.webp"
 plate_w: 800
 plate_h: 1304
