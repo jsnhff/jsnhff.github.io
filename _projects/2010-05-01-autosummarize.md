@@ -6,7 +6,7 @@ category: book
 image_path: "/images/autosummarize/jhuff-autosummarize-"
 shots: 3
 description: |
-  The top 100 most downloaded copyright free books summarized using Microsoft Word 2008’s AutoSummarize 10-sentence function and organized alphabetically. "Word has examined the document and picked the sentences most relevant to the main theme." ~ Word 2008
+  The hundred most downloaded copyright-free books, each reduced to ten sentences by Microsoft Word 2008’s AutoSummarize function and arranged alphabetically. "Word has examined the document and picked the sentences most relevant to the main theme." ~ Word 2008
 
 plate: "/images/plates/autosummarize.webp"
 plate_w: 800

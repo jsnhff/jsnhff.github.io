@@ -14,7 +14,7 @@ description: |
 
   Before I learned any geography I wondered why the Appalachians are smooth
   and the Rockies are not. Approach the question as a child and any answer
-  seems plausible — maybe they were made at the same time and one just happens
+  seems plausible: maybe they were made at the same time and one just happens
   to be softer. The answer is millions of years of rain. You cannot watch it
   happen. You stare at the mountain waiting for the tree line to shift.
 

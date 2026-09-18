@@ -1,3 +1,7 @@
 _site
 .sass-cache
 .DS_Store
+
+# Local gem install for building the site offline (bundle config path vendor/bundle)
+vendor/
+.bundle/

@@ -7,7 +7,7 @@ image_path: "/images/are-we-not-drawn-onward-to-new-era/jhuff-are-we-not-drawn-o
 shots: 12
 # The plate is this shot re-encoded, so the wall does not show it twice.
 plate_shot: 1
-description: "The language of digitally mediated images is code. Code constructs the images we see and by altering the code we alter the image's stability and meaning. This series of TIFFs searches for code that works as a palindrome challenging the blurring boundary between human language and it's digital mediated manifestations. Images are side by side: original vs. palindrome."
+description: "Digital images are made of code, and altering the code alters the image's stability and meaning. This series of TIFFs searches for code that reads as a palindrome, working the boundary between human language and its digital form. Each pair is shown side by side: original and palindrome."
 plate: "/images/plates/are-we-not-drawn-onward-to-new-era.webp"
 plate_w: 625
 plate_h: 203

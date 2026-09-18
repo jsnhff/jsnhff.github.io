@@ -17,8 +17,8 @@ description: |
   with the date of Occupy's tenth anniversary.
 
   Ten years on, income inequality had widened. The work takes the visual
-  language of the deal toy — the desk ornament a bank commissions to mark a
-  deal — and gives it to the movement those deals defeated. It was issued as a
+  language of the deal toy, the desk ornament a bank commissions to mark a
+  deal, and gives it to the movement those deals defeated. It was issued as a
   digital edition.
 
   The figures come from photo research on the people in and around the park:
