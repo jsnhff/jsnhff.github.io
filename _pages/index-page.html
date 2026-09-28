@@ -34,7 +34,7 @@ description: "What is coming up, and a record of exhibitions, press, talks and p
     <p class="up-label">Upcoming</p>
     {% for u in ahead %}
       <article class="up-item">
-        <p class="up-when">{{ u.update-type | default: "Update" }} &middot; {{ u.date | date: "%B %-d, %Y" }}</p>
+        <p class="up-when">{{ u.update-type | default: "Update" }} &middot; {% if u.when %}{{ u.when }}{% else %}{{ u.date | date: "%B %-d, %Y" }}{% endif %}</p>
         <div class="up-body">{{ u.content | strip_newlines | strip }}</div>
       </article>
     {% endfor %}
@@ -46,7 +46,7 @@ description: "What is coming up, and a record of exhibitions, press, talks and p
 {% assign archive = past | reverse %}
 {% for u in archive %}
   <article class="row">
-    <p class="row-meta">{{ u.update-type | default: "Update" }} &middot; {{ u.date | date: "%B %-d, %Y" }}</p>
+    <p class="row-meta">{{ u.update-type | default: "Update" }} &middot; {% if u.when %}{{ u.when }}{% else %}{{ u.date | date: "%B %-d, %Y" }}{% endif %}</p>
     <div class="row-body">{{ u.content | strip_newlines | strip }}</div>
   </article>
 {% endfor %}
