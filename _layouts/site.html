@@ -90,7 +90,7 @@
     <div class="island-panel" id="island-panel" inert>
       {%- for u in ahead %}
       <article class="island-event">
-        <p class="island-when">{{ u.update-type | default: "Update" }} &middot; {{ u.date | date: "%B %-d, %Y" }}</p>
+        <p class="island-when">{{ u.update-type | default: "Update" }} &middot; {% if u.when %}{{ u.when }}{% else %}{{ u.date | date: "%B %-d, %Y" }}{% endif %}</p>
         <p class="island-what">{{ u.short | default: u.content | strip_html | strip_newlines | truncate: 160 }}</p>
       </article>
       {%- endfor %}
