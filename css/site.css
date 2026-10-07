@@ -9,6 +9,94 @@
  * studio wall, project, sheet, back/nav, edge blur, motion.
  */
 
+/* ABC Areal and Areal Mono by Dinamo, self-hosted under their free fonts
+   licence (fonts/Dinamo Licensing Terms.pdf). A face only downloads when
+   something on the page uses it. */
+@font-face {
+    font-family: "Areal";
+    src: url("/fonts/ABCAreal-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal";
+    src: url("/fonts/ABCAreal-RegularItalic.woff2") format("woff2");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal";
+    src: url("/fonts/ABCAreal-Medium.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal";
+    src: url("/fonts/ABCAreal-MediumItalic.woff2") format("woff2");
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal";
+    src: url("/fonts/ABCAreal-Bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal";
+    src: url("/fonts/ABCAreal-BoldItalic.woff2") format("woff2");
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal Mono";
+    src: url("/fonts/ABCArealMono-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal Mono";
+    src: url("/fonts/ABCArealMono-RegularItalic.woff2") format("woff2");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal Mono";
+    src: url("/fonts/ABCArealMono-Medium.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal Mono";
+    src: url("/fonts/ABCArealMono-MediumItalic.woff2") format("woff2");
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal Mono";
+    src: url("/fonts/ABCArealMono-Bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal Mono";
+    src: url("/fonts/ABCArealMono-BoldItalic.woff2") format("woff2");
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+  }
+
 :root {
     --ground: #FFFFFF;
     --ink: #0A0A0A;
@@ -62,7 +150,8 @@
        belongs near the edge. */
     --edge: clamp(0.6rem, 2.2vw, 1.6rem);
 
-    --face: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --face: "Areal", Arial, sans-serif;
+    --mono: "Areal Mono", ui-monospace, Menlo, Consolas, monospace;
     --rise: cubic-bezier(0.16, 1, 0.3, 1);
     --invert: 340ms;
     --leave: 220ms;
@@ -126,6 +215,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  code, kbd, pre, samp { font-family: var(--mono); }
 
   .stage { min-height: 0; }
 
