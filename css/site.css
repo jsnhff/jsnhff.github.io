@@ -1419,7 +1419,7 @@
   max-width: 100%;
   margin: 0 0.12em;
   /* Measured, not guessed: these give equal ink-to-border space on all four
-     sides for Areal Mono caps, and the label sits on the sentence's baseline. */
+     sides for Areal Mono caps. */
   padding: 0.39em 0.78em 0.27em 0.72em;
   border: 1px solid var(--bio-pill-line);
   border-radius: 100px;
@@ -1433,7 +1433,9 @@
   text-transform: uppercase;
   text-decoration: none;
   line-height: 1;
-  vertical-align: baseline;
+  /* On the baseline, the pill centres on the sentence's lowercase and reads
+     low; level with the capitals (0.14em) it floats. This sits between. */
+  vertical-align: 0.08em;
   transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
 }
 .bio-block .pill:hover,
