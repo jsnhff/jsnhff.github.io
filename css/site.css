@@ -1338,6 +1338,16 @@
    Only where scripting is on. With JS off no swap is coming and the whole bio
    is the page, which is the point of shipping it open. */
 @media (scripting: enabled) {
+  /* The clamp holds the space; it is not for reading. Shown, it was the second
+     flicker: the static words painted, then enhance() swapped them and each
+     paragraph's rise started from nothing, so the text blinked out and back.
+     Held invisible, the rise is the first thing anyone sees. The 2.5s deadline
+     in about.html adds .is-ready either way, so a bio never stays hidden. */
+  .bio-block:not(.is-ready) .bio { opacity: 0; }
+  /* The lists sit under the bio, so they ride up when it settles. They wait
+     for it, then fade in once the first paragraphs are on their way. */
+  .bio-block .rec { transition: opacity 600ms ease 240ms; }
+  .bio-block:not(.is-ready) .rec { opacity: 0; transition: none; }
   .bio-block:not(.is-ready) .bio p {
     display: -webkit-box;
     -webkit-box-orient: vertical;
