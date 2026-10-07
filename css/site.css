@@ -151,6 +151,8 @@
     --edge: clamp(0.6rem, 2.2vw, 1.6rem);
 
     --face: "Areal", Arial, sans-serif;
+    /* The mono is for the record around the writing (dates, kinds, years,
+       section labels), never the writing itself. */
     --mono: "Areal Mono", ui-monospace, Menlo, Consolas, monospace;
     --rise: cubic-bezier(0.16, 1, 0.3, 1);
     --invert: 340ms;
@@ -601,7 +603,8 @@
 
   .row-meta {
     margin: 0 0 var(--s2);
-    font-size: 0.82rem;
+    font-family: var(--mono);
+    font-size: 0.76rem;
     color: var(--dim);
     transition: color var(--invert) ease;
   }
@@ -618,8 +621,9 @@
   /* The two halves of the index are each announced the same way. */
   .up-label, .past-label {
     margin: 0 0 0.9rem;
+    font-family: var(--mono);
     font-size: 0.72rem;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--dim);
     transition: color var(--invert) ease;
@@ -638,7 +642,8 @@
   .up-item:last-child { margin-bottom: 0; }
   .up-when {
     margin: 0 0 0.3rem;
-    font-size: 0.82rem;
+    font-family: var(--mono);
+    font-size: 0.76rem;
     color: #6E6E72;
   }
   .up-body {
@@ -836,7 +841,7 @@
      still held to a readable measure inside it. */
   .col.is-project { max-width: 62rem; }
   .pj-head { max-width: 40rem; margin: 0 auto clamp(2.5rem, 6vh, 4rem); }
-  .pj-year { margin: 0 0 0.4rem; font-size: 0.82rem; color: var(--dim);
+  .pj-year { margin: 0 0 0.4rem; font-family: var(--mono); font-size: 0.76rem; color: var(--dim);
              transition: color var(--invert) ease; }
   .pj-title { margin: 0 0 var(--s4); font-size: clamp(1.5rem, 4vw, 2.1rem);
               font-weight: 400; letter-spacing: -0.015em; }
