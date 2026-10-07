@@ -1418,7 +1418,9 @@
   display: inline-block;
   max-width: 100%;
   margin: 0 0.12em;
-  padding: 0.34em 0.72em 0.32em;
+  /* Measured, not guessed: these give equal ink-to-border space on all four
+     sides for Areal Mono caps, and the label sits on the sentence's baseline. */
+  padding: 0.39em 0.78em 0.27em 0.72em;
   border: 1px solid var(--bio-pill-line);
   border-radius: 100px;
   box-decoration-break: clone;
@@ -1431,7 +1433,7 @@
   text-transform: uppercase;
   text-decoration: none;
   line-height: 1;
-  vertical-align: 0.12em;
+  vertical-align: baseline;
   transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
 }
 .bio-block .pill:hover,
