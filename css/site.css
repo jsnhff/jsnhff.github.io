@@ -1451,28 +1451,31 @@
    what shows is a hairline arrow drawn over it. text-fill clears the glyph
    without touching color, so currentColor still carries the pill's hover.
 
-   Its top sits on the cap line. At the label's own size the inline box is
-   Areal Mono's content area, ascent 0.878em over descent 0.21em, and caps
-   stand 0.716em tall, so the cap line is 0.162em down from the box's top.
-   The drawing's stroke touches the top of its viewBox, so placing the mask
-   there puts the arrow's top edge on the tops of the letters beside it. */
+   The arrow hangs from the baseline, not the top of the text box: Safari and
+   Chrome size that box differently, and the arrow sat a pixel high on iOS.
+   Every engine agrees on the baseline. Areal Mono caps stand 0.716em, so a
+   0.6em arrow raised 0.116em puts its top on the tops of the letters.
+
+   It is drawn on its own small box after the glyph. Negative tracking equal
+   to the glyph's advance (0.61em) folds the glyph to nothing, so the box takes
+   its place; a negative margin did the same visually but threw off the pill's
+   width and wrapped long labels. nowrap keeps glyph and box together, and the
+   label runs into the glyph with no break opportunity, so the arrow cannot be
+   left on a line of its own. A masked block, unlike a masked inline span,
+   renders the same in WebKit. */
 .pill .arw {
-  position: relative;
   margin-left: 0.28em;
   font-size: 1em;
+  letter-spacing: -0.61em;
+  white-space: nowrap;
   -webkit-text-fill-color: transparent;
 }
-/* Drawn on its own box rather than masked onto the inline span: WebKit masks
-   an inline box badly, and on iOS the span's background showed through as a
-   grey block under the arrow. A positioned block masks the same everywhere.
-   top is measured from the span's content-area top, as described above. */
 .pill .arw::after {
   content: "";
-  position: absolute;
-  left: 0;
-  top: 0.162em;
+  display: inline-block;
   width: 0.6em;
   height: 0.6em;
+  vertical-align: 0.116em;
   background-color: currentColor;
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' fill='none' stroke='%23000' stroke-width='1.3'%3E%3Cpath d='M.65 9.35 9.35.65M3.2.65h6.15V6.8'/%3E%3C/svg%3E");
           mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' fill='none' stroke='%23000' stroke-width='1.3'%3E%3Cpath d='M.65 9.35 9.35.65M3.2.65h6.15V6.8'/%3E%3C/svg%3E");
