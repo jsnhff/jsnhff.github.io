@@ -310,8 +310,9 @@
   .egg-credit.on { opacity: 1; }
   .egg-canvas:active { cursor: grabbing; }
 
-  /* Clearing puts the picture back under the coating: it lifts and dissolves,
-     rather than blinking out. */
+  /* Clearing puts the picture back under the coating: it dissolves into the
+     statement waiting underneath, rather than blinking out. */
+  .egg.is-clearing .egg-canvas { opacity: 0; transition: opacity 900ms ease; }
 
   /* The open plate is a show of three: a row of small dots under the credit,
      the current one ink, the rest a faint grey. Each dot sits in a button
