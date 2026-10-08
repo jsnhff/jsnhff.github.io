@@ -442,13 +442,16 @@
     width: max-content;
     max-width: 100%;
     /* Tall enough to be a thumb target, not just a label. */
-    padding: 0.6rem 0.95rem;
+    /* Left is a touch shorter than right: the dot is visually light, so equal
+       padding makes the content look pushed toward the right edge. */
+    padding: 0.6rem 1.05rem 0.6rem 0.9rem;
     border: 0;
     background: none;
     color: inherit;
     font: inherit;
     font-size: 0.85rem;
     line-height: 1.2;
+    font-variant-numeric: tabular-nums;
     white-space: nowrap;
     text-align: left;
     cursor: pointer;
@@ -470,6 +473,9 @@
     border-radius: 999px;
     background: currentColor;
     opacity: 0.55;
+    /* Text centres on its x-height, not its line box, so a box-centred dot
+       reads low. Nudge it up to the optical middle of the lowercase. */
+    margin-top: -0.06rem;
     animation: island-pulse 2.6s ease-in-out infinite;
   }
   @keyframes island-pulse {
