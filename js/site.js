@@ -161,6 +161,14 @@
         var l = document.createElement('link');
         l.rel = 'modulepreload'; l.href = pennyUrl;
         document.head.appendChild(l);
+        ['obverse', 'reverse'].forEach(function (side) {
+          ['color', 'normal', 'rough'].forEach(function (kind) {
+            var i = document.createElement('link');
+            i.rel = 'preload'; i.as = 'image';
+            i.href = '/images/penny/' + side + '-' + kind + '.webp';
+            document.head.appendChild(i);
+          });
+        });
       }, 20000);
     });
     timerPie.addEventListener('animationend', function () {

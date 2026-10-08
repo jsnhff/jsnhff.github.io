@@ -16,12 +16,28 @@
 import {
   WebGLRenderer, Scene, PerspectiveCamera, Group, Mesh, CylinderGeometry,
   CircleGeometry, PlaneGeometry, MeshPhysicalMaterial, ShadowMaterial,
-  DirectionalLight, HemisphereLight, CanvasTexture, SRGBColorSpace,
+  DirectionalLight, HemisphereLight, TextureLoader, SRGBColorSpace,
   PMREMGenerator, PCFSoftShadowMap, ACESFilmicToneMapping, Euler, MathUtils,
   Color
 } from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { faceTextures } from './faces.js';
+
+// Face maps made by _penny/maps.py from the US Mint's image of the cent.
+const MAPS = '/images/penny/';
+function loadFaces(maxAniso) {
+  const loader = new TextureLoader();
+  const one = (url, srgb) => new Promise((ok, no) => loader.load(url, (t) => {
+    if (srgb) t.colorSpace = SRGBColorSpace;
+    t.anisotropy = Math.min(8, maxAniso);
+    ok(t);
+  }, undefined, no));
+  const side = (n) => Promise.all([
+    one(MAPS + n + '-color.webp', true),
+    one(MAPS + n + '-normal.webp', false),
+    one(MAPS + n + '-rough.webp', false)
+  ]).then(([map, normal, rough]) => ({ map, normal, rough }));
+  return Promise.all([side('obverse'), side('reverse')]);
+}
 
 const TAU = Math.PI * 2;
 const ease = {
@@ -32,9 +48,9 @@ const ease = {
 
 export async function run({ plate, from }) {
   if (!plate || !plate.scratch || plate.scratch.isDone()) return;
-  // The lettering is set in the site's bold before it is pressed into the
-  // height maps; drawn early, it would be Arial.
-  try { await document.fonts.load('700 40px "Areal"'); } catch (e) {}
+  // Fetched before anything is shown, so the coin arrives whole.
+  let faces;
+  try { faces = await loadFaces(16); } catch (e) { return; }
   let renderer;
   try {
     renderer = new WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha: true });
@@ -116,9 +132,7 @@ export async function run({ plate, from }) {
   const edgeMat = new MeshPhysicalMaterial({
     color: copper, metalness: 1, roughness: 0.34, clearcoat: 0.15, clearcoatRoughness: 0.4
   });
-  const faceMat = (side) => {
-    const t = faceTextures(side, renderer.capabilities.maxTextureSize >= 2048 ? 1024 : 512);
-    t.map.colorSpace = SRGBColorSpace;
+  const faceMat = (t) => {
     return new MeshPhysicalMaterial({
       color: 0xffffff, map: t.map, normalMap: t.normal, roughnessMap: t.rough,
       metalness: 1, roughness: 1, clearcoat: 0.15, clearcoatRoughness: 0.4
@@ -128,11 +142,10 @@ export async function run({ plate, from }) {
   const coin = new Group();
   const body = new Mesh(new CylinderGeometry(R, R, T, 96, 1, true), edgeMat);
   body.rotation.x = Math.PI / 2;
-  // The shield side faces the reader while the coin works. The obverse is the
-  // one that wants a photographed portrait; until then it only flashes past.
-  const front = new Mesh(new CircleGeometry(R, 96), faceMat('reverse'));
+  // Lincoln faces the reader while the coin works; the shield is underneath.
+  const front = new Mesh(new CircleGeometry(R, 96), faceMat(faces[0]));
   front.position.z = T / 2;
-  const back = new Mesh(new CircleGeometry(R, 96), faceMat('obverse'));
+  const back = new Mesh(new CircleGeometry(R, 96), faceMat(faces[1]));
   back.position.z = -T / 2;
   back.rotation.y = Math.PI;
   for (const m of [body, front, back]) { m.castShadow = true; coin.add(m); }
