@@ -807,6 +807,8 @@
       // Sub-pixel widths round down to a clipped final letter; always up.
       pin('--shut-w', Math.ceil(head.width));
       pin('--shut-h', Math.ceil(head.height));
+      // The home timer sits level with the shut capsule, centre on centre.
+      if (head.height > 0) root.style.setProperty('--island-h', Math.ceil(head.height) + 'px');
       // Read after the frame has settled, or the height belongs to the previous
       // layout. Capped at what is on screen: enough entries and the list is
       // taller than the viewport, and an uncapped capsule would put the last of
