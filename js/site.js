@@ -452,7 +452,15 @@
       c.width = w; c.height = h;
       var ar = im.naturalWidth / im.naturalHeight, dw = w, dh = w / ar;
       if (sl.fit === 'contain' ? dh > h : dh < h) { dh = h; dw = h * ar; }
-      c.getContext('2d').drawImage(im, (w - dw) / 2, (h - dh) / 2, dw, dh);
+      // Every picture gets the plate's own small rounded corners, however
+      // much of the plate it fills.
+      var g = c.getContext('2d'), x = (w - dw) / 2, y = (h - dh) / 2;
+      var cw = Math.min(w, dw), ch = Math.min(h, dh), rr = 4 * dpr;
+      g.beginPath();
+      if (g.roundRect) g.roundRect((w - cw) / 2, (h - ch) / 2, cw, ch, rr);
+      else g.rect((w - cw) / 2, (h - ch) / 2, cw, ch);
+      g.clip();
+      g.drawImage(im, x, y, dw, dh);
       return (photos[i] = c);
     }
     function paintPlate() {
@@ -739,10 +747,24 @@
         sl.img.src = sl.src;
       });
     }
-    // Under the credit, however many lines a long title takes.
+    // Under the credit, at the depth of the longest one, so switching to a
+    // title that wraps differently never moves them.
+    var probe = null;
     function placeDots() {
       var h = parseFloat(canvas.style.height) || 0;
-      dots.style.marginTop = (h / 2 + 14 + credit.offsetHeight + 6) + 'px';
+      if (!probe) {
+        probe = el('p', 'egg-credit', '');
+        probe.setAttribute('aria-hidden', 'true');
+        probe.style.visibility = 'hidden';
+        wrap.appendChild(probe);
+      }
+      probe.style.width = credit.style.width;
+      var tall = 0;
+      slides.forEach(function (sl) {
+        probe.textContent = sl.credit;
+        tall = Math.max(tall, probe.offsetHeight);
+      });
+      dots.style.marginTop = (h / 2 + 14 + tall + 8) + 'px';
     }
     function mark() {
       Array.prototype.forEach.call(dots.children, function (d, i) {

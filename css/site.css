@@ -314,16 +314,16 @@
      statement waiting underneath, rather than blinking out. */
   .egg.is-clearing .egg-canvas { opacity: 0; transition: opacity 900ms ease; }
 
-  /* The open plate is a show of three: a row of small dots under the credit,
-     the current one ink, the rest a faint grey. Each dot sits in a button
-     larger than it looks, so it is easy to hit with a thumb. */
+  /* The open plate is a show of three, switched by a page control under
+     the credit: grey dots, the current one stretched into a short ink pill.
+     Each sits in a button far larger than it looks, so a thumb finds it. */
   .egg-dots {
     position: absolute;
     left: 50%;
     top: 50%;
     z-index: 2;
     display: flex;
-    gap: 0.1rem;
+    align-items: center;
     transform: translate(-50%, 0);
     opacity: 0;
     pointer-events: none;
@@ -332,9 +332,10 @@
   .egg.is-show .egg-dots { opacity: 1; pointer-events: auto; }
   .egg.is-show .egg-canvas { cursor: pointer; }
   .egg-dot {
-    width: 1.5rem;
-    height: 1.5rem;
-    padding: 0;
+    display: grid;
+    place-items: center;
+    height: 2.75rem;
+    padding: 0 0.3rem;
     border: 0;
     background: none;
     cursor: pointer;
@@ -342,17 +343,16 @@
   .egg-dot::before {
     content: "";
     display: block;
-    width: 6px;
-    height: 6px;
-    margin: auto;
-    border-radius: 50%;
+    width: 9px;
+    height: 9px;
+    border-radius: 5px;
     background: var(--ink);
-    opacity: 0.18;
-    transition: opacity 200ms ease;
+    opacity: 0.16;
+    transition: width 320ms var(--rise), opacity 220ms ease;
   }
-  .egg-dot:hover::before { opacity: 0.4; }
-  .egg-dot[aria-current]::before { opacity: 0.7; }
-  .egg-dot:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; border-radius: 50%; }
+  .egg-dot:hover::before { opacity: 0.32; }
+  .egg-dot[aria-current]::before { width: 26px; opacity: 0.75; }
+  .egg-dot:focus-visible { outline: 2px solid var(--focus); outline-offset: -6px; border-radius: 8px; }
 
   /* ---- the upcoming island ---------------------------------------------- */
   /* Home's one piece of news. It only exists when something is actually
