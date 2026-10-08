@@ -367,13 +367,27 @@
     var credit = el('p', 'egg-credit', canvas.getAttribute('data-credit') || '');
     wrap.appendChild(credit);
 
-    var clear = el('button', 'egg-clear',
-      '<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" ' +
-      'stroke="currentColor" stroke-width="1.5" stroke-linecap="square">' +
-      '<path d="M4.5 4.5 19.5 19.5"/><path d="M19.5 4.5 4.5 19.5"/></svg>');
-    clear.type = 'button';
-    clear.setAttribute('aria-label', 'Cover the picture again');
-    wrap.appendChild(clear);
+    // Once the plate is open it becomes a small show of three: the picture it
+    // revealed, then two more, switched by a row of dots under the credit, a
+    // tap on the picture, a swipe, or the arrow keys.
+    var slides = [{ src: srcUrl, credit: credit.textContent, fit: 'cover', img: img }];
+    try {
+      JSON.parse(canvas.getAttribute('data-slides') || '[]').forEach(function (d) {
+        slides.push({ src: d.src, credit: d.credit, fit: d.fit || 'cover', img: null });
+      });
+    } catch (e) {}
+    var cur = 0, showing = false;
+    var dots = el('div', 'egg-dots');
+    dots.setAttribute('role', 'group');
+    dots.setAttribute('aria-label', 'Pictures');
+    slides.forEach(function (sl, i) {
+      var d = el('button', 'egg-dot');
+      d.type = 'button';
+      d.setAttribute('aria-label', (i + 1) + ' of ' + slides.length + ': ' + sl.credit);
+      d.addEventListener('click', function () { show(i); });
+      dots.appendChild(d);
+    });
+    if (slides.length > 1) wrap.appendChild(dots);
 
     var mask = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
@@ -396,39 +410,37 @@
       mctx.lineCap = mctx.lineJoin = 'round';
       resetGrid();
       credit.style.marginTop = (h / 2 + 14) + 'px';
-      placeClear();
+      credit.style.width = w + 'px';
+      placeDots();
+      photos = {};
       paintPlate();
     }
 
-    function placeClear() {
-      var w = parseFloat(canvas.style.width) || 0;
-      var h = parseFloat(canvas.style.height) || 0;
-      // Equal inset from the top and right edges of the plate, measured from
-      // the button's own box rather than guessed.
-      var pad = 10;
-      var side = clear.offsetWidth || 42;
-      clear.style.left = 'calc(50% + ' + (w / 2 - side - pad) + 'px)';
-      clear.style.top = 'calc(50% - ' + (h / 2 - pad) + 'px)';
-    }
 
     // Draw the photo, then keep only the parts that have been scratched.
     // The whole plate, from scratch: the photo, kept only where the mask is
     // open. Only needed when the plate is sized, reset or finished; between
     // those, each mark paints its own patch of the photo (see put).
-    var photo = null, patt = null;
+    var photos = {}, patt = null;
+    // A slide drawn to the plate's size: the first fills it, the others are
+    // fitted whole inside it, so no artwork loses an edge to the crop.
+    function photoFor(i) {
+      var sl = slides[i], im = sl.img, w = canvas.width, h = canvas.height;
+      if (photos[i]) return photos[i];
+      if (!w || !h || !im || !im.complete || !im.naturalWidth) return null;
+      var c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      var ar = im.naturalWidth / im.naturalHeight, dw = w, dh = w / ar;
+      if (sl.fit === 'contain' ? dh > h : dh < h) { dh = h; dw = h * ar; }
+      c.getContext('2d').drawImage(im, (w - dw) / 2, (h - dh) / 2, dw, dh);
+      return (photos[i] = c);
+    }
     function paintPlate() {
       flush();
       var w = canvas.width, h = canvas.height;
-      if (!w || !h || !img.complete || !img.naturalWidth) return;
-      if (!photo || photo.width !== w || photo.height !== h) {
-        photo = document.createElement('canvas');
-        photo.width = w; photo.height = h;
-        var ar = img.naturalWidth / img.naturalHeight;
-        var dw = w, dh = w / ar;
-        if (dh < h) { dh = h; dw = h * ar; }
-        photo.getContext('2d').drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
-        patt = ctx.createPattern(photo, 'no-repeat');
-      }
+      var photo = photoFor(cur);
+      if (!photo) return;
+      patt = ctx.createPattern(photo, 'no-repeat');
       ctx.clearRect(0, 0, w, h);
       ctx.globalCompositeOperation = 'source-over';
       ctx.globalAlpha = 1;
@@ -555,30 +567,13 @@
         mctx.globalAlpha = 1;
         paintPlate();
         if (k < 1) requestAnimationFrame(step);
+        else startShow();
       }
       requestAnimationFrame(step);
       credit.classList.add('on');
-      clear.classList.add('on');
-      placeClear();
       document.dispatchEvent(new CustomEvent('egg-revealed'));
     }
 
-    clear.addEventListener('click', function () {
-      wrap.classList.add('is-clearing');
-      clear.classList.remove('on');
-      credit.classList.remove('on');
-      setTimeout(function () {
-        mctx.clearRect(0, 0, mask.width, mask.height);
-        batch.quads = batch.dots = batch.holes = null; batch.own.length = 0;
-        resetGrid();
-        done = false;
-        need = 0.97;
-        fray = 1;
-        last = null;
-        paintPlate();
-        wrap.classList.remove('is-clearing');
-      }, 340);
-    });
 
     var drawing = false, last = null;
 
@@ -710,7 +705,73 @@
       schedule();
     }
 
+    // ---- the show --------------------------------------------------------
+    function startShow() {
+      if (showing || slides.length < 2) return;
+      showing = true;
+      wrap.classList.add('is-show');
+      placeDots();
+      mark();
+      // fetch the rest now, so a switch never waits on the network
+      slides.forEach(function (sl) {
+        if (sl.img) return;
+        sl.img = new Image();
+        sl.img.src = sl.src;
+      });
+    }
+    // Under the credit, however many lines a long title takes.
+    function placeDots() {
+      var h = parseFloat(canvas.style.height) || 0;
+      dots.style.marginTop = (h / 2 + 14 + credit.offsetHeight + 6) + 'px';
+    }
+    function mark() {
+      Array.prototype.forEach.call(dots.children, function (d, i) {
+        if (i === cur) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current');
+      });
+    }
+    // Cross-fades the plate to slide i and swaps the credit under it.
+    var fading = false;
+    function show(i) {
+      i = (i + slides.length) % slides.length;
+      if (!showing || i === cur || fading) return;
+      var sl = slides[i];
+      if (!sl.img) { sl.img = new Image(); sl.img.src = sl.src; }
+      var go = function () {
+        var to = photoFor(i);
+        if (!to) return;
+        var from = document.createElement('canvas');
+        from.width = canvas.width; from.height = canvas.height;
+        from.getContext('2d').drawImage(canvas, 0, 0);
+        cur = i; mark(); fading = true;
+        credit.classList.remove('on');
+        setTimeout(function () { credit.textContent = sl.credit; placeDots(); credit.classList.add('on'); }, 200);
+        var t0 = null;
+        (function step(ts) {
+          if (!t0) t0 = ts;
+          var k = Math.min(1, (ts - t0) / 380);
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.globalAlpha = 1 - k; ctx.drawImage(from, 0, 0);
+          ctx.globalAlpha = k; ctx.drawImage(to, 0, 0);
+          ctx.globalAlpha = 1;
+          if (k < 1) requestAnimationFrame(step);
+          else { fading = false; paintPlate(); }
+        })(performance.now());
+      };
+      if (sl.img.complete && sl.img.naturalWidth) go();
+      else sl.img.onload = go;
+    }
+    document.addEventListener('keydown', function (e) {
+      if (!showing || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key === 'ArrowRight') show(cur + 1);
+      else if (e.key === 'ArrowLeft') show(cur - 1);
+    });
+    // On the open plate a tap goes on to the next picture and a swipe goes
+    // either way; there is nothing left to scratch.
+    var swipe = null;
+
     canvas.addEventListener('pointerdown', function (e) {
+      if (showing) { swipe = [e.clientX, e.clientY]; return; }
       drawing = true; last = null;
       canvas.setPointerCapture(e.pointerId);
       stroke(at(e));
@@ -720,7 +781,16 @@
     });
     // No auto-complete below the threshold. The picture arrives by hand.
     function end() { drawing = false; last = null; }
-    canvas.addEventListener('pointerup', end);
+    canvas.addEventListener('pointerup', function (e) {
+      if (showing && swipe) {
+        var dx = e.clientX - swipe[0], dy = e.clientY - swipe[1];
+        swipe = null;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) show(cur + (dx < 0 ? 1 : -1));
+        else if (Math.hypot(dx, dy) < 10) show(cur + 1);
+        return;
+      }
+      end();
+    });
     canvas.addEventListener('pointercancel', end);
     canvas.addEventListener('pointerleave', end);
 

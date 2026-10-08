@@ -301,7 +301,8 @@
     font-size: 0.8rem;
     color: var(--dim);
     text-align: center;
-    white-space: nowrap;
+    /* As wide as the plate, and a long title wraps evenly under it. */
+    text-wrap: balance;
     opacity: 0;
     pointer-events: none;
     transition: opacity 420ms ease, color var(--invert) ease;
@@ -311,36 +312,46 @@
 
   /* Clearing puts the picture back under the coating: it lifts and dissolves,
      rather than blinking out. */
-  .egg.is-clearing .egg-canvas { opacity: 0; transform: translate(-50%, -54%) scale(0.985); }
-  .egg.is-clearing .egg-credit { opacity: 0; }
 
-  /* No chip, no circle — just the mark. The X is drawn as two crossing lines
-     rather than set as a glyph, so it is exactly symmetrical and optically
-     centred instead of sitting wherever the font's × happens to fall. A drop
-     shadow rather than a plate keeps it legible over sky as well as over
-     shadow. */
-  .egg-clear {
+  /* The open plate is a show of three: a row of small dots under the credit,
+     the current one ink, the rest a faint grey. Each dot sits in a button
+     larger than it looks, so it is easy to hit with a thumb. */
+  .egg-dots {
     position: absolute;
-    z-index: 3;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.6rem;
-    height: 2.6rem;
+    left: 50%;
+    top: 50%;
+    z-index: 2;
+    display: flex;
+    gap: 0.1rem;
+    transform: translate(-50%, 0);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 420ms ease;
+  }
+  .egg.is-show .egg-dots { opacity: 1; pointer-events: auto; }
+  .egg.is-show .egg-canvas { cursor: pointer; }
+  .egg-dot {
+    width: 1.5rem;
+    height: 1.5rem;
     padding: 0;
     border: 0;
     background: none;
-    color: #fff;
     cursor: pointer;
-    opacity: 0;
-    pointer-events: none;
-    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
-    transition: opacity 320ms ease, transform 180ms ease;
   }
-  .egg-clear svg { display: block; }
-  .egg-clear.on { opacity: 0.92; pointer-events: auto; }
-  .egg-clear.on:hover { opacity: 1; transform: scale(1.06); }
-  .egg-clear:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+  .egg-dot::before {
+    content: "";
+    display: block;
+    width: 6px;
+    height: 6px;
+    margin: auto;
+    border-radius: 50%;
+    background: var(--ink);
+    opacity: 0.18;
+    transition: opacity 200ms ease;
+  }
+  .egg-dot:hover::before { opacity: 0.4; }
+  .egg-dot[aria-current]::before { opacity: 0.7; }
+  .egg-dot:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; border-radius: 50%; }
 
   /* ---- the upcoming island ---------------------------------------------- */
   /* Home's one piece of news. It only exists when something is actually
