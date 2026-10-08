@@ -338,6 +338,10 @@ export async function run({ plate, from }) {
   let phase = 'appear', t0 = performance.now(), prev = 0, alive = true;
   let patch = null, lastU = 0, hop = null, rest = 0;
   let revealed = false, baseHead = null, view = null;
+  // How far someone has scratched with it by hand. A drag of any length
+  // counts as helping; a tap that only picks it up does not.
+  let helpedBy = 0, bubble = null;
+  const HELPED = 40;
   // Standing up to look: nearly upright on its edge, face to the picture.
   const ADMIRE = MathUtils.degToRad(70);
   const zAt = (tilt) => R * Math.sin(tilt) + (T / 2) * Math.cos(tilt);
@@ -560,6 +564,7 @@ export async function run({ plate, from }) {
         crumbs(x, y, -s.head);
         scratch.to(x, y, band, -s.head);
       }
+      helpedBy += d;
       s.x = held.tx; s.y = held.ty; s.z = restZ;
       lean(s.head, drag.vx, -drag.vy);
       if (sp < 30) { s.tilt += (TILT - s.tilt) * Math.min(1, dt * 6); s.roll *= Math.exp(-dt * 6); }
@@ -590,7 +595,16 @@ export async function run({ plate, from }) {
       s.tilt = ADMIRE + MathUtils.degToRad(3) * Math.sin(t * 1.7);
       const b = t - 1.25;
       s.z = zAt(s.tilt) + (b > 0 && b < 0.5 ? Math.abs(Math.sin(b * TAU * 2)) * 7 * (1 - b / 0.5) : 0);
-      if (t >= 2.6) { phase = 'settle'; t0 = now; }
+      // If someone lent a hand, it says so, and takes a little longer over
+      // its admiring so the words can be read.
+      const thanks = helpedBy > HELPED;
+      if (thanks && !bubble && t > 0.5) bubble = say('Thanks for helping');
+      if (bubble) placeBubble();
+      if (bubble && t > 3.3 && !bubble.classList.contains('out')) bubble.classList.add('out');
+      if (t >= (thanks ? 3.75 : 2.6)) {
+        if (bubble) { bubble.remove(); bubble = null; }
+        phase = 'settle'; t0 = now;
+      }
     } else if (phase === 'settle') {
       // Stops, then a short shake: side to side, dying away.
       // It stays standing for this; it does not slump first.
@@ -757,6 +771,28 @@ export async function run({ plate, from }) {
     g.fill();
   }
 
+  // ---- a word ------------------------------------------------------------
+  // A message bubble, as a phone draws one that has been received: a grey
+  // round-cornered pill with a tail curling down towards whoever sent it,
+  // here the coin. It pops up out of its tail and sinks back into it.
+  function say(text) {
+    const el = document.createElement('div');
+    el.className = 'penny-bubble';
+    el.setAttribute('role', 'status');
+    el.textContent = text;
+    document.body.appendChild(el);
+    return el;
+  }
+  function placeBubble() {
+    // just above the coin's top, a touch to the right, kept on the screen
+    const c = centre();
+    const r = { width: bubble.offsetWidth, height: bubble.offsetHeight };
+    let x = c[0] - R * 0.15, y = c[1] - R * 1.05 - r.height;
+    x = Math.max(8, Math.min(W() - r.width - 8, x));
+    y = Math.max(8, y);
+    bubble.style.translate = `${Math.round(x)}px ${Math.round(y)}px`;
+  }
+
   function puff() {
     const r = cvs.getBoundingClientRect();
     const cx = s.x, cy = s.y - R * Math.cos(s.tilt) * 0.5;
@@ -779,6 +815,7 @@ export async function run({ plate, from }) {
 
   function done() {
     alive = false;
+    if (bubble) { bubble.remove(); bubble = null; }
     document.removeEventListener('pointerdown', onDown, true);
     window.removeEventListener('pointermove', onMove);
     window.removeEventListener('pointerup', onUp);
