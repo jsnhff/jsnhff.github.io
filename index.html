@@ -7,11 +7,9 @@ description: "Jason Huff is a designer and manager by trade, focused on supporti
 
 <div class="egg">
   <h1 class="statement">{{ site.home_statement }}</h1>
-  {%- assign art = site.data.home_art.showing -%}
-  {%- assign first = art | first %}
+  {%- assign art = site.data.home_art.showing %}
   <canvas class="egg-canvas"
-          data-src="{{ first.src }}"
-          data-credit="{{ first.artist }}, &ldquo;{{ first.title }}&rdquo;, {{ first.year }}"
-          data-slides="{{ art | shift | jsonify | escape }}"
+          data-src="{{ art[0].src }}"
+          data-slides="{{ art | jsonify | escape }}"
           aria-hidden="true"></canvas>
 </div>

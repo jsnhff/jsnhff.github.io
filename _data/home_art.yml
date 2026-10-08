@@ -5,26 +5,32 @@
 # plate, cropped at its edges if need be; `fit: contain` shows the whole
 # picture inside it instead.
 #
+# `wiki` is where the artist's name links to.
+#
 # `archive` is everything that has been up before. Its files stay in
 # images/home, so bringing one back is moving its entry up into `showing`.
 
 showing:
   - src: /images/home/throwing-three-balls.webp
     artist: John Baldessari
+    wiki: https://en.wikipedia.org/wiki/John_Baldessari
     title: Throwing Three Balls in the Air (Best of 36 Attempts)
     year: 1973
   - src: /images/home/katabasis.webp
     artist: Paul Chan
+    wiki: https://en.wikipedia.org/wiki/Paul_Chan_(artist)
     title: Katabasis
     year: 2019
 
 archive:
   - src: /images/home/palm.webp
     artist: John Baldessari
+    wiki: https://en.wikipedia.org/wiki/John_Baldessari
     title: Palm tree / seascape
     year: 2010
   - src: /images/home/no-more-boring-art.webp
     artist: John Baldessari
+    wiki: https://en.wikipedia.org/wiki/John_Baldessari
     title: I Will Not Make Any More Boring Art
     year: 1971
     fit: contain

@@ -409,30 +409,43 @@
 
     var wrap = canvas.parentNode;
     var credit = el('p', 'egg-credit', '');
-    // A title given in curly quotes is set in italics instead, as a work's
-    // title is; the text itself stays plain, so nothing in it is markup.
-    function setCredit(node, text) {
-      node.textContent = '';
-      text.split(/\u201C([^\u201D]*)\u201D/).forEach(function (part, i) {
-        if (!part) return;
-        if (i % 2) { var t = document.createElement('i'); t.textContent = part; node.appendChild(t); }
-        else node.appendChild(document.createTextNode(part));
-      });
-    }
-    var firstCredit = canvas.getAttribute('data-credit') || '';
-    setCredit(credit, firstCredit);
-    wrap.appendChild(credit);
-
-    // Once the plate is open it becomes a small show of three: the picture it
-    // revealed, then two more, switched by a row of dots under the credit, a
-    // tap on the picture, a swipe, or the arrow keys.
-    var slides = [{ src: srcUrl, credit: firstCredit, fit: 'cover', img: img }];
+    // Once the plate is open it becomes a small show: the picture it
+    // revealed, then the rest, switched by a row of dots under the credit, a
+    // tap on the picture, a swipe, or the arrow keys. All of them, the first
+    // included, come from data-slides; data-src is the first, to start
+    // fetching before anything else is read.
+    var slides = [];
     try {
       JSON.parse(canvas.getAttribute('data-slides') || '[]').forEach(function (d) {
-        var c = d.credit || (d.artist + ', \u201C' + d.title + '\u201D, ' + d.year);
-        slides.push({ src: d.src, credit: c, fit: d.fit || 'cover', img: null });
+        slides.push({ src: d.src, artist: d.artist, title: d.title, year: d.year, link: d.wiki,
+                      fit: d.fit || 'cover', img: null });
       });
     } catch (e) {}
+    if (!slides.length || slides[0].src !== srcUrl) slides.unshift({ src: srcUrl, artist: '', title: '', year: '', fit: 'cover' });
+    slides[0].fit = 'cover';
+    slides[0].img = img;
+    // As a label reads: the artist, linked to more about them when there is
+    // somewhere to go, the work's title in italics, the year. Built from
+    // text, so nothing in it is ever read as markup.
+    function plain(sl) { return [sl.artist, sl.title, sl.year].filter(Boolean).join(', '); }
+    function setCredit(node, sl) {
+      node.textContent = '';
+      var name = document.createTextNode(sl.artist);
+      if (sl.link && node === credit) {
+        name = document.createElement('a');
+        name.href = sl.link; name.target = '_blank'; name.rel = 'noopener';
+        name.textContent = sl.artist;
+      }
+      node.appendChild(name);
+      if (sl.title) {
+        node.appendChild(document.createTextNode(', '));
+        var t = document.createElement('i'); t.textContent = sl.title; node.appendChild(t);
+      }
+      if (sl.year) node.appendChild(document.createTextNode(', ' + sl.year));
+    }
+    setCredit(credit, slides[0]);
+    wrap.appendChild(credit);
+
     var cur = 0, showing = false;
     var dots = el('div', 'egg-dots');
     dots.setAttribute('role', 'group');
@@ -440,7 +453,7 @@
     slides.forEach(function (sl, i) {
       var d = el('button', 'egg-dot');
       d.type = 'button';
-      d.setAttribute('aria-label', (i + 1) + ' of ' + slides.length + ': ' + sl.credit);
+      d.setAttribute('aria-label', (i + 1) + ' of ' + slides.length + ': ' + plain(sl));
       d.addEventListener('click', function () { show(i); });
       dots.appendChild(d);
     });
@@ -808,7 +821,7 @@
       probe.style.width = credit.style.width;
       var tall = 0;
       slides.forEach(function (sl) {
-        setCredit(probe, sl.credit);
+        setCredit(probe, sl);
         tall = Math.max(tall, probe.offsetHeight);
       });
       dots.style.marginTop = (h / 2 + 14 + tall + 8) + 'px';
@@ -854,7 +867,7 @@
           // the show may have been put away in the meantime
           if (!showing) release();
           else {
-            if (e >= 0.5 && !swapped) { swapped = true; setCredit(credit, sl.credit); }
+            if (e >= 0.5 && !swapped) { swapped = true; setCredit(credit, sl); }
             credit.style.opacity = String(Math.abs(1 - 2 * e));
           }
           if (k < 1) requestAnimationFrame(step);
@@ -953,7 +966,7 @@
       credit.classList.remove('on');
       setTimeout(function () {
         fading = false; cur = 0; clearing = false;
-        setCredit(credit, slides[0].credit);
+        setCredit(credit, slides[0]);
         credit.classList.remove('on');
         mark();
         mctx.clearRect(0, 0, mask.width, mask.height);
