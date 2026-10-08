@@ -429,7 +429,8 @@
     var slides = [{ src: srcUrl, credit: firstCredit, fit: 'cover', img: img }];
     try {
       JSON.parse(canvas.getAttribute('data-slides') || '[]').forEach(function (d) {
-        slides.push({ src: d.src, credit: d.credit, fit: d.fit || 'cover', img: null });
+        var c = d.credit || (d.artist + ', \u201C' + d.title + '\u201D, ' + d.year);
+        slides.push({ src: d.src, credit: c, fit: d.fit || 'cover', img: null });
       });
     } catch (e) {}
     var cur = 0, showing = false;
