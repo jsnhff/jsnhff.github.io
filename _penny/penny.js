@@ -9,9 +9,10 @@
 // reads as sitting on the site rather than floating in front of it.
 //
 // The choreography: the penny comes out where the timer was, hops down onto
-// the scratch plate, stands on its edge and scratches it open in rows, the way
-// a lottery ticket gets done. When the plate says it is open the penny stops,
-// shakes, and pops.
+// the scratch plate, and scratches it open the way a person does a lottery
+// ticket: a burst here, lift, a burst there. Anyone can pick it up and do it
+// themselves. When the plate says it is open the penny stops, shakes, and
+// pops.
 
 import {
   WebGLRenderer, Scene, PerspectiveCamera, Group, Mesh, CylinderGeometry,
@@ -176,17 +177,10 @@ export async function run({ plate, from }) {
   }
 
   // ---- the hand ----------------------------------------------------------
-  // The coin answers its motion, the way a held coin does. A wrist sets an
-  // angle across the strokes and holds it, turning as the path turns: along a
-  // row it angles the edge a little into the direction of travel, opposite on
-  // the way back, and wanders a few degrees as it goes. Within that, every
-  // stroke moves it: it leans back against a push and forward on a pull, and
-  // rocks towards whichever way it slides along its edge.
-  //
-  // All of it is worked out from the path itself, never from how far the
-  // coin happened to move between two frames. A slow device draws fewer
-  // frames, not a different coin, and the scrape under it is the same.
-  const LEAN = MathUtils.degToRad(14), ROCK = MathUtils.degToRad(10);
+  // The coin answers its motion, the way a held coin does: it leans back
+  // against a push and forward on a pull, and rocks towards whichever way it
+  // slides along its edge. The heading is set per patch, across the strokes.
+  const LEAN = MathUtils.degToRad(16), ROCK = MathUtils.degToRad(12);
   function lean(head, wx, wy) {
     // wx, wy: velocity in world axes (y up)
     const sp = Math.hypot(wx, wy);
@@ -197,77 +191,176 @@ export async function run({ plate, from }) {
     s.tilt = TILT + LEAN * push * f;
     s.roll = ROCK * slide * f;
   }
+  // A coin's edge has no front: of the two headings that put it at an
+  // angle, take the nearer.
+  function near(want, cur) {
+    while (want - cur > Math.PI / 2) want -= Math.PI;
+    while (want - cur < -Math.PI / 2) want += Math.PI;
+    return want;
+  }
+  const rnd = (a, b) => a + Math.random() * (b - a);
 
   // ---- choreography ------------------------------------------------------
   const scratch = plate.scratch;
-  // Pressed nearly flat, one edge biting, as a coin is held to a ticket.
-  const TILT = MathUtils.degToRad(22);
+  if (scratch.need) scratch.need(0.86);
+  const TILT = MathUtils.degToRad(36);
   const restZ = R * Math.sin(TILT) + (T / 2) * Math.cos(TILT);
-  const band = R * 0.8;             // half the width of the band the edge scrapes
+  const band = R * 0.95;            // half the width of the band the edge scrapes
+  const pb = plate.getBoundingClientRect();
+  const big = Math.min(1.8, Math.max(1, Math.sqrt(pb.width * pb.height) / 320));
 
-  // Rows across the plate, top to bottom, alternating direction. In each row
-  // the coin works up and down in quick strokes while it travels. The edge
-  // is a flat chord, not a round brush, so the valley between two strokes is
-  // only scraped clean if each half-stroke moves on by less than half the
-  // chord: hence 0.8 of `band`, against a chord at least 0.86 of it each way.
-  // Rows overlap by enough that even the shortest stroke meets the next row.
-  function plan() {
-    const b = plate.getBoundingClientRect();
-    const rowH = Math.min(150, Math.max(80, b.height / 3));
-    const rows = Math.max(1, Math.ceil(b.height / rowH));
-    const step = b.height / rows;
-    const pad = band * 0.4;
-    const speed = Math.max(380, b.width / 1.6);        // px/s along the row
-    const half = band * 0.8;                           // advance per half-stroke
-    const freq = speed / (2 * half);
-    const legs = [];
-    for (let i = 0; i < rows; i++) {
-      const y = b.top + step * (i + 0.5);
-      const ltr = i % 2 === 0;
-      const x0 = ltr ? b.left - pad : b.right + pad;
-      const x1 = ltr ? b.right + pad : b.left - pad;
-      legs.push({ x0, x1, y, amp: step * 0.62 + band * 0.3, dur: Math.abs(x1 - x0) / speed, freq,
-                  seed: Math.random() * 100 });
+  // Scratched the way a person does it: a burst of strokes in one spot, lift,
+  // somewhere else, another burst. Each spot is chosen among the places still
+  // covered: a few at random, and the one with the most covering round it,
+  // so it wanders here and there without wasting itself on clean ground.
+  function pickSpot() {
+    const open = scratch.covered();
+    if (!open.length) return null;
+    const reach = band * 3 * big;
+    let best = null, score = -1;
+    for (let i = 0; i < 8; i++) {
+      const c = open[Math.floor(Math.random() * open.length)];
+      let n = 0;
+      for (let j = 0; j < open.length; j += 2) {
+        if (Math.abs(open[j][0] - c[0]) < reach && Math.abs(open[j][1] - c[1]) < reach) n++;
+      }
+      const sc = n * rnd(0.7, 1.3);
+      if (sc > score) { score = sc; best = c; }
     }
-    return legs;
+    return best;
   }
 
-  // Where the coin is at time t within a leg: travelling, and stroking. No
-  // two strokes alike: their length and rhythm drift on slow, out-of-step
-  // waves, so the edge left between rows is torn, not a row of teeth.
-  function along(leg, t) {
-    const k = Math.min(1, t / leg.dur);
-    const sd = leg.seed;
-    const ph = t * leg.freq * TAU + 0.35 * Math.sin(t * 1.7 + sd);
-    // Strokes only ever run long, by uneven amounts, never short: the rows'
-    // edges go ragged and nothing between them is missed.
-    const amp = leg.amp * (1 + 0.28 * Math.max(0, Math.sin(t * 2.9 + sd * 1.3))
-                             + 0.14 * Math.max(0, Math.sin(t * 7.3 + sd * 0.7)));
-    // Strokes run on a slant that drifts, up to about 20° either way, as a
-    // hand's do; the slant only shears each stroke sideways, so the advance
-    // between strokes, and with it the coverage, is unchanged.
-    const slant = Math.tan(MathUtils.degToRad(20) * Math.sin(t * 0.9 + sd * 1.7));
-    const sw = Math.sin(ph) * amp;
-    const y = leg.y + sw + 6 * Math.sin(t * 1.1 + sd * 2.1);
-    const x = leg.x0 + (leg.x1 - leg.x0) * k + sw * slant;
-    const dir = leg.x1 > leg.x0 ? 1 : -1;
-    const head = dir * MathUtils.degToRad(11) + MathUtils.degToRad(6) * Math.sin(t * 1.3 + sd);
-    return { x, y, head };
+  // One burst. Strokes run back and forth along `theta`, a direction picked
+  // fresh each time, while the stroke's centre drifts across the spot. The
+  // edge is a flat chord square to the stroke, so it only leaves no gaps if
+  // each half-stroke moves on by less than the chord's half-width: the drift
+  // is held to between 0.9 and 1.5 of `band` per stroke cycle.
+  function makePatch(c) {
+    const theta = rnd(0, Math.PI);
+    const f = rnd(7, 9.5);
+    const dur = rnd(0.8, 1.5);
+    const drift = theta + Math.PI / 2 + rnd(-0.45, 0.45);
+    const dv = rnd(1.1, 1.5) * band * f;
+    // The centre's path bends as it goes, the way a wrist drifts in an arc,
+    // walked out in small steps and centred on the spot.
+    const seed = Math.random() * 100, bendA = rnd(0.5, 1.1), bendF = rnd(1.2, 2.6);
+    const pts = [[0, 0]], n = 60;
+    for (let i = 1; i <= n; i++) {
+      const u = dur * i / n, dir = drift + bendA * Math.sin(u * bendF + seed);
+      const [px, py] = pts[i - 1];
+      pts.push([px + Math.cos(dir) * dv * dur / n, py + Math.sin(dir) * dv * dur / n]);
+    }
+    const mx = pts.reduce((a, q) => a + q[0], 0) / pts.length;
+    const my = pts.reduce((a, q) => a + q[1], 0) / pts.length;
+    for (const q of pts) { q[0] += c[0] - mx; q[1] += c[1] - my; }
+    return { theta, f, dur, pts, seed, amp: band * rnd(1.9, 2.9) * big };
   }
 
-  let phase = 'enter', t0 = performance.now(), legs = plan(), leg = 0;
-  let target = null, sweep = null, lastT = 0, prev = 0, alive = true;
-  let revealed = false, baseHead = null, headFrom = 0;
+  // Where the edge is at time u in a burst, and the angle it is held at.
+  // Strokes run long by uneven amounts, their direction wanders a little, and
+  // they ease in and out at the ends of the burst rather than starting and
+  // stopping mid-swing.
+  function pose(P, u) {
+    const sd = P.seed;
+    const k = Math.max(0, Math.min(1, u / P.dur)) * (P.pts.length - 1);
+    const i = Math.min(P.pts.length - 2, Math.floor(k)), fr = k - i;
+    const cx = P.pts[i][0] + (P.pts[i + 1][0] - P.pts[i][0]) * fr;
+    const cy = P.pts[i][1] + (P.pts[i + 1][1] - P.pts[i][1]) * fr;
+    const th = P.theta + 0.3 * Math.sin(u * 2.3 + sd * 1.7);
+    // Strokes swell and shrink unevenly through the burst: its outline is
+    // ragged rather than a ruled block. They never drop below the stroke the
+    // drift was sized for, so nothing between them is missed.
+    const a = P.amp * (1 + 0.35 * Math.max(0, Math.sin(u * 3.1 + sd))
+                         + 0.2 * Math.max(0, Math.sin(u * 8.3 + sd * 2.3)));
+    const w = Math.sin(TAU * P.f * u + 0.3 * Math.sin(u * 1.9 + sd));
+    const env = Math.max(0, Math.min(1, u / 0.1, (P.dur - u) / 0.1));
+    return { x: cx + Math.cos(th) * a * w * env, y: cy + Math.sin(th) * a * w * env, ang: th + Math.PI / 2 };
+  }
+
+  let phase = 'enter', t0 = performance.now(), prev = 0, alive = true;
+  let patch = null, lastU = 0, hop = null, rest = 0;
+  let revealed = false, baseHead = null;
   document.addEventListener('egg-revealed', () => { revealed = true; }, { once: true });
 
   // Where it starts: the timer's spot, at the timer's size, flat to the reader.
   const fr = from ? from.getBoundingClientRect() : { left: W() - 60, top: 20, width: 28, height: 28 };
   const start = { x: fr.left + fr.width / 2, y: fr.top + fr.height / 2 + R };
-  const first = along(legs[0], 0);
+  patch = makePatch(pickSpot() || [pb.left + pb.width / 2, pb.top + pb.height / 2]);
+  const first = pose(patch, 0);
+
+  // Lift, move to the next spot, put down: a short glide with a little
+  // height, the coin turning on the way to the angle the next burst wants.
+  function nextPatch(now) {
+    scratch.lift();
+    const c = pickSpot();
+    if (!c) { phase = 'settle'; t0 = now; return; }
+    patch = makePatch(c);
+    const to = pose(patch, 0);
+    const d = Math.hypot(to.x - s.x, to.y - s.y);
+    hop = {
+      x0: s.x, y0: s.y, x1: to.x, y1: to.y, h0: s.head, h1: near(-to.ang, s.head),
+      dur: Math.max(0.14, Math.min(0.38, d / 1300)), lift: Math.min(34, 8 + d * 0.08),
+      wait: rnd(0, 0.1)
+    };
+    phase = 'travel'; t0 = now;
+  }
+
+  // ---- your hand ---------------------------------------------------------
+  // Press on the coin, with a finger or a mouse, and it is yours: it follows,
+  // scratching wherever it is dragged, and turns and leans with the drag. Let
+  // go and, after a moment, it carries on by itself.
+  let held = null;
+  const drag = { vx: 0, vy: 0, c2: 0, s2: 0 };
+  const canHold = () => phase === 'travel' || phase === 'patch' || phase === 'rest' || phase === 'held';
+  function centre() {
+    const off = R * Math.cos(s.tilt) * s.scale;
+    return [s.x - Math.sin(s.head) * off, s.y - Math.cos(s.head) * off];
+  }
+  function over(e) {
+    const c = centre();
+    return Math.hypot(e.clientX - c[0], e.clientY - c[1]) < R * 1.25;
+  }
+  function onDown(e) {
+    if (!alive || held || !canHold() || !over(e)) return;
+    e.preventDefault(); e.stopPropagation();
+    held = { id: e.pointerId, dx: s.x - e.clientX, dy: s.y - e.clientY, tx: s.x, ty: s.y };
+    drag.vx = drag.vy = 0;
+    scratch.lift();
+    phase = 'held';
+    document.documentElement.style.cursor = 'grabbing';
+  }
+  function onMove(e) {
+    if (held && e.pointerId === held.id) {
+      e.preventDefault();
+      held.tx = e.clientX + held.dx; held.ty = e.clientY + held.dy;
+    } else if (!held && e.pointerType === 'mouse') {
+      document.documentElement.style.cursor = canHold() && over(e) ? 'grab' : '';
+    }
+  }
+  function onUp(e) {
+    if (!held || e.pointerId !== held.id) return;
+    held = null;
+    document.documentElement.style.cursor = '';
+    scratch.lift();
+    if (phase === 'held') { phase = 'rest'; t0 = performance.now(); rest = 1.2; }
+  }
+  document.addEventListener('pointerdown', onDown, true);
+  window.addEventListener('pointermove', onMove, { passive: false });
+  window.addEventListener('pointerup', onUp);
+  window.addEventListener('pointercancel', onUp);
+  // While the coin is on the page a drag on it is a drag, not a scroll.
+  const touchWas = document.documentElement.style.touchAction;
+  document.documentElement.style.touchAction = 'none';
 
   function frame(now) {
     if (!alive) return;
     const t = (now - t0) / 1000;
+    const dt = Math.min(0.05, Math.max(0.001, (now - prev) / 1000));
+
+    if (revealed && phase !== 'settle' && phase !== 'pop' && phase !== 'enter') {
+      if (held) { held = null; document.documentElement.style.cursor = ''; }
+      scratch.lift(); phase = 'settle'; t0 = now;
+    }
 
     if (phase === 'enter') {
       // Out of the timer and onto the plate in one hop: grows from the
@@ -281,64 +374,62 @@ export async function run({ plate, from }) {
       s.tilt = TILT * ease.out(k);
       s.flip = (1 - ease.out(k)) * TAU * 2;
       s.z = restZ + Math.sin(Math.PI * Math.min(1, k * 1.05)) * 240 * (1 - k * 0.3);
-      s.head = 0;
-      if (k >= 1) { phase = 'scratch'; t0 = now; lastT = 0; s.flip = 0; s.z = restZ; }
-    } else if (phase === 'scratch') {
-      const L = legs[leg];
-      const p = along(L, Math.min(t, L.dur));
+      s.head = near(-first.ang, 0) * ease.out(k);
+      if (k >= 1) { phase = 'patch'; t0 = now; lastU = 0; s.flip = 0; s.z = restZ; }
+    } else if (phase === 'travel') {
+      const k = Math.min(1, Math.max(0, t - hop.wait) / hop.dur);
+      const e = ease.inOut(k);
+      s.x = hop.x0 + (hop.x1 - hop.x0) * e;
+      s.y = hop.y0 + (hop.y1 - hop.y0) * e;
+      s.z = restZ + Math.sin(Math.PI * k) * hop.lift;
+      s.head = hop.h0 + (hop.h1 - hop.h0) * e;
+      s.tilt += (TILT - MathUtils.degToRad(8) * Math.sin(Math.PI * k) - s.tilt) * Math.min(1, dt * 12);
+      s.roll *= Math.exp(-dt * 10);
+      if (k >= 1) { phase = 'patch'; t0 = now; lastU = 0; }
+    } else if (phase === 'patch') {
+      const P = patch;
+      const u = Math.min(t, P.dur);
       // Scratched along the path in small steps since the last frame, not
-      // just at this frame's point: a slow frame would otherwise cut the
-      // corners off the strokes and leave the plate striped.
-      for (let u = lastT + 0.004; u < Math.min(t, L.dur); u += 0.004) {
-        const q = along(L, u); scratch.to(q.x, q.y, band, -q.head); crumbs(q.x, q.y);
+      // just at this frame's point: a slow frame would otherwise cut corners
+      // and leave stripes. The path, not the frame rate, decides the scrape.
+      for (let v = lastU + 0.003; v < u; v += 0.003) {
+        const q = pose(P, v); scratch.to(q.x, q.y, band, q.ang); crumbs(q.x, q.y);
       }
-      lastT = Math.min(t, L.dur);
-      // Heading eases from wherever the last leg left it.
-      const turn = Math.min(1, t / 0.25);
-      s.head = headFrom + (p.head - headFrom) * ease.inOut(turn);
+      lastU = u;
+      const p = pose(P, u), p2 = pose(P, u + 0.003);
       s.x = p.x; s.y = p.y; s.z = restZ;
-      const q2 = along(L, Math.min(t, L.dur) + 0.003);
-      lean(s.head, (q2.x - p.x) / 0.003, -(q2.y - p.y) / 0.003);
-      scratch.to(p.x, p.y, band, -p.head);
-      if (revealed) { phase = 'settle'; t0 = now; scratch.lift(); }
-      else if (t >= L.dur) {
-        scratch.lift(); lastT = 0; headFrom = s.head;
-        if (++leg >= legs.length) {
-          // A last pass over whatever the rows missed, nearest first.
-          sweep = scratch.covered();
-          phase = sweep.length ? 'sweep' : 'settle';
-        }
-        t0 = now;
+      s.head += (near(-p.ang, s.head) - s.head) * Math.min(1, dt * 14);
+      lean(s.head, (p2.x - p.x) / 0.003, -(p2.y - p.y) / 0.003);
+      scratch.to(p.x, p.y, band, p.ang);
+      if (t >= P.dur) nextPatch(now);
+    } else if (phase === 'held') {
+      // Follow the hand, scratching every few pixels of the way; the heading
+      // settles square to the line of the drag, averaged over a moment so a
+      // scribble does not spin it.
+      const dx = held.tx - s.x, dy = held.ty - s.y, d = Math.hypot(dx, dy);
+      const vx = dx / dt, vy = dy / dt, k = Math.min(1, dt * 20);
+      drag.vx += (vx - drag.vx) * k; drag.vy += (vy - drag.vy) * k;
+      const sp = Math.hypot(drag.vx, drag.vy);
+      if (sp > 30) {
+        const th = Math.atan2(drag.vy, drag.vx), a = Math.min(1, dt / 0.25);
+        drag.c2 += (Math.cos(2 * th) - drag.c2) * a;
+        drag.s2 += (Math.sin(2 * th) - drag.s2) * a;
+        const ang = Math.atan2(drag.s2, drag.c2) / 2 + Math.PI / 2;
+        s.head += (near(-ang, s.head) - s.head) * Math.min(1, dt * 10);
       }
-    } else if (phase === 'sweep') {
-      // Straight to whatever is still covered, nearest first, scratching the
-      // whole way at a brisk 900px/s.
-      const dt = Math.min(0.05, (now - prev) / 1000);
-      let budget = dt * 900;
-      while (budget > 0 && !revealed) {
-        if (!target) {
-          if (!sweep.length) sweep = scratch.covered();
-          if (!sweep.length) break;
-          sweep.sort((a, b) => Math.hypot(a[0] - s.x, a[1] - s.y) - Math.hypot(b[0] - s.x, b[1] - s.y));
-          target = sweep.shift();
-        }
-        const dx = target[0] - s.x, dy = target[1] - s.y, d = Math.hypot(dx, dy);
-        if (d > 0) {
-          let want = Math.atan2(-dy, dx) + Math.PI / 2;
-          while (want - s.head > Math.PI / 2) want -= Math.PI;
-          while (want - s.head < -Math.PI / 2) want += Math.PI;
-          s.head += (want - s.head) * 0.08;
-          lean(s.head, dx / d * 900, -dy / d * 900);
-        }
-        const m = Math.min(d, budget, 4);
-        if (d > 0) { s.x += dx / d * m; s.y += dy / d * m; }
-        budget -= Math.max(m, 0.5);
-        scratch.to(s.x, s.y, band, -s.head); crumbs(s.x, s.y);
-        if (d <= 4) target = null;
+      const n = Math.max(1, Math.ceil(d / 3));
+      for (let i = 1; i <= n; i++) {
+        const x = s.x + dx * i / n, y = s.y + dy * i / n;
+        scratch.to(x, y, band, -s.head);
+        if (i % 2 === 0) crumbs(x, y);
       }
-      if (revealed || (!target && !sweep.length && !scratch.covered().length)) {
-        phase = 'settle'; t0 = now; scratch.lift();
-      }
+      s.x = held.tx; s.y = held.ty; s.z = restZ;
+      lean(s.head, drag.vx, -drag.vy);
+      if (sp < 30) { s.tilt += (TILT - s.tilt) * Math.min(1, dt * 6); s.roll *= Math.exp(-dt * 6); }
+    } else if (phase === 'rest') {
+      s.tilt += (TILT - s.tilt) * Math.min(1, dt * 6);
+      s.roll *= Math.exp(-dt * 6);
+      if (t >= rest) nextPatch(now);
     } else if (phase === 'settle') {
       // Stops, then a short shake: side to side, dying away.
       const k = Math.min(1, t / 0.55);
@@ -451,6 +542,12 @@ export async function run({ plate, from }) {
 
   function done() {
     alive = false;
+    document.removeEventListener('pointerdown', onDown, true);
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+    window.removeEventListener('pointercancel', onUp);
+    document.documentElement.style.touchAction = touchWas;
+    document.documentElement.style.cursor = '';
     window.removeEventListener('resize', layout);
     window.removeEventListener('resize', sizeDust);
     dust.remove();

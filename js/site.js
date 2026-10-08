@@ -156,20 +156,21 @@
   var timerPie = document.querySelector('.timer-pie');
   if (timerPie) {
     var pennyUrl = '/js/penny.js';
+    // ?penny: the last four seconds only, for trying it out.
+    var quick = /[?&]penny\b/.test(location.search);
+    if (quick) timerPie.getAnimations().forEach(function (a) { a.currentTime = 26000; });
     timerPie.addEventListener('animationstart', function () {
       setTimeout(function () {
         var l = document.createElement('link');
         l.rel = 'modulepreload'; l.href = pennyUrl;
         document.head.appendChild(l);
+        // Warmed into the cache; the penny's own loader picks them up.
         ['obverse', 'reverse'].forEach(function (side) {
           ['color', 'normal', 'rough'].forEach(function (kind) {
-            var i = document.createElement('link');
-            i.rel = 'preload'; i.as = 'image';
-            i.href = '/images/penny/' + side + '-' + kind + '.webp';
-            document.head.appendChild(i);
+            new Image().src = '/images/penny/' + side + '-' + kind + '.webp';
           });
         });
-      }, 20000);
+      }, quick ? 0 : 20000);
     });
     timerPie.addEventListener('animationend', function () {
       document.dispatchEvent(new CustomEvent('home-timer-done'));
@@ -427,7 +428,7 @@
 
     // Sampled on a coarse grid: this runs inside the draw loop and only needs
     // to know when the plate is essentially open.
-    var done = false;
+    var done = false, need = 0.97;
     function checkDone() {
       if (done || !mask.width) return;
       var step = 12;
@@ -439,7 +440,7 @@
           n++;
         }
       }
-      if (n && open / n >= 0.97) { done = true; finish(); }
+      if (n && open / n >= need) { done = true; finish(); }
     }
 
     // Past the threshold the last unscratched slivers are just noise, so they
@@ -473,6 +474,7 @@
       setTimeout(function () {
         mctx.clearRect(0, 0, mask.width, mask.height);
         done = false;
+        need = 0.97;
         last = null;
         paintPlate();
         wrap.classList.remove('is-clearing');
@@ -608,7 +610,11 @@
         }
         return out;
       },
-      isDone: function () { return done; }
+      isDone: function () { return done; },
+      // How much must be scratched before the plate finishes itself. A hand
+      // gets the last slivers filled in at 97%; the penny, which would
+      // otherwise spend its last seconds hunting specks, at less.
+      need: function (v) { need = v; schedule(); }
     };
 
     if (img.complete) size();
