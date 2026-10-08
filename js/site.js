@@ -149,10 +149,27 @@
   // ---- home timer ---------------------------------------------------------
   // The countdown itself is the stylesheet's; this only says when it is over,
   // for whatever wants to happen at the end.
+  // At zero a penny comes out and scratches the plate open. Its code and the
+  // 3D library under it are fetched only near the end of the countdown, so
+  // the home page itself costs nothing extra. Skipped for reduced motion,
+  // where the timer is hidden too, and when the plate is already open.
   var timerPie = document.querySelector('.timer-pie');
   if (timerPie) {
+    var pennyUrl = '/js/penny.js';
+    timerPie.addEventListener('animationstart', function () {
+      setTimeout(function () {
+        var l = document.createElement('link');
+        l.rel = 'modulepreload'; l.href = pennyUrl;
+        document.head.appendChild(l);
+      }, 20000);
+    });
     timerPie.addEventListener('animationend', function () {
       document.dispatchEvent(new CustomEvent('home-timer-done'));
+      var egg = document.querySelector('.egg-canvas');
+      if (reduce || !egg || !egg.scratch || egg.scratch.isDone()) return;
+      import(pennyUrl).then(function (m) {
+        m.run({ plate: egg, from: document.getElementById('timer') });
+      }).catch(function () {});
     });
   }
 
@@ -346,7 +363,8 @@
 
     var mask = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
-    var mctx = mask.getContext('2d');
+    // Read back on every stroke to tell when the plate is open.
+    var mctx = mask.getContext('2d', { willReadFrequently: true });
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     var queued = false;
 
@@ -436,6 +454,7 @@
       credit.classList.add('on');
       clear.classList.add('on');
       placeClear();
+      document.dispatchEvent(new CustomEvent('egg-revealed'));
     }
 
     clear.addEventListener('click', function () {
@@ -459,8 +478,8 @@
               (e.clientY - r.top) * (canvas.height / r.height)];
     }
 
-    function stroke(pt) {
-      var radius = 26 * dpr;
+    function stroke(pt, r) {
+      var radius = (r || 26) * dpr;
       mctx.globalCompositeOperation = 'source-over';
       mctx.strokeStyle = mctx.fillStyle = '#fff';
       mctx.lineWidth = radius * 2;
@@ -490,6 +509,33 @@
     canvas.addEventListener('pointerup', end);
     canvas.addEventListener('pointercancel', end);
     canvas.addEventListener('pointerleave', end);
+
+    // The same scratch, for something other than a hand to drive: the home
+    // timer's penny. Points are viewport coordinates; r is in CSS pixels.
+    canvas.scratch = {
+      to: function (x, y, r) {
+        var b = canvas.getBoundingClientRect();
+        stroke([(x - b.left) * (canvas.width / b.width),
+                (y - b.top) * (canvas.height / b.height)], r);
+      },
+      lift: function () { last = null; },
+      // Viewport centres of the coarse cells still covered, for a last pass.
+      covered: function () {
+        var out = [], b = canvas.getBoundingClientRect();
+        if (!mask.width) return out;
+        var step = Math.round(24 * dpr);
+        var d = mctx.getImageData(0, 0, mask.width, mask.height).data;
+        for (var y = step / 2; y < mask.height; y += step) {
+          for (var x = step / 2; x < mask.width; x += step) {
+            if (d[(Math.floor(y) * mask.width + Math.floor(x)) * 4 + 3] <= 24) {
+              out.push([b.left + x * b.width / mask.width, b.top + y * b.height / mask.height]);
+            }
+          }
+        }
+        return out;
+      },
+      isDone: function () { return done; }
+    };
 
     if (img.complete) size();
     else img.onload = size;

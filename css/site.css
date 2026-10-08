@@ -612,7 +612,8 @@
   /* A pie, not a ring: the circle's radius is a quarter of the box and its
      stroke is half, so the stroke covers the whole disc. pathLength 100 makes
      the dash maths a percentage. The -90deg turn starts it at twelve, and the
-     offset running from 0 to -100 takes the slices away clockwise. */
+     offset running from 0 to 100 winds it back like a kitchen timer: what is
+     left always runs clockwise from twelve, and shrinks back towards it. */
   .timer {
     position: fixed;
     top: var(--edge);
@@ -636,7 +637,33 @@
     animation-delay: var(--island-delay, 300ms);
   }
   @keyframes timer-in  { to { opacity: 1; } }
-  @keyframes timer-run { to { stroke-dashoffset: -100; } }
+  @keyframes timer-run { to { stroke-dashoffset: 100; } }
+  @media (prefers-reduced-motion: reduce) { .timer { display: none; } }
+
+  /* The penny's stage covers the viewport and catches nothing: the plate under
+     it stays scratchable by hand while the coin works. */
+  .penny-stage {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    pointer-events: none;
+  }
+  /* The pop: a few motes of grey thrown off where the coin was. */
+  .penny-puff { position: fixed; z-index: 41; width: 0; height: 0; pointer-events: none; }
+  .penny-puff span {
+    position: absolute;
+    left: calc(var(--sz) / -2);
+    top: calc(var(--sz) / -2);
+    width: var(--sz);
+    height: var(--sz);
+    border-radius: 50%;
+    background: #D6D6D6;
+    animation: penny-mote 520ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes penny-mote {
+    from { transform: translate(0, 0) scale(1); opacity: 1; }
+    to   { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
+  }
 
   /* ---- upcoming --------------------------------------------------------- */
   /* What has not happened yet is the one thing on the index that is not an
