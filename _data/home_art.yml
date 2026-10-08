@@ -1,0 +1,30 @@
+# The home page's scratch plate and the pictures after it.
+#
+# `showing` is what the page uses, in order: the first is the picture the
+# penny scratches open, the rest follow in the little show. Each fills the
+# plate, cropped at its edges if need be; `fit: contain` shows the whole
+# picture inside it instead.
+#
+# `archive` is everything that has been up before. Its files stay in
+# images/home, so bringing one back is moving its entry up into `showing`.
+
+showing:
+  - src: /images/home/throwing-three-balls.webp
+    artist: John Baldessari
+    title: Throwing Three Balls in the Air (Best of 36 Attempts)
+    year: 1973
+  - src: /images/home/katabasis.webp
+    artist: Paul Chan
+    title: Katabasis
+    year: 2019
+
+archive:
+  - src: /images/home/palm.webp
+    artist: John Baldessari
+    title: Palm tree / seascape
+    year: 2010
+  - src: /images/home/no-more-boring-art.webp
+    artist: John Baldessari
+    title: I Will Not Make Any More Boring Art
+    year: 1971
+    fit: contain
