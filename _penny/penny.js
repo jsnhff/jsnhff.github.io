@@ -170,6 +170,9 @@ export async function run({ plate, from }) {
     const off = R * Math.cos(s.tilt);
     holder.position.set(s.x - Math.sin(s.head) * off, -(s.y) + Math.cos(s.head) * off, s.z);
     holder.scale.setScalar(s.scale);
+    // A shadow thins as what casts it rises: full on the page, a ghost of
+    // itself at the top of the hop.
+    floor.material.opacity = 0.2 * (1 - 0.75 * Math.min(1, Math.max(0, s.z - restZ) / 220));
   }
 
   // ---- the hand ----------------------------------------------------------
@@ -197,7 +200,8 @@ export async function run({ plate, from }) {
 
   // ---- choreography ------------------------------------------------------
   const scratch = plate.scratch;
-  const TILT = MathUtils.degToRad(40);
+  // Pressed nearly flat, one edge biting, as a coin is held to a ticket.
+  const TILT = MathUtils.degToRad(22);
   const restZ = R * Math.sin(TILT) + (T / 2) * Math.cos(TILT);
   const band = R * 0.8;             // half the width of the band the edge scrapes
 
@@ -213,7 +217,7 @@ export async function run({ plate, from }) {
     const rows = Math.max(1, Math.ceil(b.height / rowH));
     const step = b.height / rows;
     const pad = band * 0.4;
-    const speed = Math.max(240, b.width / 2.6);        // px/s along the row
+    const speed = Math.max(380, b.width / 1.6);        // px/s along the row
     const half = band * 0.8;                           // advance per half-stroke
     const freq = speed / (2 * half);
     const legs = [];
@@ -233,11 +237,19 @@ export async function run({ plate, from }) {
   // waves, so the edge left between rows is torn, not a row of teeth.
   function along(leg, t) {
     const k = Math.min(1, t / leg.dur);
-    const x = leg.x0 + (leg.x1 - leg.x0) * k;
     const sd = leg.seed;
     const ph = t * leg.freq * TAU + 0.35 * Math.sin(t * 1.7 + sd);
-    const amp = leg.amp * (1 + 0.08 * Math.sin(t * 2.9 + sd * 1.3) + 0.04 * Math.sin(t * 7.3 + sd * 0.7));
-    const y = leg.y + Math.sin(ph) * amp + 6 * Math.sin(t * 1.1 + sd * 2.1);
+    // Strokes only ever run long, by uneven amounts, never short: the rows'
+    // edges go ragged and nothing between them is missed.
+    const amp = leg.amp * (1 + 0.28 * Math.max(0, Math.sin(t * 2.9 + sd * 1.3))
+                             + 0.14 * Math.max(0, Math.sin(t * 7.3 + sd * 0.7)));
+    // Strokes run on a slant that drifts, up to about 20° either way, as a
+    // hand's do; the slant only shears each stroke sideways, so the advance
+    // between strokes, and with it the coverage, is unchanged.
+    const slant = Math.tan(MathUtils.degToRad(20) * Math.sin(t * 0.9 + sd * 1.7));
+    const sw = Math.sin(ph) * amp;
+    const y = leg.y + sw + 6 * Math.sin(t * 1.1 + sd * 2.1);
+    const x = leg.x0 + (leg.x1 - leg.x0) * k + sw * slant;
     const dir = leg.x1 > leg.x0 ? 1 : -1;
     const head = dir * MathUtils.degToRad(11) + MathUtils.degToRad(6) * Math.sin(t * 1.3 + sd);
     return { x, y, head };
@@ -245,7 +257,7 @@ export async function run({ plate, from }) {
 
   let phase = 'enter', t0 = performance.now(), legs = plan(), leg = 0;
   let target = null, sweep = null, lastT = 0, prev = 0, alive = true;
-  let revealed = false, coated = false, baseHead = null, headFrom = 0;
+  let revealed = false, baseHead = null, headFrom = 0;
   document.addEventListener('egg-revealed', () => { revealed = true; }, { once: true });
 
   // Where it starts: the timer's spot, at the timer's size, flat to the reader.
@@ -270,7 +282,6 @@ export async function run({ plate, from }) {
       s.flip = (1 - ease.out(k)) * TAU * 2;
       s.z = restZ + Math.sin(Math.PI * Math.min(1, k * 1.05)) * 240 * (1 - k * 0.3);
       s.head = 0;
-      if (k > 0.45 && !coated) { coated = true; scratch.coat(450); }
       if (k >= 1) { phase = 'scratch'; t0 = now; lastT = 0; s.flip = 0; s.z = restZ; }
     } else if (phase === 'scratch') {
       const L = legs[leg];
@@ -351,8 +362,8 @@ export async function run({ plate, from }) {
   }
 
   // ---- crumbs ------------------------------------------------------------
-  // Latex comes off a ticket as grit: little silver flakes thrown back from
-  // the edge, skidding to a stop and fading. Drawn on a 2D canvas under the
+  // Coating comes off a ticket as grit: little flakes thrown back from the
+  // edge, skidding to a stop and fading. Drawn on a 2D canvas under the
   // coin's, so the coin passes over its own mess.
   const dust = document.createElement('canvas');
   dust.className = 'penny-dust';
@@ -374,18 +385,20 @@ export async function run({ plate, from }) {
     since += d;
     if (d < 0.01) return;
     const ux = dx / d, uy = dy / d;
-    while (since > 5) {
-      since -= 5;
-      if (flakes.length > 260) flakes.shift();
-      const along = (Math.random() * 2 - 1) * band;
+    while (since > 16) {
+      since -= 16;
+      if (flakes.length > 90) flakes.shift();
+      // mostly off the ends of the edge, where a ticket sheds
+      const end = Math.random() < 0.5 ? -1 : 1;
+      const along = end * band * (0.55 + Math.random() * 0.45);
       const sp = 40 + Math.random() * 140;
       const a = Math.atan2(-uy, -ux) + (Math.random() - 0.5) * 1.6;
       flakes.push({
         x: x - uy * along, y: y + ux * along,
         vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
-        r: 0.6 + Math.random() * 1.6, rot: Math.random() * TAU,
-        life: 0, max: 0.5 + Math.random() * 0.9,
-        shade: 150 + Math.floor(Math.random() * 60)
+        r: 0.5 + Math.random() * 1.0, rot: Math.random() * TAU,
+        life: 0, max: 0.3 + Math.random() * 0.45,
+        shade: 244 + Math.floor(Math.random() * 11)
       });
     }
   }
@@ -403,8 +416,15 @@ export async function run({ plate, from }) {
       const o = 1 - Math.pow(f.life / f.max, 2);
       dg.save();
       dg.translate(f.x, f.y); dg.rotate(f.rot);
-      dg.fillStyle = `rgba(${f.shade},${f.shade + 3},${f.shade + 7},${o})`;
-      dg.fillRect(-f.r, -f.r * 0.6, f.r * 2, f.r * 1.2);
+      // Flakes of the page itself: white, with just enough edge to read
+      // against the white they came off.
+      dg.fillStyle = `rgba(${f.shade},${f.shade},${f.shade},${o})`;
+      dg.strokeStyle = `rgba(0,0,0,${0.1 * o})`;
+      dg.lineWidth = 0.5;
+      dg.beginPath();
+      dg.moveTo(-f.r, -f.r * 0.5); dg.lineTo(f.r, -f.r * 0.2); dg.lineTo(f.r * 0.2, f.r * 0.7);
+      dg.closePath();
+      dg.fill(); dg.stroke();
       dg.restore();
     }
   }

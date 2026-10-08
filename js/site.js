@@ -376,34 +376,6 @@
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     var queued = false;
 
-    // The scratch-off coating, for the penny. Off by default: by hand, the
-    // statement itself is the coating. When the penny comes it lays a ticket's
-    // silver latex over the plate and scratches that away instead.
-    var coat = null, coatAlpha = 0;
-    function makeCoat(w, h) {
-      var c = document.createElement('canvas');
-      c.width = w; c.height = h;
-      var g = c.getContext('2d');
-      var grad = g.createLinearGradient(0, 0, w, h);
-      grad.addColorStop(0, '#D3D5D8');
-      grad.addColorStop(0.45, '#BCC0C4');
-      grad.addColorStop(0.55, '#C6C9CD');
-      grad.addColorStop(1, '#ACB0B5');
-      g.fillStyle = grad;
-      g.fillRect(0, 0, w, h);
-      // Brushed grain and a fine tooth of speckle, the latex's own texture.
-      var img = g.getImageData(0, 0, w, h), d = img.data, row = 0;
-      for (var y = 0; y < h; y++) {
-        row = (Math.random() - 0.5) * 10;
-        for (var x = 0; x < w; x++) {
-          var i = (y * w + x) * 4;
-          var n = row + (Math.random() - 0.5) * 22;
-          d[i] += n; d[i + 1] += n; d[i + 2] += n;
-        }
-      }
-      g.putImageData(img, 0, 0);
-      return c;
-    }
 
     function size() {
       var stmt = wrap.querySelector('.statement');
@@ -444,12 +416,6 @@
       ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
       ctx.globalCompositeOperation = 'destination-in';
       ctx.drawImage(mask, 0, 0);
-      if (coat && coatAlpha > 0) {
-        ctx.globalCompositeOperation = 'destination-over';
-        ctx.globalAlpha = coatAlpha;
-        ctx.drawImage(coat, 0, 0, w, h);
-        ctx.globalAlpha = 1;
-      }
       ctx.globalCompositeOperation = 'source-over';
     }
 
@@ -508,7 +474,6 @@
         mctx.clearRect(0, 0, mask.width, mask.height);
         done = false;
         last = null;
-        coat = null; coatAlpha = 0;
         paintPlate();
         wrap.classList.remove('is-clearing');
       }, 340);
@@ -524,9 +489,10 @@
 
     // The coin's edge: a chord at the angle the coin is held (radians, on the
     // screen, clockwise from horizontal), stamped every couple of pixels with
-    // its ends chipped at random, so the band it leaves has a ticket's torn
-    // edges. Now and then a fleck of latex survives in the band for a later
-    // pass to take.
+    // its ends chipped at random. Latex tears rather than cuts, so the ends
+    // also throw out thin fibres past the band, and now and then a sliver of
+    // coating is left hanging into it, the way a real ticket looks halfway
+    // through. Later passes, and the plate's own finish, take what is left.
     function scrape(pt, r, ang) {
       var half = r * dpr;
       mctx.globalCompositeOperation = 'source-over';
@@ -549,6 +515,8 @@
         mctx.lineTo(cx + nx * b + ux * th, cy + ny * b + uy * th);
         mctx.lineTo(cx - nx * a + ux * th, cy - ny * a + uy * th);
         mctx.fill();
+        if (Math.random() < 0.3) fibre(cx, cy, nx, ny, Math.random() < 0.5 ? -a : b, half * 1.3, 'source-over');
+        if (Math.random() < 0.07) fibre(cx, cy, nx, ny, (Math.random() < 0.5 ? -1 : 1) * half * 0.9, -half * 0.5, 'destination-out');
       }
       if (Math.random() < 0.05) {
         var o = (Math.random() * 2 - 1) * half * 0.8;
@@ -561,6 +529,25 @@
       }
       last = pt;
       schedule();
+    }
+
+    // A torn fibre from the chord's end at `from` (signed, along the chord),
+    // running `reach` further out (negative: back into the band) at a slight
+    // angle: revealed when drawn over, coating left behind when cut out.
+    function fibre(cx, cy, nx, ny, from, reach, op) {
+      var sgn = from < 0 ? -1 : 1, len = Math.abs(reach) * (0.12 + Math.random() * 0.3);
+      var dir = reach < 0 ? -sgn : sgn;
+      var sx = cx + nx * from, sy = cy + ny * from;
+      var bend = (Math.random() - 0.5) * 0.9;
+      var ex = sx + (nx * Math.cos(bend) - ny * Math.sin(bend)) * len * dir;
+      var ey = sy + (ny * Math.cos(bend) + nx * Math.sin(bend)) * len * dir;
+      mctx.globalCompositeOperation = op;
+      mctx.strokeStyle = '#fff';
+      mctx.lineWidth = (0.5 + Math.random() * 1.1) * dpr;
+      mctx.lineCap = 'round';
+      mctx.beginPath(); mctx.moveTo(sx, sy); mctx.lineTo(ex, ey); mctx.stroke();
+      mctx.globalCompositeOperation = 'source-over';
+      mctx.lineCap = 'round';
     }
 
     function stroke(pt, r) {
@@ -603,19 +590,6 @@
         var pt = [(x - b.left) * (canvas.width / b.width),
                   (y - b.top) * (canvas.height / b.height)];
         if (edge !== undefined && edge !== false) scrape(pt, r, +edge || 0); else stroke(pt, r);
-      },
-      // Lay the silver over the plate, fading in over `ms`.
-      coat: function (ms) {
-        if (!canvas.width) return;
-        coat = makeCoat(canvas.width, canvas.height);
-        var t0 = null;
-        (function fade(ts) {
-          if (!coat) return;
-          if (!t0) t0 = ts;
-          coatAlpha = Math.min(1, (ts - t0) / (ms || 400));
-          paintPlate();
-          if (coatAlpha < 1) requestAnimationFrame(fade);
-        })(performance.now());
       },
       rect: function () { return canvas.getBoundingClientRect(); },
       lift: function () { last = null; },
