@@ -177,12 +177,32 @@
         });
       }, quick ? 0 : 20000);
     });
+    // Once the picture is open the timer runs again, for a while in the
+    // gallery. When that runs out the plate covers itself back over and the
+    // whole thing starts again from the top: the timer, then the penny.
+    var egg = document.querySelector('.egg-canvas');
+    var timer = document.getElementById('timer');
+    function rewind() {
+      timerPie.getAnimations().forEach(function (a) {
+        a.cancel();
+        a.currentTime = 0;
+        a.play();
+      });
+      timer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, easing: 'ease' });
+    }
+    document.addEventListener('egg-revealed', function () {
+      if (!reduce) setTimeout(rewind, 600);
+    });
     timerPie.addEventListener('animationend', function () {
       document.dispatchEvent(new CustomEvent('home-timer-done'));
-      var egg = document.querySelector('.egg-canvas');
-      if (reduce || !egg || !egg.scratch || egg.scratch.isDone()) return;
+      if (reduce || !egg || !egg.scratch) return;
+      if (egg.scratch.isDone()) {
+        egg.scratch.reset();
+        setTimeout(rewind, 900);
+        return;
+      }
       import(pennyUrl).then(function (m) {
-        m.run({ plate: egg, from: document.getElementById('timer') });
+        m.run({ plate: egg, from: timer });
       }).catch(function () {});
     });
   }
@@ -833,8 +853,31 @@
       // How much must be scratched before the plate finishes itself. A hand
       // gets the last slivers filled in at 97%; the penny, which would
       // otherwise spend its last seconds hunting specks, at less.
-      need: function (v) { need = v; schedule(); }
+      need: function (v) { need = v; schedule(); },
+      // Covers the picture again: the open plate fades away to the statement
+      // under it, and comes back as fresh coating, the show put away.
+      reset: reset
     };
+
+    function reset() {
+      if (!done) return;
+      wrap.classList.add('is-clearing');
+      wrap.classList.remove('is-show');
+      credit.classList.remove('on');
+      setTimeout(function () {
+        showing = false; fading = false; cur = 0; swipe = null;
+        credit.textContent = slides[0].credit;
+        mark();
+        mctx.clearRect(0, 0, mask.width, mask.height);
+        batch.quads = batch.dots = batch.holes = null; batch.own.length = 0;
+        resetGrid();
+        done = false; need = 0.97; fray = 1; last = null; drawing = false;
+        paintPlate();
+        placeDots();
+        // the canvas is clear now, so showing it again shows nothing
+        wrap.classList.remove('is-clearing');
+      }, 900);
+    }
 
     if (img.complete) size();
     else img.onload = size;
