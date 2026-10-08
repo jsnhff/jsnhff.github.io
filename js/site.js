@@ -831,23 +831,33 @@
         from.width = canvas.width; from.height = canvas.height;
         from.getContext('2d').drawImage(canvas, 0, 0);
         cur = i; mark(); fading = true;
-        credit.classList.remove('on');
-        setTimeout(function () {
-          // the show may have been put away in the meantime
-          if (!showing) return;
-          setCredit(credit, sl.credit); placeDots(); credit.classList.add('on');
-        }, 200);
+        // The title runs on the picture's own clock: out over the first
+        // half of the cross-fade, swapped while it is gone, back in over the
+        // second, so the two finish together.
+        var swapped = false;
+        credit.style.transition = 'none';
+        function release() { credit.style.opacity = ''; credit.style.transition = ''; }
         var t0 = null;
         (function step(ts) {
           if (!t0) t0 = ts;
-          var k = Math.min(1, (ts - t0) / 380);
-          ctx.globalCompositeOperation = 'source-over';
+          var k = Math.min(1, (ts - t0) / 440);
+          var e = k < 0.5 ? 2 * k * k : 1 - 2 * (1 - k) * (1 - k);
+          // Added, not laid over: the two weights always sum to one, so the
+          // plate never thins to the page halfway through.
           ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.globalAlpha = 1 - k; ctx.drawImage(from, 0, 0);
-          ctx.globalAlpha = k; ctx.drawImage(to, 0, 0);
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.globalAlpha = 1 - e; ctx.drawImage(from, 0, 0);
+          ctx.globalAlpha = e; ctx.drawImage(to, 0, 0);
           ctx.globalAlpha = 1;
+          ctx.globalCompositeOperation = 'source-over';
+          // the show may have been put away in the meantime
+          if (!showing) release();
+          else {
+            if (e >= 0.5 && !swapped) { swapped = true; setCredit(credit, sl.credit); }
+            credit.style.opacity = String(Math.abs(1 - 2 * e));
+          }
           if (k < 1) requestAnimationFrame(step);
-          else { fading = false; paintPlate(); }
+          else { fading = false; release(); paintPlate(); }
         })(performance.now());
       };
       if (sl.img.complete && sl.img.naturalWidth) go();
