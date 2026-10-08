@@ -146,6 +146,42 @@
     }
   }
 
+  // ---- home timer ---------------------------------------------------------
+  // The countdown itself is the stylesheet's; this only says when it is over,
+  // for whatever wants to happen at the end.
+  // At zero a penny comes out and scratches the plate open. Its code and the
+  // 3D library under it are fetched only near the end of the countdown, so
+  // the home page itself costs nothing extra. Skipped for reduced motion,
+  // where the timer is hidden too, and when the plate is already open.
+  var timerPie = document.querySelector('.timer-pie');
+  if (timerPie) {
+    var pennyUrl = '/js/penny.js';
+    // ?penny: the last four seconds only, for trying it out.
+    var quick = /[?&]penny\b/.test(location.search);
+    if (quick) timerPie.getAnimations().forEach(function (a) { a.currentTime = 26000; });
+    timerPie.addEventListener('animationstart', function () {
+      setTimeout(function () {
+        var l = document.createElement('link');
+        l.rel = 'modulepreload'; l.href = pennyUrl;
+        document.head.appendChild(l);
+        // Warmed into the cache; the penny's own loader picks them up.
+        ['obverse', 'reverse'].forEach(function (side) {
+          ['color', 'normal', 'rough'].forEach(function (kind) {
+            new Image().src = '/images/penny/' + side + '-' + kind + '.webp';
+          });
+        });
+      }, quick ? 0 : 20000);
+    });
+    timerPie.addEventListener('animationend', function () {
+      document.dispatchEvent(new CustomEvent('home-timer-done'));
+      var egg = document.querySelector('.egg-canvas');
+      if (reduce || !egg || !egg.scratch || egg.scratch.isDone()) return;
+      import(pennyUrl).then(function (m) {
+        m.run({ plate: egg, from: document.getElementById('timer') });
+      }).catch(function () {});
+    });
+  }
+
   // ---- nav ----------------------------------------------------------------
   // The selected chip is one element that travels, placed from the live
   // geometry of the current link so it survives resizes and the
@@ -336,9 +372,11 @@
 
     var mask = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
-    var mctx = mask.getContext('2d');
+    // Read back on every stroke to tell when the plate is open.
+    var mctx = mask.getContext('2d', { willReadFrequently: true });
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     var queued = false;
+
 
     function size() {
       var stmt = wrap.querySelector('.statement');
@@ -390,7 +428,7 @@
 
     // Sampled on a coarse grid: this runs inside the draw loop and only needs
     // to know when the plate is essentially open.
-    var done = false;
+    var done = false, need = 0.97;
     function checkDone() {
       if (done || !mask.width) return;
       var step = 12;
@@ -402,7 +440,7 @@
           n++;
         }
       }
-      if (n && open / n >= 0.97) { done = true; finish(); }
+      if (n && open / n >= need) { done = true; finish(); }
     }
 
     // Past the threshold the last unscratched slivers are just noise, so they
@@ -426,6 +464,7 @@
       credit.classList.add('on');
       clear.classList.add('on');
       placeClear();
+      document.dispatchEvent(new CustomEvent('egg-revealed'));
     }
 
     clear.addEventListener('click', function () {
@@ -435,6 +474,7 @@
       setTimeout(function () {
         mctx.clearRect(0, 0, mask.width, mask.height);
         done = false;
+        need = 0.97;
         last = null;
         paintPlate();
         wrap.classList.remove('is-clearing');
@@ -449,8 +489,71 @@
               (e.clientY - r.top) * (canvas.height / r.height)];
     }
 
-    function stroke(pt) {
-      var radius = 26 * dpr;
+    // The coin's edge: a chord at the angle the coin is held (radians, on the
+    // screen, clockwise from horizontal), stamped every couple of pixels with
+    // its ends chipped at random. Latex tears rather than cuts, so the ends
+    // also throw out thin fibres past the band, and now and then a sliver of
+    // coating is left hanging into it, the way a real ticket looks halfway
+    // through. Later passes, and the plate's own finish, take what is left.
+    function scrape(pt, r, ang) {
+      var half = r * dpr;
+      mctx.globalCompositeOperation = 'source-over';
+      mctx.fillStyle = '#fff';
+      if (!last) { last = pt; return; }
+      var dx = pt[0] - last[0], dy = pt[1] - last[1], len = Math.hypot(dx, dy);
+      if (len < 0.5) return;
+      var ux = dx / len, uy = dy / len;
+      var nx = Math.cos(ang), ny = Math.sin(ang);
+      // the chord's thickness runs across it, not along the travel
+      ux = -ny; uy = nx;
+      var stepPx = 1.5 * dpr, n = Math.max(1, Math.ceil(len / stepPx));
+      for (var i = 1; i <= n; i++) {
+        var cx = last[0] + dx * i / n, cy = last[1] + dy * i / n;
+        var a = half * (0.86 + Math.random() * 0.14), b = half * (0.86 + Math.random() * 0.14);
+        var th = (1.6 + Math.random() * 1.8) * dpr;
+        mctx.beginPath();
+        mctx.moveTo(cx - nx * a - ux * th, cy - ny * a - uy * th);
+        mctx.lineTo(cx + nx * b - ux * th, cy + ny * b - uy * th);
+        mctx.lineTo(cx + nx * b + ux * th, cy + ny * b + uy * th);
+        mctx.lineTo(cx - nx * a + ux * th, cy - ny * a + uy * th);
+        mctx.fill();
+        if (Math.random() < 0.3) fibre(cx, cy, nx, ny, Math.random() < 0.5 ? -a : b, half * 1.3, 'source-over');
+        if (Math.random() < 0.07) fibre(cx, cy, nx, ny, (Math.random() < 0.5 ? -1 : 1) * half * 0.9, -half * 0.5, 'destination-out');
+      }
+      if (Math.random() < 0.05) {
+        var o = (Math.random() * 2 - 1) * half * 0.8;
+        mctx.globalCompositeOperation = 'destination-out';
+        mctx.beginPath();
+        mctx.arc(pt[0] + nx * o - ux * half * 0.6, pt[1] + ny * o - uy * half * 0.6,
+                 (0.8 + Math.random() * 1.4) * dpr, 0, 7);
+        mctx.fill();
+        mctx.globalCompositeOperation = 'source-over';
+      }
+      last = pt;
+      schedule();
+    }
+
+    // A torn fibre from the chord's end at `from` (signed, along the chord),
+    // running `reach` further out (negative: back into the band) at a slight
+    // angle: revealed when drawn over, coating left behind when cut out.
+    function fibre(cx, cy, nx, ny, from, reach, op) {
+      var sgn = from < 0 ? -1 : 1, len = Math.abs(reach) * (0.12 + Math.random() * 0.3);
+      var dir = reach < 0 ? -sgn : sgn;
+      var sx = cx + nx * from, sy = cy + ny * from;
+      var bend = (Math.random() - 0.5) * 0.9;
+      var ex = sx + (nx * Math.cos(bend) - ny * Math.sin(bend)) * len * dir;
+      var ey = sy + (ny * Math.cos(bend) + nx * Math.sin(bend)) * len * dir;
+      mctx.globalCompositeOperation = op;
+      mctx.strokeStyle = '#fff';
+      mctx.lineWidth = (0.5 + Math.random() * 1.1) * dpr;
+      mctx.lineCap = 'round';
+      mctx.beginPath(); mctx.moveTo(sx, sy); mctx.lineTo(ex, ey); mctx.stroke();
+      mctx.globalCompositeOperation = 'source-over';
+      mctx.lineCap = 'round';
+    }
+
+    function stroke(pt, r) {
+      var radius = (r || 26) * dpr;
       mctx.globalCompositeOperation = 'source-over';
       mctx.strokeStyle = mctx.fillStyle = '#fff';
       mctx.lineWidth = radius * 2;
@@ -480,6 +583,39 @@
     canvas.addEventListener('pointerup', end);
     canvas.addEventListener('pointercancel', end);
     canvas.addEventListener('pointerleave', end);
+
+    // The same scratch, for something other than a hand to drive: the home
+    // timer's penny. Points are viewport coordinates; r is in CSS pixels.
+    canvas.scratch = {
+      to: function (x, y, r, edge) {
+        var b = canvas.getBoundingClientRect();
+        var pt = [(x - b.left) * (canvas.width / b.width),
+                  (y - b.top) * (canvas.height / b.height)];
+        if (edge !== undefined && edge !== false) scrape(pt, r, +edge || 0); else stroke(pt, r);
+      },
+      rect: function () { return canvas.getBoundingClientRect(); },
+      lift: function () { last = null; },
+      // Viewport centres of the coarse cells still covered, for a last pass.
+      covered: function () {
+        var out = [], b = canvas.getBoundingClientRect();
+        if (!mask.width) return out;
+        var step = Math.round(24 * dpr);
+        var d = mctx.getImageData(0, 0, mask.width, mask.height).data;
+        for (var y = step / 2; y < mask.height; y += step) {
+          for (var x = step / 2; x < mask.width; x += step) {
+            if (d[(Math.floor(y) * mask.width + Math.floor(x)) * 4 + 3] <= 24) {
+              out.push([b.left + x * b.width / mask.width, b.top + y * b.height / mask.height]);
+            }
+          }
+        }
+        return out;
+      },
+      isDone: function () { return done; },
+      // How much must be scratched before the plate finishes itself. A hand
+      // gets the last slivers filled in at 97%; the penny, which would
+      // otherwise spend its last seconds hunting specks, at less.
+      need: function (v) { need = v; schedule(); }
+    };
 
     if (img.complete) size();
     else img.onload = size;

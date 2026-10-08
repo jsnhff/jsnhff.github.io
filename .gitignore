@@ -5,3 +5,6 @@ _site
 # Local gem install for building the site offline (bundle config path vendor/bundle)
 vendor/
 .bundle/
+
+# Build-only dependencies for _penny
+node_modules/
