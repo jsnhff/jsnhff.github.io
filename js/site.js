@@ -475,6 +475,7 @@
         mctx.clearRect(0, 0, mask.width, mask.height);
         done = false;
         need = 0.97;
+        fray = 1;
         last = null;
         paintPlate();
         wrap.classList.remove('is-clearing');
@@ -490,11 +491,29 @@
     }
 
     // The coin's edge: a chord at the angle the coin is held (radians, on the
-    // screen, clockwise from horizontal), stamped every couple of pixels with
-    // its ends chipped at random. Latex tears rather than cuts, so the ends
-    // also throw out thin fibres past the band, and now and then a sliver of
-    // coating is left hanging into it, the way a real ticket looks halfway
-    // through. Later passes, and the plate's own finish, take what is left.
+    // screen, clockwise from horizontal), stamped every couple of pixels. A
+    // real edge does not chip the same way twice, and its tears come in
+    // runs: so the two ends of the chord wander on slow noise of their own
+    // along the distance travelled, biting deep now and then and falling
+    // short now and then, and the fibres torn past them come in clusters,
+    // mostly short, a few long, some bent, with the odd ragged chunk. While
+    // `fray` is on, a little coating is also left hanging into the band for
+    // a later pass; the penny turns that off for its last clean-up.
+    var travelled = 0, fray = 1;
+    function hash1(i, s) { var v = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return v - Math.floor(v); }
+    function noise1(x, s) {
+      var i = Math.floor(x), f = x - i;
+      f = f * f * (3 - 2 * f);
+      return hash1(i, s) + (hash1(i + 1, s) - hash1(i, s)) * f;
+    }
+    // how far one end reaches, as a fraction of the half-chord
+    function reach(d, s) {
+      var n = noise1(d * 0.045, s), deep = noise1(d * 0.018, s + 7);
+      var v = 0.8 + 0.2 * n;
+      if (deep > 0.8) v += (deep - 0.8) / 0.2 * 0.45;      // a bite
+      else if (deep < 0.14) v -= (0.14 - deep) / 0.14 * 0.12; // falls short
+      return v;
+    }
     function scrape(pt, r, ang) {
       var half = r * dpr;
       mctx.globalCompositeOperation = 'source-over';
@@ -502,30 +521,38 @@
       if (!last) { last = pt; return; }
       var dx = pt[0] - last[0], dy = pt[1] - last[1], len = Math.hypot(dx, dy);
       if (len < 0.5) return;
-      var ux = dx / len, uy = dy / len;
       var nx = Math.cos(ang), ny = Math.sin(ang);
       // the chord's thickness runs across it, not along the travel
-      ux = -ny; uy = nx;
+      var ux = -ny, uy = nx;
       var stepPx = 1.5 * dpr, n = Math.max(1, Math.ceil(len / stepPx));
       for (var i = 1; i <= n; i++) {
         var cx = last[0] + dx * i / n, cy = last[1] + dy * i / n;
-        var a = half * (0.86 + Math.random() * 0.14), b = half * (0.86 + Math.random() * 0.14);
-        var th = (1.6 + Math.random() * 1.8) * dpr;
+        travelled += len / n / dpr;
+        var d = travelled;
+        var a = half * reach(d, 1), b = half * reach(d, 2);
+        var th = (1.3 + 2.4 * noise1(d * 0.21, 5)) * dpr;
         mctx.beginPath();
         mctx.moveTo(cx - nx * a - ux * th, cy - ny * a - uy * th);
         mctx.lineTo(cx + nx * b - ux * th, cy + ny * b - uy * th);
         mctx.lineTo(cx + nx * b + ux * th, cy + ny * b + uy * th);
         mctx.lineTo(cx - nx * a + ux * th, cy - ny * a + uy * th);
         mctx.fill();
-        if (Math.random() < 0.3) fibre(cx, cy, nx, ny, Math.random() < 0.5 ? -a : b, half * 1.3, 'source-over');
-        if (Math.random() < 0.07) fibre(cx, cy, nx, ny, (Math.random() < 0.5 ? -1 : 1) * half * 0.9, -half * 0.5, 'destination-out');
+        // clusters: each end has its own run of tearing and quiet
+        var ca = noise1(d * 0.07, 11), cb = noise1(d * 0.07, 12);
+        if (Math.random() < 0.6 * ca * ca * ca) fibre(cx, cy, nx, ny, -a, half, 'source-over');
+        if (Math.random() < 0.6 * cb * cb * cb) fibre(cx, cy, nx, ny, b, half, 'source-over');
+        if (Math.random() < 0.035 * ca) chunk(cx, cy, nx, ny, -a, half);
+        if (Math.random() < 0.035 * cb) chunk(cx, cy, nx, ny, b, half);
+        if (fray && Math.random() < 0.05 * Math.max(ca, cb)) {
+          fibre(cx, cy, nx, ny, (Math.random() < 0.5 ? -a : b) * 0.95, -half * 0.6, 'destination-out');
+        }
       }
-      if (Math.random() < 0.05) {
+      if (fray && Math.random() < 0.04) {
         var o = (Math.random() * 2 - 1) * half * 0.8;
         mctx.globalCompositeOperation = 'destination-out';
         mctx.beginPath();
         mctx.arc(pt[0] + nx * o - ux * half * 0.6, pt[1] + ny * o - uy * half * 0.6,
-                 (0.8 + Math.random() * 1.4) * dpr, 0, 7);
+                 (0.6 + Math.pow(Math.random(), 2) * 2.4) * dpr, 0, 7);
         mctx.fill();
         mctx.globalCompositeOperation = 'source-over';
       }
@@ -534,22 +561,46 @@
     }
 
     // A torn fibre from the chord's end at `from` (signed, along the chord),
-    // running `reach` further out (negative: back into the band) at a slight
-    // angle: revealed when drawn over, coating left behind when cut out.
-    function fibre(cx, cy, nx, ny, from, reach, op) {
-      var sgn = from < 0 ? -1 : 1, len = Math.abs(reach) * (0.12 + Math.random() * 0.3);
-      var dir = reach < 0 ? -sgn : sgn;
+    // running out by up to `span`, mostly short and now and then long, bent
+    // a little: revealed when drawn, coating left behind when cut out (a
+    // negative span runs it back into the band).
+    function fibre(cx, cy, nx, ny, from, span, op) {
+      var sgn = from < 0 ? -1 : 1, dir = span < 0 ? -sgn : sgn;
+      var len = Math.abs(span) * (0.06 + 0.5 * Math.pow(Math.random(), 2.5));
       var sx = cx + nx * from, sy = cy + ny * from;
-      var bend = (Math.random() - 0.5) * 0.9;
+      var bend = (Math.random() - 0.5) * 1.1;
       var ex = sx + (nx * Math.cos(bend) - ny * Math.sin(bend)) * len * dir;
       var ey = sy + (ny * Math.cos(bend) + nx * Math.sin(bend)) * len * dir;
+      var k = (Math.random() - 0.5) * len * 0.5;
       mctx.globalCompositeOperation = op;
       mctx.strokeStyle = '#fff';
-      mctx.lineWidth = (0.5 + Math.random() * 1.1) * dpr;
+      mctx.lineWidth = (0.6 + Math.pow(Math.random(), 1.5) * 2.2) * dpr;
       mctx.lineCap = 'round';
-      mctx.beginPath(); mctx.moveTo(sx, sy); mctx.lineTo(ex, ey); mctx.stroke();
+      mctx.beginPath();
+      mctx.moveTo(sx, sy);
+      mctx.quadraticCurveTo((sx + ex) / 2 - ny * k, (sy + ey) / 2 + nx * k, ex, ey);
+      mctx.stroke();
       mctx.globalCompositeOperation = 'source-over';
-      mctx.lineCap = 'round';
+    }
+
+    // A ragged chunk torn out past the end of the chord: a few jagged points
+    // fanning outward, revealed all at once.
+    function chunk(cx, cy, nx, ny, from, half) {
+      var sgn = from < 0 ? -1 : 1;
+      var sx = cx + nx * from, sy = cy + ny * from;
+      var size = half * (0.12 + Math.random() * 0.3), pts = 3 + Math.floor(Math.random() * 3);
+      mctx.globalCompositeOperation = 'source-over';
+      mctx.fillStyle = '#fff';
+      mctx.beginPath();
+      mctx.moveTo(sx - ny * size * 0.6, sy + nx * size * 0.6);
+      for (var i = 0; i <= pts; i++) {
+        var t = i / pts, w = (t - 0.5) * 1.6 + (Math.random() - 0.5) * 0.5;
+        var out = size * (0.4 + Math.random() * 0.9) * Math.sin(Math.PI * t);
+        mctx.lineTo(sx + nx * out * sgn - ny * w * size * 0.6, sy + ny * out * sgn + nx * w * size * 0.6);
+      }
+      mctx.lineTo(sx + ny * size * 0.6, sy - nx * size * 0.6);
+      mctx.closePath();
+      mctx.fill();
     }
 
     function stroke(pt, r) {
@@ -595,14 +646,15 @@
       },
       rect: function () { return canvas.getBoundingClientRect(); },
       lift: function () { last = null; },
-      // Viewport centres of the coarse cells still covered, for a last pass.
+      // Viewport points of the sample grid still covered.
       covered: function () {
         var out = [], b = canvas.getBoundingClientRect();
         if (!mask.width) return out;
-        var step = Math.round(24 * dpr);
+        // The very grid checkDone samples, so an empty list means done.
+        var step = 12;
         var d = mctx.getImageData(0, 0, mask.width, mask.height).data;
-        for (var y = step / 2; y < mask.height; y += step) {
-          for (var x = step / 2; x < mask.width; x += step) {
+        for (var y = 0; y < mask.height; y += step) {
+          for (var x = 0; x < mask.width; x += step) {
             if (d[(Math.floor(y) * mask.width + Math.floor(x)) * 4 + 3] <= 24) {
               out.push([b.left + x * b.width / mask.width, b.top + y * b.height / mask.height]);
             }
@@ -611,6 +663,16 @@
         return out;
       },
       isDone: function () { return done; },
+      // Is the coating still on at this viewport point?
+      coveredAt: function (x, y) {
+        var b = canvas.getBoundingClientRect();
+        var px = Math.floor((x - b.left) * (mask.width / b.width));
+        var py = Math.floor((y - b.top) * (mask.height / b.height));
+        if (px < 0 || py < 0 || px >= mask.width || py >= mask.height) return false;
+        return mctx.getImageData(px, py, 1, 1).data[3] <= 24;
+      },
+      // Whether scraping leaves slivers of coating behind for later passes.
+      fray: function (on) { fray = on ? 1 : 0; },
       // How much must be scratched before the plate finishes itself. A hand
       // gets the last slivers filled in at 97%; the penny, which would
       // otherwise spend its last seconds hunting specks, at less.
