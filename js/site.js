@@ -377,8 +377,9 @@
 
     var mask = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
-    // Read back on every stroke to tell when the plate is open.
-    var mctx = mask.getContext('2d', { willReadFrequently: true });
+    // Drawn into and composited whole, never read back during scratching:
+    // how much is open is kept in the coverage grid below.
+    var mctx = mask.getContext('2d');
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     var queued = false;
 
@@ -393,6 +394,7 @@
       canvas.width = mask.width = Math.round(w * dpr);
       canvas.height = mask.height = Math.round(h * dpr);
       mctx.lineCap = mctx.lineJoin = 'round';
+      resetGrid();
       credit.style.marginTop = (h / 2 + 14) + 'px';
       placeClear();
       paintPlate();
@@ -415,6 +417,7 @@
     // those, each mark paints its own patch of the photo (see put).
     var photo = null, patt = null;
     function paintPlate() {
+      flush();
       var w = canvas.width, h = canvas.height;
       if (!w || !h || !img.complete || !img.naturalWidth) return;
       if (!photo || photo.width !== w || photo.height !== h) {
@@ -435,59 +438,110 @@
       ctx.globalCompositeOperation = 'source-over';
     }
 
-    // Every mark goes to two places: the mask, in white, which is what the
-    // plate reads to know how much is open; and the picture, filled with the
-    // photo itself, so a scrape paints only the patch it opens. Recomposing
-    // the whole plate through the mask on every frame meant sending a
-    // plate-sized image to the graphics chip sixty times a second.
-    function put(path, op, width) {
+    // Every mark goes to two places: the mask, in white, which is the plate's
+    // record for repainting it whole; and the picture, filled with the photo
+    // itself, so a scrape paints only the patch it opens. Marks are gathered
+    // through a frame and drawn in one go per canvas: dozens of small fills a
+    // frame, each its own draw, was what made heavy scratching stutter.
+    // Quads, dots and holes each share one path, since each kind winds the
+    // same way; chunks and fibres, which may not, are drawn on their own.
+    var batch = { quads: null, dots: null, holes: null, own: [] };
+    function flush() {
+      if (!batch.quads && !batch.dots && !batch.holes && !batch.own.length) return;
       for (var i = 0; i < 2; i++) {
         var g = i ? ctx : mctx, paint = i ? patt : '#fff';
         if (i && !patt) break;
-        g.globalCompositeOperation = op;
-        if (width) {
-          g.lineWidth = width; g.lineCap = g.lineJoin = 'round';
-          g.strokeStyle = paint; g.stroke(path);
-        } else {
-          g.fillStyle = paint; g.fill(path);
-        }
+        g.fillStyle = g.strokeStyle = paint;
+        g.lineCap = g.lineJoin = 'round';
         g.globalCompositeOperation = 'source-over';
+        if (batch.quads) g.fill(batch.quads);
+        if (batch.dots) g.fill(batch.dots);
+        for (var j = 0; j < batch.own.length; j++) {
+          var o = batch.own[j];
+          g.globalCompositeOperation = o.op;
+          if (o.width) { g.lineWidth = o.width; g.stroke(o.path); } else g.fill(o.path);
+        }
+        if (batch.holes) { g.globalCompositeOperation = 'destination-out'; g.fill(batch.holes); }
+        g.globalCompositeOperation = 'source-over';
+      }
+      batch.quads = batch.dots = batch.holes = null;
+      batch.own.length = 0;
+    }
+
+    // ---- coverage ---------------------------------------------------------
+    // One sample point every 12 mask pixels, open or covered. Each mark opens
+    // the points inside its shape, worked out from the shape itself, so
+    // knowing how much is open, where is still covered and whether a point
+    // has coating on it never means copying the mask back out of the canvas.
+    // (That copy, a megabyte at a time, was most of the cost of scratching.)
+    var STEP = 12, gw = 0, gh = 0, grid = new Uint8Array(0), openCount = 0;
+    function resetGrid() {
+      gw = Math.ceil(mask.width / STEP); gh = Math.ceil(mask.height / STEP);
+      grid = new Uint8Array(gw * gh); openCount = 0;
+    }
+    function setPt(i, v) { if (grid[i] !== v) { grid[i] = v; openCount += v ? 1 : -1; } }
+    function span(lo, hi, n) { return [Math.max(0, Math.ceil(lo / STEP)), Math.min(n - 1, Math.floor(hi / STEP))]; }
+    // a convex polygon, as a flat list of corners
+    function openPoly(p) {
+      var minx = Infinity, miny = Infinity, maxx = -Infinity, maxy = -Infinity, k, n = p.length;
+      for (k = 0; k < n; k += 2) {
+        if (p[k] < minx) minx = p[k]; if (p[k] > maxx) maxx = p[k];
+        if (p[k + 1] < miny) miny = p[k + 1]; if (p[k + 1] > maxy) maxy = p[k + 1];
+      }
+      var xs = span(minx, maxx, gw), ys = span(miny, maxy, gh);
+      for (var gy = ys[0]; gy <= ys[1]; gy++) {
+        for (var gx = xs[0]; gx <= xs[1]; gx++) {
+          var x = gx * STEP, y = gy * STEP, side = 0, inside = true;
+          for (k = 0; k < n; k += 2) {
+            var ax = p[k], ay = p[k + 1], bx = p[(k + 2) % n], by = p[(k + 3) % n];
+            var c = (bx - ax) * (y - ay) - (by - ay) * (x - ax);
+            if (c !== 0) { var sg = c > 0 ? 1 : -1; if (!side) side = sg; else if (sg !== side) { inside = false; break; } }
+          }
+          if (inside) setPt(gy * gw + gx, 1);
+        }
+      }
+    }
+    function setDisc(cx, cy, r, v) {
+      var xs = span(cx - r, cx + r, gw), ys = span(cy - r, cy + r, gh), rr = r * r;
+      for (var gy = ys[0]; gy <= ys[1]; gy++) {
+        for (var gx = xs[0]; gx <= xs[1]; gx++) {
+          var dx = gx * STEP - cx, dy = gy * STEP - cy;
+          if (dx * dx + dy * dy <= rr) setPt(gy * gw + gx, v);
+        }
+      }
+    }
+    function openCapsule(ax, ay, bx, by, r) {
+      var xs = span(Math.min(ax, bx) - r, Math.max(ax, bx) + r, gw);
+      var ys = span(Math.min(ay, by) - r, Math.max(ay, by) + r, gh);
+      var vx = bx - ax, vy = by - ay, vv = vx * vx + vy * vy || 1, rr = r * r;
+      for (var gy = ys[0]; gy <= ys[1]; gy++) {
+        for (var gx = xs[0]; gx <= xs[1]; gx++) {
+          var px = gx * STEP - ax, py = gy * STEP - ay;
+          var t = Math.max(0, Math.min(1, (px * vx + py * vy) / vv));
+          var dx = px - vx * t, dy = py - vy * t;
+          if (dx * dx + dy * dy <= rr) setPt(gy * gw + gx, 1);
+        }
       }
     }
 
-    // The check for whether it is all open reads the whole mask back, so it
-    // runs at most five times a second, and always once more after the last
-    // stroke.
-    var checkTimer = null;
     function schedule() {
       if (queued) return;
       queued = true;
-      requestAnimationFrame(function () {
-        queued = false;
-        if (!checkTimer) checkTimer = setTimeout(function () { checkTimer = null; checkDone(); }, 200);
-      });
+      requestAnimationFrame(function () { queued = false; flush(); checkDone(); });
     }
 
-    // Sampled on a coarse grid: this runs inside the draw loop and only needs
-    // to know when the plate is essentially open.
+    // Sampled on a coarse grid: only needs to know when the plate is open.
     var done = false, need = 0.97;
     function checkDone() {
-      if (done || !mask.width) return;
-      var step = 12;
-      var d = mctx.getImageData(0, 0, mask.width, mask.height).data;
-      var open = 0, n = 0;
-      for (var y = 0; y < mask.height; y += step) {
-        for (var x = 0; x < mask.width; x += step) {
-          if (d[(y * mask.width + x) * 4 + 3] > 24) open++;
-          n++;
-        }
-      }
-      if (n && open / n >= need) { done = true; finish(); }
+      if (done || !grid.length) return;
+      if (openCount / grid.length >= need) { done = true; finish(); }
     }
 
     // Past the threshold the last unscratched slivers are just noise, so they
     // are filled in over the same beat the credit arrives on.
     function finish() {
+      flush();
+      for (var g = 0; g < grid.length; g++) setPt(g, 1);
       var t0 = null;
       var from = mctx.getImageData(0, 0, mask.width, mask.height);
       function step(ts) {
@@ -515,6 +569,8 @@
       credit.classList.remove('on');
       setTimeout(function () {
         mctx.clearRect(0, 0, mask.width, mask.height);
+        batch.quads = batch.dots = batch.holes = null; batch.own.length = 0;
+        resetGrid();
         done = false;
         need = 0.97;
         fray = 1;
@@ -571,13 +627,14 @@
         var d = travelled;
         var a = half * reach(d, 1), b = half * reach(d, 2);
         var th = (1.3 + 2.4 * noise1(d * 0.21, 5)) * dpr;
-        var q = new Path2D();
-        q.moveTo(cx - nx * a - ux * th, cy - ny * a - uy * th);
-        q.lineTo(cx + nx * b - ux * th, cy + ny * b - uy * th);
-        q.lineTo(cx + nx * b + ux * th, cy + ny * b + uy * th);
-        q.lineTo(cx - nx * a + ux * th, cy - ny * a + uy * th);
-        q.closePath();
-        put(q, 'source-over');
+        var q = [cx - nx * a - ux * th, cy - ny * a - uy * th,
+                 cx + nx * b - ux * th, cy + ny * b - uy * th,
+                 cx + nx * b + ux * th, cy + ny * b + uy * th,
+                 cx - nx * a + ux * th, cy - ny * a + uy * th];
+        var qp = batch.quads || (batch.quads = new Path2D());
+        qp.moveTo(q[0], q[1]); qp.lineTo(q[2], q[3]); qp.lineTo(q[4], q[5]); qp.lineTo(q[6], q[7]);
+        qp.closePath();
+        openPoly(q);
         // clusters: each end has its own run of tearing and quiet
         var ca = noise1(d * 0.07, 11), cb = noise1(d * 0.07, 12);
         if (Math.random() < 0.6 * ca * ca * ca) fibre(cx, cy, nx, ny, -a, half, 'source-over');
@@ -589,10 +646,12 @@
         }
       }
       if (fray && Math.random() < 0.04) {
-        var o = (Math.random() * 2 - 1) * half * 0.8, hole = new Path2D();
-        hole.arc(pt[0] + nx * o - ux * half * 0.6, pt[1] + ny * o - uy * half * 0.6,
-                 (0.6 + Math.pow(Math.random(), 2) * 2.4) * dpr, 0, 7);
-        put(hole, 'destination-out');
+        var o = (Math.random() * 2 - 1) * half * 0.8;
+        var hx = pt[0] + nx * o - ux * half * 0.6, hy = pt[1] + ny * o - uy * half * 0.6;
+        var hr = (0.6 + Math.pow(Math.random(), 2) * 2.4) * dpr;
+        var hp = batch.holes || (batch.holes = new Path2D());
+        hp.moveTo(hx + hr, hy); hp.arc(hx, hy, hr, 0, 7);
+        setDisc(hx, hy, hr, 0);
       }
       last = pt;
       schedule();
@@ -613,7 +672,7 @@
       var f = new Path2D();
       f.moveTo(sx, sy);
       f.quadraticCurveTo((sx + ex) / 2 - ny * k, (sy + ey) / 2 + nx * k, ex, ey);
-      put(f, op, (0.6 + Math.pow(Math.random(), 1.5) * 2.2) * dpr);
+      batch.own.push({ path: f, op: op, width: (0.6 + Math.pow(Math.random(), 1.5) * 2.2) * dpr });
     }
 
     // A ragged chunk torn out past the end of the chord: a few jagged points
@@ -631,7 +690,8 @@
       }
       c.lineTo(sx + ny * size * 0.6, sy - nx * size * 0.6);
       c.closePath();
-      put(c, 'source-over');
+      batch.own.push({ path: c, op: 'source-over', width: 0 });
+      setDisc(sx + nx * sgn * size * 0.4, sy + ny * sgn * size * 0.4, size * 0.45, 1);
     }
 
     function stroke(pt, r) {
@@ -640,11 +700,12 @@
         var line = new Path2D();
         line.moveTo(last[0], last[1]);
         line.lineTo(pt[0], pt[1]);
-        put(line, 'source-over', radius * 2);
+        batch.own.push({ path: line, op: 'source-over', width: radius * 2 });
+        openCapsule(last[0], last[1], pt[0], pt[1], radius);
       }
-      var dot = new Path2D();
-      dot.arc(pt[0], pt[1], radius, 0, 7);
-      put(dot, 'source-over');
+      var dp = batch.dots || (batch.dots = new Path2D());
+      dp.moveTo(pt[0] + radius, pt[1]); dp.arc(pt[0], pt[1], radius, 0, 7);
+      setDisc(pt[0], pt[1], radius, 1);
       last = pt;
       schedule();
     }
@@ -679,12 +740,10 @@
         var out = [], b = canvas.getBoundingClientRect();
         if (!mask.width) return out;
         // The very grid checkDone samples, so an empty list means done.
-        var step = 12;
-        var d = mctx.getImageData(0, 0, mask.width, mask.height).data;
-        for (var y = 0; y < mask.height; y += step) {
-          for (var x = 0; x < mask.width; x += step) {
-            if (d[(Math.floor(y) * mask.width + Math.floor(x)) * 4 + 3] <= 24) {
-              out.push([b.left + x * b.width / mask.width, b.top + y * b.height / mask.height]);
+        for (var gy = 0; gy < gh; gy++) {
+          for (var gx = 0; gx < gw; gx++) {
+            if (!grid[gy * gw + gx]) {
+              out.push([b.left + gx * STEP * b.width / mask.width, b.top + gy * STEP * b.height / mask.height]);
             }
           }
         }
@@ -694,10 +753,10 @@
       // Is the coating still on at this viewport point?
       coveredAt: function (x, y) {
         var b = canvas.getBoundingClientRect();
-        var px = Math.floor((x - b.left) * (mask.width / b.width));
-        var py = Math.floor((y - b.top) * (mask.height / b.height));
-        if (px < 0 || py < 0 || px >= mask.width || py >= mask.height) return false;
-        return mctx.getImageData(px, py, 1, 1).data[3] <= 24;
+        var gx = Math.round((x - b.left) * (mask.width / b.width) / STEP);
+        var gy = Math.round((y - b.top) * (mask.height / b.height) / STEP);
+        if (gx < 0 || gy < 0 || gx >= gw || gy >= gh) return false;
+        return !grid[gy * gw + gx];
       },
       // Whether scraping leaves slivers of coating behind for later passes.
       fray: function (on) { fray = on ? 1 : 0; },
