@@ -307,7 +307,8 @@
     pointer-events: none;
     transition: opacity 420ms ease, color var(--invert) ease;
   }
-  .egg-credit.on { opacity: 1; }
+  /* the artist's name links out, so a credit on show takes taps */
+  .egg-credit.on { opacity: 1; pointer-events: auto; }
   .egg-canvas:active { cursor: grabbing; }
 
   /* Clearing puts the picture back under the coating: it dissolves into the
