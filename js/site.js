@@ -425,10 +425,18 @@
       ctx.globalCompositeOperation = 'source-over';
     }
 
+    // The picture repaints every frame something is scratched; the check for
+    // whether it is all open reads the whole mask back, so it runs at most
+    // five times a second, and always once more after the last stroke.
+    var checkTimer = null;
     function schedule() {
       if (queued) return;
       queued = true;
-      requestAnimationFrame(function () { queued = false; paintPlate(); checkDone(); });
+      requestAnimationFrame(function () {
+        queued = false;
+        paintPlate();
+        if (!checkTimer) checkTimer = setTimeout(function () { checkTimer = null; checkDone(); }, 200);
+      });
     }
 
     // Sampled on a coarse grid: this runs inside the draw loop and only needs

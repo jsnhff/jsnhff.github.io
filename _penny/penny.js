@@ -294,7 +294,28 @@ export async function run({ plate, from }) {
 
   let phase = 'appear', t0 = performance.now(), prev = 0, alive = true;
   let patch = null, lastU = 0, hop = null, rest = 0;
-  let revealed = false, baseHead = null;
+  let revealed = false, baseHead = null, view = null;
+  const ADMIRE = MathUtils.degToRad(28);
+  // Where to stand to look at the finished picture: just off whichever side
+  // of the plate is nearest, on the page, facing the plate's centre. Its
+  // face turns to the picture, so it is the shield the reader sees.
+  function viewSpot() {
+    const b = plate.getBoundingClientRect(), m = R * 1.6;
+    const spots = [
+      [b.left + b.width * 0.2, b.bottom + m], [b.right - b.width * 0.2, b.bottom + m],
+      [b.left - m, b.top + b.height * 0.7], [b.right + m, b.top + b.height * 0.7]
+    ].filter(([x, y]) => x > R * 1.5 && x < W() - R * 1.5 && y > R * 2 && y < H() - R);
+    if (!spots.length) spots.push([b.left + b.width / 2, Math.min(H() - R, b.bottom + m)]);
+    spots.sort((p, q) => Math.hypot(p[0] - s.x, p[1] - s.y) - Math.hypot(q[0] - s.x, q[1] - s.y));
+    const [x, y] = spots[0];
+    // front face's reach across the page is (sin h, -cos h) in world axes
+    const cx = b.left + b.width / 2, cy = b.top + b.height / 2;
+    // a face has a front, so the nearest turn is taken round the full circle
+    let h = Math.atan2(cx - x, cy - y);
+    while (h - s.head > Math.PI) h -= TAU;
+    while (h - s.head < -Math.PI) h += TAU;
+    return { x0: s.x, y0: s.y, x, y, h0: s.head, h };
+  }
   document.addEventListener('egg-revealed', () => { revealed = true; }, { once: true });
 
   // Where it starts: the timer's spot, at the timer's size, flat to the reader.
@@ -330,7 +351,7 @@ export async function run({ plate, from }) {
       if (scratch.fray) scratch.fray(false);
     }
     const c = pickSpot(open);
-    if (!c) { phase = 'settle'; t0 = now; return; }
+    if (!c) { phase = 'stop'; t0 = now; return; }
     patch = makePatch(c);
     const to = pose(patch, 0);
     const d = Math.hypot(to.x - s.x, to.y - s.y);
@@ -403,10 +424,9 @@ export async function run({ plate, from }) {
     const t = (now - t0) / 1000;
     const dt = Math.min(0.05, Math.max(0.001, (now - prev) / 1000));
 
-    if (revealed && phase !== 'settle' && phase !== 'pop' && phase !== 'enter'
-        && phase !== 'appear' && phase !== 'wake') {
+    if (revealed && (phase === 'travel' || phase === 'patch' || phase === 'held' || phase === 'rest')) {
       if (held) { held = null; document.documentElement.style.cursor = ''; }
-      scratch.lift(); phase = 'settle'; t0 = now;
+      scratch.lift(); phase = 'stop'; t0 = now;
     }
 
     if (phase === 'appear') {
@@ -502,6 +522,30 @@ export async function run({ plate, from }) {
       s.tilt += (TILT - s.tilt) * Math.min(1, dt * 6);
       s.roll *= Math.exp(-dt * 6);
       if (t >= rest) nextPatch(now);
+    } else if (phase === 'stop') {
+      // Done. It holds still a moment where it finished.
+      s.tilt += (TILT - s.tilt) * Math.min(1, dt * 8);
+      s.roll *= Math.exp(-dt * 8);
+      if (t >= 0.5) { view = viewSpot(); phase = 'step'; t0 = now; }
+    } else if (phase === 'step') {
+      // A hop back to just off the plate, turning to face the picture.
+      const k = Math.min(1, t / 0.75), e = ease.inOut(k);
+      s.x = view.x0 + (view.x - view.x0) * e;
+      s.y = view.y0 + (view.y - view.y0) * e;
+      s.z = restZ + Math.sin(Math.PI * k) * 26;
+      s.head = view.h0 + (view.h - view.h0) * e;
+      s.tilt += (ADMIRE - s.tilt) * Math.min(1, dt * 6);
+      s.roll *= Math.exp(-dt * 8);
+      if (k >= 1) { phase = 'admire'; t0 = now; }
+    } else if (phase === 'admire') {
+      // It looks at what it did: stands a little taller, sways slowly, and
+      // gives two small bounces of satisfaction before it goes.
+      s.head = view.h + MathUtils.degToRad(5) * Math.sin(t * 1.3);
+      s.roll = MathUtils.degToRad(3.5) * Math.sin(t * 0.9 + 0.4);
+      s.tilt = ADMIRE + MathUtils.degToRad(3) * Math.sin(t * 1.7);
+      const b = t - 1.25;
+      s.z = restZ + (b > 0 && b < 0.5 ? Math.abs(Math.sin(b * TAU * 2)) * 7 * (1 - b / 0.5) : 0);
+      if (t >= 2.6) { phase = 'settle'; t0 = now; }
     } else if (phase === 'settle') {
       // Stops, then a short shake: side to side, dying away.
       const k = Math.min(1, t / 0.55);
@@ -530,15 +574,25 @@ export async function run({ plate, from }) {
   // all where the coating is already gone. They fly off the ends of the
   // edge, land, and lie where they fell, each with a shadow cast by the same
   // light as the coin's (down and to the right), long while a flake is in
-  // the air and tight once it is down. They go when the coin does.
+  // the air and tight once it is down. They lie there until the coin goes.
   const dust = document.createElement('canvas');
   dust.className = 'penny-dust';
   dust.setAttribute('aria-hidden', 'true');
   document.body.appendChild(dust);
   const dg = dust.getContext('2d');
+  // Flakes that have landed and stopped are painted once onto a bed beneath
+  // and forgotten; only the few still moving are drawn each frame. Redrawing
+  // hundreds every frame is what made the second half stutter.
+  const bed = document.createElement('canvas');
+  bed.className = 'penny-dust';
+  bed.setAttribute('aria-hidden', 'true');
+  document.body.insertBefore(bed, dust);
+  const bg = bed.getContext('2d');
   function sizeDust() {
-    dust.width = W() * dpr; dust.height = H() * dpr;
-    dust.style.width = W() + 'px'; dust.style.height = H() + 'px';
+    for (const c of [dust, bed]) {
+      c.width = W() * dpr; c.height = H() * dpr;
+      c.style.width = W() + 'px'; c.style.height = H() + 'px';
+    }
   }
   sizeDust();
   window.addEventListener('resize', sizeDust);
@@ -571,7 +625,7 @@ export async function run({ plate, from }) {
         const sgn = e ? 1 : -1, along = sgn * band * (0.6 + Math.random() * 0.45);
         const px = x + nx * along, py = y + ny * along;
         if (!scratch.coveredAt(px, py)) continue;
-        if (flakes.length > 320) flakes.shift();
+        if (flakes.length > 140) flakes.shift();
         const ink = inInk(px, py) && Math.random() < 0.38;
         // white grit is finer and sparser than the ink that comes off letters
         if (!ink && Math.random() < 0.3) continue;
@@ -590,7 +644,7 @@ export async function run({ plate, from }) {
           vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, vz: 20 + Math.random() * 60,
           rot: Math.random() * TAU, spin: (Math.random() - 0.5) * 14, pts,
           shade: ink ? 18 + Math.floor(Math.random() * 30) : 242 + Math.floor(Math.random() * 13),
-          ink, life: 0, stay: 4 + Math.random() * 3, gone: 1
+          ink, life: 0, still: 0, gone: 1
         });
       }
     }
@@ -614,36 +668,44 @@ export async function run({ plate, from }) {
         const drag = Math.exp(-dt * 14);
         f.vx *= drag; f.vy *= drag;
         f.x += f.vx * dt; f.y += f.vy * dt;
+        if (Math.hypot(f.vx, f.vy) < 4) f.still += dt;
       }
-      if (f.life > f.stay) f.gone -= dt / 1.2;
       if (fading) f.gone = Math.min(f.gone, fading);
       if (f.gone <= 0) { flakes.splice(i, 1); continue; }
-      const o = Math.min(1, f.gone);
-      // shadow: the light is up and to the left, as it is for the coin
-      const sx = 0.5 + f.z * 0.45, sy = 0.7 + f.z * 0.6;
-      dg.save();
-      dg.translate(f.x + sx, f.y + sy); dg.rotate(f.rot);
-      dg.fillStyle = `rgba(0,0,0,${(f.ink ? 0.22 : 0.16) * o * Math.max(0.35, 1 - f.z / 14)})`;
-      shape(f.pts, 1.08);
-      dg.restore();
-      dg.save();
-      dg.translate(f.x, f.y); dg.rotate(f.rot);
-      dg.fillStyle = `rgba(${f.shade},${f.shade},${f.shade},${o})`;
-      shape(f.pts, 1);
-      if (!f.ink) {
-        dg.strokeStyle = `rgba(0,0,0,${0.07 * o})`;
-        dg.lineWidth = 0.4;
-        dg.stroke();
+      if (f.still > 0.15 && !fading) {
+        bg.setTransform(dpr, 0, 0, dpr, 0, 0);
+        paint(bg, f, 1);
+        flakes.splice(i, 1);
+        continue;
       }
-      dg.restore();
+      paint(dg, f, Math.min(1, f.gone));
     }
   }
-  function shape(pts, k) {
-    dg.beginPath();
-    dg.moveTo(pts[0][0] * k, pts[0][1] * k);
-    for (let i = 1; i < pts.length; i++) dg.lineTo(pts[i][0] * k, pts[i][1] * k);
-    dg.closePath();
-    dg.fill();
+  function paint(g, f, o) {
+    // shadow: the light is up and to the left, as it is for the coin
+    const sx = 0.5 + f.z * 0.45, sy = 0.7 + f.z * 0.6;
+    g.save();
+    g.translate(f.x + sx, f.y + sy); g.rotate(f.rot);
+    g.fillStyle = `rgba(0,0,0,${(f.ink ? 0.22 : 0.16) * o * Math.max(0.35, 1 - f.z / 14)})`;
+    shape(g, f.pts, 1.08);
+    g.restore();
+    g.save();
+    g.translate(f.x, f.y); g.rotate(f.rot);
+    g.fillStyle = `rgba(${f.shade},${f.shade},${f.shade},${o})`;
+    shape(g, f.pts, 1);
+    if (!f.ink) {
+      g.strokeStyle = `rgba(0,0,0,${0.07 * o})`;
+      g.lineWidth = 0.4;
+      g.stroke();
+    }
+    g.restore();
+  }
+  function shape(g, pts, k) {
+    g.beginPath();
+    g.moveTo(pts[0][0] * k, pts[0][1] * k);
+    for (let i = 1; i < pts.length; i++) g.lineTo(pts[i][0] * k, pts[i][1] * k);
+    g.closePath();
+    g.fill();
   }
 
   function puff() {
@@ -681,12 +743,15 @@ export async function run({ plate, from }) {
     cvs.remove();
     // The shavings outlast the coin by a moment, then fade.
     fading = 1;
+    bed.style.transition = 'opacity 900ms ease';
+    bed.style.opacity = '0';
+    setTimeout(() => bed.remove(), 1000);
     let last = performance.now();
     (function settleDust(now) {
       const dt = (now - last) / 1000; last = now;
       fading = Math.max(0, fading - dt / 0.9);
       drawCrumbs(dt);
-      if (fading > 0 && flakes.length) requestAnimationFrame(settleDust);
+      if (fading > 0) requestAnimationFrame(settleDust);
       else { window.removeEventListener('resize', sizeDust); dust.remove(); }
     })(last);
   }
