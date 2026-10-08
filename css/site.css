@@ -12,6 +12,16 @@
 /* ABC Areal and Areal Mono by Dinamo, self-hosted under their free fonts
    licence (fonts/Dinamo Licensing Terms.pdf). A face only downloads when
    something on the page uses it. */
+/* Nothing You Could Do by Kimberly Geswein, SIL Open Font License
+   (fonts/NothingYouCouldDo-OFL.txt). The critic's handwriting in act three;
+   only fetched when the critic writes. */
+@font-face {
+    font-family: "Critic Hand";
+    src: url("/fonts/NothingYouCouldDo.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+  }
 @font-face {
     font-family: "Areal";
     src: url("/fonts/ABCAreal-Regular.woff2") format("woff2");
@@ -346,20 +356,23 @@
   .poem-ink .pen { fill: none; stroke: #d2352b; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; transition: opacity 500ms ease; }
   .poem-ink .pen.thin { stroke-width: 1.1; opacity: 0.8; }
   .poem-ink .gone { opacity: 0; }
-  /* the critic's hand: whatever handwriting the device has */
+  /* the critic's hand, in a ballpoint's red, each letter a little off the line */
   .poem-note {
     position: absolute;
-    white-space: nowrap;
-    font-family: "Bradley Hand", "Segoe Print", "Chalkboard SE", "Marker Felt", "Comic Sans MS", cursive;
-    font-size: 0.62em;
+    white-space: pre;
+    font-family: "Critic Hand", "Bradley Hand", "Segoe Print", cursive;
+    font-size: 1.02em;
     line-height: 1.2;
-    color: #d2352b;
-    letter-spacing: 0;
+    color: #e03a30;
+    letter-spacing: 0.01em;
     transform: rotate(var(--rot, 0deg));
+    transform-origin: left center;
     transition: opacity 500ms ease;
   }
+  .poem-note .c { display: inline-block; transition: opacity 60ms linear; }
+  .poem-note .c.hid { opacity: 0; }
   .poem-note.gone { opacity: 0; }
-  .poem-note.final { right: 0; bottom: -1.6em; font-size: 0.8em; }
+  .poem-note.final { right: 0; bottom: -1.9em; font-size: 1.2em; }
   .poem-status { margin: 1.4em 0 0; font-size: 0.7em; color: var(--dim); opacity: 0; transition: opacity 400ms ease; pointer-events: auto; }
   .poem-status.on { opacity: 1; }
   .poem-status a { color: inherit; }

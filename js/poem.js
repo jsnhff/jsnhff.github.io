@@ -92,6 +92,22 @@ function revise(p, f) {
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const SVG = 'http://www.w3.org/2000/svg';
 
+// Handwriting: every letter its own span, set a hair off the line and off the
+// vertical, hidden until the pen gets to it. Returns the letters.
+function letters(node, text) {
+  node.textContent = '';
+  return [...text].map((ch) => {
+    const c = document.createElement('span');
+    c.className = 'c hid';
+    c.textContent = ch;
+    c.style.transform = `translateY(${(Math.random() * 2.4 - 1.2).toFixed(1)}px) rotate(${(Math.random() * 6 - 3).toFixed(1)}deg)`;
+    node.appendChild(c);
+    return c;
+  });
+}
+// A person writes unevenly: quick inside a word, a beat between words.
+const hand = (ch) => (ch === ' ' ? 70 + Math.random() * 60 : 22 + Math.random() * 38);
+
 export function run({ wrap, after, penUrl }) {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const speed = reduce ? 0.15 : 1;
@@ -198,18 +214,20 @@ export function run({ wrap, after, penUrl }) {
     }
     box.appendChild(n);
     if (pen) {
-      // measure the whole note, then clear it for the pen to write
-      n.textContent = text;
+      // set the whole note (hidden) to measure it, then write it letter by letter
+      const cs = letters(n, text);
       const nr = n.getBoundingClientRect();
-      n.textContent = '';
-      const y = nr.top + nr.height * 0.82;
+      const y = nr.top + nr.height * 0.78;
+      const gaps = cs.map((c) => hand(c.textContent));
+      const total = gaps.reduce((a, g) => a + g, 0);
       await pen.glide(nr.left, y, 380 * speed + 1);
       if (dead) throw 0;
-      const typing = (async () => { for (let i = 1; i <= text.length; i++) { n.textContent = text.slice(0, i); await nap(30); } })();
-      await Promise.all([typing, pen.write(nr.left, y, nr.left + nr.width, text.length * 30 * speed + 1)]);
+      const typing = (async () => { for (let i = 0; i < cs.length; i++) { cs[i].classList.remove('hid'); await nap(gaps[i]); } })();
+      await Promise.all([typing, pen.write(nr.left, y, nr.left + nr.width, total * speed + 1)]);
       return n;
     }
-    for (let i = 1; i <= text.length; i++) { n.textContent = text.slice(0, i); await nap(26); }
+    const cs = letters(n, text);
+    for (const c of cs) { c.classList.remove('hid'); await nap(hand(c.textContent) * 0.8); }
     return n;
   }
 
@@ -284,6 +302,8 @@ export function run({ wrap, after, penUrl }) {
 
   async function go() {
     await write();
+    // the critic's handwriting must be in before anything is measured
+    try { await document.fonts.load('1em "Critic Hand"'); } catch (e) {}
     // the critic's pen shows up
     const mod = await penReady;
     if (dead) return;
@@ -313,7 +333,7 @@ export function run({ wrap, after, penUrl }) {
     box.appendChild(end);
     if (pen) pen.leave(700 * speed + 1);
     const verdict = round > 1 ? 'better. print it.' : 'fine.';
-    for (let i = 1; i <= verdict.length; i++) { end.textContent = verdict.slice(0, i); await nap(40); }
+    for (const c of letters(end, verdict)) { c.classList.remove('hid'); await nap(hand(c.textContent) + 15); }
     const count = log(round);
     status.classList.add('on');
     status.textContent = '';
