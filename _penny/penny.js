@@ -158,7 +158,7 @@ export async function run({ plate, from }) {
   // State, in page terms: where the coin touches (client px), how high its
   // centre is above the page, how far it leans back from flat-on-the-reader,
   // its heading in the page plane, its scale, and any extra turn in flight.
-  const s = { x: 0, y: 0, z: 0, tilt: 0, head: 0, roll: 0, scale: 1, flip: 0 };
+  const s = { x: 0, y: 0, z: 0, tilt: 0, head: 0, roll: 0, scale: 1, flip: 0, alpha: 1 };
 
   function place() {
     // Lean is a rotation about the coin's horizontal diameter; with the coin
@@ -168,12 +168,12 @@ export async function run({ plate, from }) {
     // about its upright diameter.
     const lean = s.tilt + s.flip;
     coin.quaternion.setFromEuler(new Euler(lean, s.roll, s.head, 'ZXY'));
-    const off = R * Math.cos(s.tilt);
+    const off = R * Math.cos(s.tilt) * s.scale;
     holder.position.set(s.x - Math.sin(s.head) * off, -(s.y) + Math.cos(s.head) * off, s.z);
     holder.scale.setScalar(s.scale);
     // A shadow thins as what casts it rises: full on the page, a ghost of
     // itself at the top of the hop.
-    floor.material.opacity = 0.2 * (1 - 0.75 * Math.min(1, Math.max(0, s.z - restZ) / 220));
+    floor.material.opacity = 0.2 * s.alpha * (1 - 0.75 * Math.min(1, Math.max(0, s.z - restZ) / 220));
   }
 
   // ---- the hand ----------------------------------------------------------
@@ -237,10 +237,10 @@ export async function run({ plate, from }) {
   // is held to between 0.9 and 1.5 of `band` per stroke cycle.
   function makePatch(c) {
     const theta = rnd(0, Math.PI);
-    const f = rnd(7, 9.5);
-    const dur = rnd(0.8, 1.5);
+    const f = rnd(3, 4.2);
+    const dur = rnd(1.4, 2.6);
     const drift = theta + Math.PI / 2 + rnd(-0.45, 0.45);
-    const dv = rnd(1.1, 1.5) * band * f;
+    const dv = rnd(1.0, 1.4) * band * f;
     // The centre's path bends as it goes, the way a wrist drifts in an arc,
     // walked out in small steps and centred on the spot.
     const seed = Math.random() * 100, bendA = rnd(0.5, 1.1), bendF = rnd(1.2, 2.6);
@@ -277,14 +277,29 @@ export async function run({ plate, from }) {
     return { x: cx + Math.cos(th) * a * w * env, y: cy + Math.sin(th) * a * w * env, ang: th + Math.PI / 2 };
   }
 
-  let phase = 'enter', t0 = performance.now(), prev = 0, alive = true;
+  let phase = 'appear', t0 = performance.now(), prev = 0, alive = true;
   let patch = null, lastU = 0, hop = null, rest = 0;
   let revealed = false, baseHead = null;
   document.addEventListener('egg-revealed', () => { revealed = true; }, { once: true });
 
   // Where it starts: the timer's spot, at the timer's size, flat to the reader.
   const fr = from ? from.getBoundingClientRect() : { left: W() - 60, top: 20, width: 28, height: 28 };
-  const start = { x: fr.left + fr.width / 2, y: fr.top + fr.height / 2 + R };
+  // The coin takes the timer's place exactly: same centre, same size, flat
+  // to the reader. Its contact point is the bottom of that disc, which is
+  // what it pivots on when it leans up.
+  const s0 = fr.width / D;
+  const home = { x: fr.left + fr.width / 2, y: fr.top + fr.height / 2 + R * s0 };
+  const smallZ = (tilt) => (R * Math.sin(tilt) + (T / 2) * Math.cos(tilt)) * s0;
+  let start = null;
+  const mats = [edgeMat, front.material, back.material];
+  function fade(a) {
+    s.alpha = a;
+    for (const m of mats) {
+      const see = a < 1;
+      if (m.transparent !== see) { m.transparent = see; m.needsUpdate = true; }
+      m.opacity = a;
+    }
+  }
   patch = makePatch(pickSpot() || [pb.left + pb.width / 2, pb.top + pb.height / 2]);
   const first = pose(patch, 0);
 
@@ -299,8 +314,9 @@ export async function run({ plate, from }) {
     const d = Math.hypot(to.x - s.x, to.y - s.y);
     hop = {
       x0: s.x, y0: s.y, x1: to.x, y1: to.y, h0: s.head, h1: near(-to.ang, s.head),
-      dur: Math.max(0.14, Math.min(0.38, d / 1300)), lift: Math.min(34, 8 + d * 0.08),
-      wait: rnd(0, 0.1)
+      dur: Math.max(0.35, Math.min(0.9, d / 520)), lift: Math.min(34, 8 + d * 0.08),
+      // a moment between bursts, the way a person stops to look
+      wait: rnd(0.3, 0.9)
     };
     phase = 'travel'; t0 = now;
   }
@@ -357,23 +373,49 @@ export async function run({ plate, from }) {
     const t = (now - t0) / 1000;
     const dt = Math.min(0.05, Math.max(0.001, (now - prev) / 1000));
 
-    if (revealed && phase !== 'settle' && phase !== 'pop' && phase !== 'enter') {
+    if (revealed && phase !== 'settle' && phase !== 'pop' && phase !== 'enter'
+        && phase !== 'appear' && phase !== 'wake') {
       if (held) { held = null; document.documentElement.style.cursor = ''; }
       scratch.lift(); phase = 'settle'; t0 = now;
     }
 
-    if (phase === 'enter') {
-      // Out of the timer and onto the plate in one hop: grows from the
-      // timer's size, turns over twice, and lands leaning on its edge.
+    if (phase === 'appear') {
+      // Fades in where the timer was, the timer's size, flat to the reader.
+      const k = Math.min(1, t / 0.6);
+      s.x = home.x; s.y = home.y; s.scale = s0; s.tilt = 0; s.head = 0; s.roll = 0;
+      s.z = smallZ(0);
+      fade(ease.inOut(k));
+      if (k >= 1) { phase = 'wake'; t0 = now; }
+    } else if (phase === 'wake') {
+      // Leans up onto its edge, pivoting on it, a touch past and back; then
+      // shakes itself awake: a quick rocking twist and two small bounces,
+      // dying away; then a beat, and it goes.
+      const up = Math.min(1, t / 0.55);
+      s.tilt = TILT * ease.back(up);
+      s.z = smallZ(s.tilt);
+      const w = Math.max(0, t - 0.75);
+      if (w > 0) {
+        const d = Math.max(0, 1 - w / 0.7);
+        s.roll = MathUtils.degToRad(16) * Math.sin(w * 30) * d;
+        s.head = MathUtils.degToRad(10) * Math.sin(w * 23 + 1) * d;
+        s.z += Math.abs(Math.sin(w * 9)) * 6 * s0 * d * (w < 0.7 ? 1 : 0);
+      }
+      if (t >= 1.75) {
+        phase = 'enter'; t0 = now; s.roll = 0; s.head = 0;
+        start = { x: s.x, y: s.y, z: s.z };
+      }
+    } else if (phase === 'enter') {
+      // The jump: up and over to the plate, growing from the timer's size to
+      // its own, turning over twice, and landing leaning on its edge.
       const dur = 1.35;
       const k = Math.min(1, t / dur);
       const e = ease.inOut(k);
       s.x = start.x + (first.x - start.x) * e;
       s.y = start.y + (first.y - start.y) * e;
-      s.scale = MathUtils.lerp(fr.width / D, 1, ease.out(Math.min(1, k / 0.45)));
-      s.tilt = TILT * ease.out(k);
+      s.scale = MathUtils.lerp(s0, 1, ease.out(Math.min(1, k / 0.45)));
+      s.tilt = TILT;
       s.flip = (1 - ease.out(k)) * TAU * 2;
-      s.z = restZ + Math.sin(Math.PI * Math.min(1, k * 1.05)) * 240 * (1 - k * 0.3);
+      s.z = MathUtils.lerp(start.z, restZ, e) + Math.sin(Math.PI * Math.min(1, k * 1.05)) * 240 * (1 - k * 0.3);
       s.head = near(-first.ang, 0) * ease.out(k);
       if (k >= 1) { phase = 'patch'; t0 = now; lastU = 0; s.flip = 0; s.z = restZ; }
     } else if (phase === 'travel') {
