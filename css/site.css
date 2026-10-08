@@ -654,6 +654,8 @@
     pointer-events: none;
   }
   .penny-dust { z-index: 39; }
+  /* The coin's canvas is a small square moved over it, not the screen. */
+  .penny-stage { right: auto; bottom: auto; will-change: transform; }
   /* The pop: a few motes of grey thrown off where the coin was. */
   .penny-puff { position: fixed; z-index: 41; width: 0; height: 0; pointer-events: none; }
   .penny-puff span {

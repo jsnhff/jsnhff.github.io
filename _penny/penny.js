@@ -16,7 +16,7 @@
 
 import {
   WebGLRenderer, Scene, PerspectiveCamera, Group, Mesh, CylinderGeometry,
-  CircleGeometry, PlaneGeometry, MeshPhysicalMaterial, ShadowMaterial,
+  CircleGeometry, PlaneGeometry, MeshStandardMaterial, ShadowMaterial,
   DirectionalLight, HemisphereLight, TextureLoader, SRGBColorSpace,
   PMREMGenerator, PCFSoftShadowMap, ACESFilmicToneMapping, Euler, MathUtils,
   Color
@@ -54,7 +54,11 @@ export async function run({ plate, from }) {
   try { faces = await loadFaces(16); } catch (e) { return; }
   let renderer;
   try {
-    renderer = new WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha: true });
+    // On a dense screen the pixels are fine enough already; multisampling a
+    // full-screen canvas there is cost with nothing to show for it.
+    const sharp = (window.devicePixelRatio || 1) >= 2;
+    renderer = new WebGLRenderer({ antialias: !sharp, alpha: true, premultipliedAlpha: true,
+                                   powerPreference: 'high-performance' });
   } catch (e) { return; }
 
   const W = () => window.innerWidth;
@@ -89,7 +93,7 @@ export async function run({ plate, from }) {
   scene.add(new HemisphereLight(0xffffff, 0xe9e6e2, 0.55));
   const key = new DirectionalLight(0xffffff, 1.9);
   key.castShadow = true;
-  key.shadow.mapSize.set(2048, 2048);
+  key.shadow.mapSize.set(1024, 1024);
   key.shadow.bias = -0.0004;
   key.shadow.normalBias = 0.6;
   key.shadow.radius = 6;
@@ -99,24 +103,47 @@ export async function run({ plate, from }) {
   floor.receiveShadow = true;
   scene.add(floor);
 
+  // The 3D canvas is not the whole screen. It is a square just big enough
+  // for the coin and its longest shadow, and it travels with the coin; the
+  // camera keeps its full-screen view and renders only that window of it
+  // (setViewOffset), so the picture is identical and the pixels drawn each
+  // frame are a fraction of the display's.
+  let win = 0, bx = 0, by = 0;
   function layout() {
     const w = W(), h = H();
-    renderer.setSize(w, h, false);
-    cvs.style.width = w + 'px';
-    cvs.style.height = h + 'px';
     camera.aspect = w / h;
     const dist = (h / 2) / Math.tan(MathUtils.degToRad(FOV / 2));
     camera.position.set(w / 2, -h / 2, dist);
     camera.near = dist * 0.2; camera.far = dist * 3;
     camera.lookAt(w / 2, -h / 2, 0);
+    if (win) camera.setViewOffset(w, h, bx, by, win, win);
     camera.updateProjectionMatrix();
-    floor.scale.set(w * 1.5, h * 1.5, 1);
-    floor.position.set(w / 2, -h / 2, 0);
-    key.target.position.set(w / 2, -h / 2, 0);
-    key.position.set(w / 2 - 260, -h / 2 + 420, 900);
-    const c = key.shadow.camera;
-    c.left = -w; c.right = w; c.top = h; c.bottom = -h; c.near = 10; c.far = 3000;
-    c.updateProjectionMatrix();
+    key.shadow.camera.near = 10; key.shadow.camera.far = 3000;
+  }
+
+  // The page under the coin, and the light's view of it, cover only the
+  // patch where the coin's shadow can fall, and travel with it. Spread over
+  // the whole screen, the shadow was being worked out for every pixel of the
+  // display on every frame, to draw one coin's worth of it. The light comes
+  // from up and to the left, so a point at height z throws its shadow
+  // (0.29z, -0.47z) away, down and to the right on the screen.
+  const LIGHT = { x: -260, y: 420, z: 900 };
+  let shadowSpan = 0;
+  function followShadow(cx, cy) {
+    const top = s.z + R * s.scale;
+    const ox = -LIGHT.x / LIGHT.z * top, oy = -LIGHT.y / LIGHT.z * top;
+    const span = Math.ceil((R * s.scale * 2.6 + Math.hypot(ox, oy)) / 8) * 8;
+    const fx = cx + ox / 2, fy = cy + oy / 2;
+    floor.position.set(fx, fy, 0);
+    floor.scale.set(span * 1.6, span * 1.6, 1);
+    key.target.position.set(fx, fy, 0);
+    key.position.set(fx + LIGHT.x, fy + LIGHT.y, LIGHT.z);
+    if (span !== shadowSpan) {
+      shadowSpan = span;
+      const c = key.shadow.camera;
+      c.left = -span; c.right = span; c.top = span; c.bottom = -span;
+      c.updateProjectionMatrix();
+    }
   }
   layout();
   window.addEventListener('resize', layout);
@@ -128,15 +155,20 @@ export async function run({ plate, from }) {
   const D = Math.max(46, Math.min(70, box.width * 0.11));
   const R = D / 2;
   const T = D * (1.52 / 19.05);
+  // Big enough for the coin, a little swell, and the shadow it throws from
+  // the top of its jump (a point at height z casts 0.55z away).
+  win = Math.ceil((R * 2.6 + 0.55 * 300 + 16) / 2) * 2;
+  renderer.setSize(win, win, false);
+  cvs.style.width = cvs.style.height = win + 'px';
 
   const copper = new Color('#c27a4f');
-  const edgeMat = new MeshPhysicalMaterial({
-    color: copper, metalness: 1, roughness: 0.34, clearcoat: 0.15, clearcoatRoughness: 0.4
+  const edgeMat = new MeshStandardMaterial({
+    color: copper, metalness: 1, roughness: 0.32
   });
   const faceMat = (t) => {
-    return new MeshPhysicalMaterial({
+    return new MeshStandardMaterial({
       color: 0xffffff, map: t.map, normalMap: t.normal, roughnessMap: t.rough,
-      metalness: 1, roughness: 1, clearcoat: 0.15, clearcoatRoughness: 0.4
+      metalness: 1, roughness: 0.95
     });
   };
 
@@ -174,6 +206,17 @@ export async function run({ plate, from }) {
     // A shadow thins as what casts it rises: full on the page, a ghost of
     // itself at the top of the hop.
     floor.material.opacity = 0.2 * s.alpha * (1 - 0.75 * Math.min(1, Math.max(0, s.z - restZ) / 220));
+    followShadow(holder.position.x, holder.position.y);
+    // Move the window over the coin and its shadow, and render just that.
+    const top = s.z + R * s.scale;
+    const wx = holder.position.x + 0.29 * top / 2, wy = -holder.position.y + 0.47 * top / 2;
+    const nbx = Math.round(wx - win / 2), nby = Math.round(wy - win / 2);
+    if (nbx !== bx || nby !== by) {
+      bx = nbx; by = nby;
+      cvs.style.transform = `translate(${bx}px, ${by}px)`;
+      camera.setViewOffset(W(), H(), bx, by, win, win);
+      camera.updateProjectionMatrix();
+    }
   }
 
   // ---- the hand ----------------------------------------------------------
@@ -295,7 +338,9 @@ export async function run({ plate, from }) {
   let phase = 'appear', t0 = performance.now(), prev = 0, alive = true;
   let patch = null, lastU = 0, hop = null, rest = 0;
   let revealed = false, baseHead = null, view = null;
-  const ADMIRE = MathUtils.degToRad(28);
+  // Standing up to look: nearly upright on its edge, face to the picture.
+  const ADMIRE = MathUtils.degToRad(70);
+  const zAt = (tilt) => R * Math.sin(tilt) + (T / 2) * Math.cos(tilt);
   // Where to stand to look at the finished picture: just off whichever side
   // of the plate is nearest, on the page, facing the plate's centre. Its
   // face turns to the picture, so it is the shield the reader sees.
@@ -532,9 +577,9 @@ export async function run({ plate, from }) {
       const k = Math.min(1, t / 0.75), e = ease.inOut(k);
       s.x = view.x0 + (view.x - view.x0) * e;
       s.y = view.y0 + (view.y - view.y0) * e;
-      s.z = restZ + Math.sin(Math.PI * k) * 26;
       s.head = view.h0 + (view.h - view.h0) * e;
       s.tilt += (ADMIRE - s.tilt) * Math.min(1, dt * 6);
+      s.z = zAt(s.tilt) + Math.sin(Math.PI * k) * 26;
       s.roll *= Math.exp(-dt * 8);
       if (k >= 1) { phase = 'admire'; t0 = now; }
     } else if (phase === 'admire') {
@@ -544,12 +589,12 @@ export async function run({ plate, from }) {
       s.roll = MathUtils.degToRad(3.5) * Math.sin(t * 0.9 + 0.4);
       s.tilt = ADMIRE + MathUtils.degToRad(3) * Math.sin(t * 1.7);
       const b = t - 1.25;
-      s.z = restZ + (b > 0 && b < 0.5 ? Math.abs(Math.sin(b * TAU * 2)) * 7 * (1 - b / 0.5) : 0);
+      s.z = zAt(s.tilt) + (b > 0 && b < 0.5 ? Math.abs(Math.sin(b * TAU * 2)) * 7 * (1 - b / 0.5) : 0);
       if (t >= 2.6) { phase = 'settle'; t0 = now; }
     } else if (phase === 'settle') {
       // Stops, then a short shake: side to side, dying away.
+      // It stays standing for this; it does not slump first.
       const k = Math.min(1, t / 0.55);
-      s.tilt += (TILT - s.tilt) * 0.2;
       if (baseHead === null) baseHead = s.head;
       s.roll *= 0.85;
       s.head = baseHead + MathUtils.degToRad(14) * Math.sin(t * 46) * (1 - k) * Math.min(1, t / 0.08);
@@ -650,7 +695,11 @@ export async function run({ plate, from }) {
     }
   }
   let fading = 0;   // > 0 once the coin has gone: the last of the dust fades with it
+  let dustDrawn = false;
   function drawCrumbs(dt) {
+    // Nothing in the air and nothing drawn last frame: nothing to do.
+    if (!flakes.length && !dustDrawn) return;
+    dustDrawn = flakes.length > 0;
     dg.setTransform(dpr, 0, 0, dpr, 0, 0);
     dg.clearRect(0, 0, W(), H());
     if (!(dt > 0)) dt = 0.016;
