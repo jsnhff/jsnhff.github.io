@@ -642,12 +642,14 @@
 
   /* The penny's stage covers the viewport and catches nothing: the plate under
      it stays scratchable by hand while the coin works. */
-  .penny-stage {
+  .penny-stage,
+  .penny-dust {
     position: fixed;
     inset: 0;
     z-index: 40;
     pointer-events: none;
   }
+  .penny-dust { z-index: 39; }
   /* The pop: a few motes of grey thrown off where the coin was. */
   .penny-puff { position: fixed; z-index: 41; width: 0; height: 0; pointer-events: none; }
   .penny-puff span {
