@@ -410,31 +410,60 @@
     }
 
     // Draw the photo, then keep only the parts that have been scratched.
+    // The whole plate, from scratch: the photo, kept only where the mask is
+    // open. Only needed when the plate is sized, reset or finished; between
+    // those, each mark paints its own patch of the photo (see put).
+    var photo = null, patt = null;
     function paintPlate() {
       var w = canvas.width, h = canvas.height;
       if (!w || !h || !img.complete || !img.naturalWidth) return;
+      if (!photo || photo.width !== w || photo.height !== h) {
+        photo = document.createElement('canvas');
+        photo.width = w; photo.height = h;
+        var ar = img.naturalWidth / img.naturalHeight;
+        var dw = w, dh = w / ar;
+        if (dh < h) { dh = h; dw = h * ar; }
+        photo.getContext('2d').drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+        patt = ctx.createPattern(photo, 'no-repeat');
+      }
       ctx.clearRect(0, 0, w, h);
-      var ar = img.naturalWidth / img.naturalHeight;
-      var dw = w, dh = w / ar;
-      if (dh < h) { dh = h; dw = h * ar; }
       ctx.globalCompositeOperation = 'source-over';
       ctx.globalAlpha = 1;
-      ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+      ctx.drawImage(photo, 0, 0);
       ctx.globalCompositeOperation = 'destination-in';
       ctx.drawImage(mask, 0, 0);
       ctx.globalCompositeOperation = 'source-over';
     }
 
-    // The picture repaints every frame something is scratched; the check for
-    // whether it is all open reads the whole mask back, so it runs at most
-    // five times a second, and always once more after the last stroke.
+    // Every mark goes to two places: the mask, in white, which is what the
+    // plate reads to know how much is open; and the picture, filled with the
+    // photo itself, so a scrape paints only the patch it opens. Recomposing
+    // the whole plate through the mask on every frame meant sending a
+    // plate-sized image to the graphics chip sixty times a second.
+    function put(path, op, width) {
+      for (var i = 0; i < 2; i++) {
+        var g = i ? ctx : mctx, paint = i ? patt : '#fff';
+        if (i && !patt) break;
+        g.globalCompositeOperation = op;
+        if (width) {
+          g.lineWidth = width; g.lineCap = g.lineJoin = 'round';
+          g.strokeStyle = paint; g.stroke(path);
+        } else {
+          g.fillStyle = paint; g.fill(path);
+        }
+        g.globalCompositeOperation = 'source-over';
+      }
+    }
+
+    // The check for whether it is all open reads the whole mask back, so it
+    // runs at most five times a second, and always once more after the last
+    // stroke.
     var checkTimer = null;
     function schedule() {
       if (queued) return;
       queued = true;
       requestAnimationFrame(function () {
         queued = false;
-        paintPlate();
         if (!checkTimer) checkTimer = setTimeout(function () { checkTimer = null; checkDone(); }, 200);
       });
     }
@@ -529,8 +558,6 @@
     }
     function scrape(pt, r, ang) {
       var half = r * dpr;
-      mctx.globalCompositeOperation = 'source-over';
-      mctx.fillStyle = '#fff';
       if (!last) { last = pt; return; }
       var dx = pt[0] - last[0], dy = pt[1] - last[1], len = Math.hypot(dx, dy);
       if (len < 0.5) return;
@@ -544,12 +571,13 @@
         var d = travelled;
         var a = half * reach(d, 1), b = half * reach(d, 2);
         var th = (1.3 + 2.4 * noise1(d * 0.21, 5)) * dpr;
-        mctx.beginPath();
-        mctx.moveTo(cx - nx * a - ux * th, cy - ny * a - uy * th);
-        mctx.lineTo(cx + nx * b - ux * th, cy + ny * b - uy * th);
-        mctx.lineTo(cx + nx * b + ux * th, cy + ny * b + uy * th);
-        mctx.lineTo(cx - nx * a + ux * th, cy - ny * a + uy * th);
-        mctx.fill();
+        var q = new Path2D();
+        q.moveTo(cx - nx * a - ux * th, cy - ny * a - uy * th);
+        q.lineTo(cx + nx * b - ux * th, cy + ny * b - uy * th);
+        q.lineTo(cx + nx * b + ux * th, cy + ny * b + uy * th);
+        q.lineTo(cx - nx * a + ux * th, cy - ny * a + uy * th);
+        q.closePath();
+        put(q, 'source-over');
         // clusters: each end has its own run of tearing and quiet
         var ca = noise1(d * 0.07, 11), cb = noise1(d * 0.07, 12);
         if (Math.random() < 0.6 * ca * ca * ca) fibre(cx, cy, nx, ny, -a, half, 'source-over');
@@ -561,13 +589,10 @@
         }
       }
       if (fray && Math.random() < 0.04) {
-        var o = (Math.random() * 2 - 1) * half * 0.8;
-        mctx.globalCompositeOperation = 'destination-out';
-        mctx.beginPath();
-        mctx.arc(pt[0] + nx * o - ux * half * 0.6, pt[1] + ny * o - uy * half * 0.6,
+        var o = (Math.random() * 2 - 1) * half * 0.8, hole = new Path2D();
+        hole.arc(pt[0] + nx * o - ux * half * 0.6, pt[1] + ny * o - uy * half * 0.6,
                  (0.6 + Math.pow(Math.random(), 2) * 2.4) * dpr, 0, 7);
-        mctx.fill();
-        mctx.globalCompositeOperation = 'source-over';
+        put(hole, 'destination-out');
       }
       last = pt;
       schedule();
@@ -585,15 +610,10 @@
       var ex = sx + (nx * Math.cos(bend) - ny * Math.sin(bend)) * len * dir;
       var ey = sy + (ny * Math.cos(bend) + nx * Math.sin(bend)) * len * dir;
       var k = (Math.random() - 0.5) * len * 0.5;
-      mctx.globalCompositeOperation = op;
-      mctx.strokeStyle = '#fff';
-      mctx.lineWidth = (0.6 + Math.pow(Math.random(), 1.5) * 2.2) * dpr;
-      mctx.lineCap = 'round';
-      mctx.beginPath();
-      mctx.moveTo(sx, sy);
-      mctx.quadraticCurveTo((sx + ex) / 2 - ny * k, (sy + ey) / 2 + nx * k, ex, ey);
-      mctx.stroke();
-      mctx.globalCompositeOperation = 'source-over';
+      var f = new Path2D();
+      f.moveTo(sx, sy);
+      f.quadraticCurveTo((sx + ex) / 2 - ny * k, (sy + ey) / 2 + nx * k, ex, ey);
+      put(f, op, (0.6 + Math.pow(Math.random(), 1.5) * 2.2) * dpr);
     }
 
     // A ragged chunk torn out past the end of the chord: a few jagged points
@@ -602,34 +622,29 @@
       var sgn = from < 0 ? -1 : 1;
       var sx = cx + nx * from, sy = cy + ny * from;
       var size = half * (0.12 + Math.random() * 0.3), pts = 3 + Math.floor(Math.random() * 3);
-      mctx.globalCompositeOperation = 'source-over';
-      mctx.fillStyle = '#fff';
-      mctx.beginPath();
-      mctx.moveTo(sx - ny * size * 0.6, sy + nx * size * 0.6);
+      var c = new Path2D();
+      c.moveTo(sx - ny * size * 0.6, sy + nx * size * 0.6);
       for (var i = 0; i <= pts; i++) {
         var t = i / pts, w = (t - 0.5) * 1.6 + (Math.random() - 0.5) * 0.5;
         var out = size * (0.4 + Math.random() * 0.9) * Math.sin(Math.PI * t);
-        mctx.lineTo(sx + nx * out * sgn - ny * w * size * 0.6, sy + ny * out * sgn + nx * w * size * 0.6);
+        c.lineTo(sx + nx * out * sgn - ny * w * size * 0.6, sy + ny * out * sgn + nx * w * size * 0.6);
       }
-      mctx.lineTo(sx + ny * size * 0.6, sy - nx * size * 0.6);
-      mctx.closePath();
-      mctx.fill();
+      c.lineTo(sx + ny * size * 0.6, sy - nx * size * 0.6);
+      c.closePath();
+      put(c, 'source-over');
     }
 
     function stroke(pt, r) {
       var radius = (r || 26) * dpr;
-      mctx.globalCompositeOperation = 'source-over';
-      mctx.strokeStyle = mctx.fillStyle = '#fff';
-      mctx.lineWidth = radius * 2;
       if (last) {
-        mctx.beginPath();
-        mctx.moveTo(last[0], last[1]);
-        mctx.lineTo(pt[0], pt[1]);
-        mctx.stroke();
+        var line = new Path2D();
+        line.moveTo(last[0], last[1]);
+        line.lineTo(pt[0], pt[1]);
+        put(line, 'source-over', radius * 2);
       }
-      mctx.beginPath();
-      mctx.arc(pt[0], pt[1], radius, 0, 7);
-      mctx.fill();
+      var dot = new Path2D();
+      dot.arc(pt[0], pt[1], radius, 0, 7);
+      put(dot, 'source-over');
       last = pt;
       schedule();
     }
