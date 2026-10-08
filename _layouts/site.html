@@ -167,6 +167,6 @@
         data-variant="{{ site.background_shader }}"
         data-grain="{{ site.background_grain | default: 1 }}" defer></script>
 {% endif %}
-<script src="/js/site.js?v={{ site.time | date: '%s' }}" defer></script>
+<script src="/js/site.js?v={{ site.time | date: '%s' }}" data-v="{{ site.time | date: '%s' }}" defer></script>
 </body>
 </html>

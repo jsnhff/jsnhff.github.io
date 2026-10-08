@@ -19,6 +19,9 @@
   'use strict';
 
   var root = document.documentElement;
+  // The build's timestamp, from this script's own tag; files fetched later
+  // carry it so they are never served stale across a deploy.
+  var buildStamp = (document.currentScript && document.currentScript.getAttribute('data-v')) || '';
   var reduce = window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -155,7 +158,9 @@
   // where the timer is hidden too, and when the plate is already open.
   var timerPie = document.querySelector('.timer-pie');
   if (timerPie) {
-    var pennyUrl = '/js/penny.js';
+    // Stamped with the build, as site.js itself is, so a new deploy is never
+    // answered from a cached copy of the old penny.
+    var pennyUrl = '/js/penny.js?v=' + buildStamp;
     // ?penny: the last four seconds only, for trying it out.
     var quick = /[?&]penny\b/.test(location.search);
     if (quick) timerPie.getAnimations().forEach(function (a) { a.currentTime = 26000; });
