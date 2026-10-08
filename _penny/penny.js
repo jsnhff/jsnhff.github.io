@@ -296,7 +296,7 @@ export async function run({ plate, from }) {
   function makePatch(c) {
     const theta = rnd(0, Math.PI);
     const f = rnd(3, 4.2);
-    const dur = tidy ? rnd(0.6, 1.0) : rnd(1.4, 2.6);
+    const dur = tidy ? rnd(0.6, 1.0) : rnd(1.2, 2.0);
     const drift = theta + Math.PI / 2 + rnd(-0.45, 0.45);
     const dv = rnd(1.0, 1.4) * band * f;
     // The centre's path bends as it goes, the way a wrist drifts in an arc,
@@ -311,7 +311,7 @@ export async function run({ plate, from }) {
     const mx = pts.reduce((a, q) => a + q[0], 0) / pts.length;
     const my = pts.reduce((a, q) => a + q[1], 0) / pts.length;
     for (const q of pts) { q[0] += c[0] - mx; q[1] += c[1] - my; }
-    return { theta, f, dur, pts, seed, amp: tidy ? band * rnd(0.8, 1.2) : band * rnd(1.9, 2.9) * big };
+    return { theta, f, dur, pts, seed, amp: tidy ? band * rnd(0.8, 1.2) : band * rnd(1.5, 2.3) * big };
   }
 
   // Where the edge is at time u in a burst, and the angle it is held at.
@@ -328,8 +328,8 @@ export async function run({ plate, from }) {
     // Strokes swell and shrink unevenly through the burst: its outline is
     // ragged rather than a ruled block. They never drop below the stroke the
     // drift was sized for, so nothing between them is missed.
-    const a = P.amp * (1 + 0.35 * Math.max(0, Math.sin(u * 3.1 + sd))
-                         + 0.2 * Math.max(0, Math.sin(u * 8.3 + sd * 2.3)));
+    const a = P.amp * (1 + 0.3 * Math.max(0, Math.sin(u * 3.1 + sd))
+                         + 0.15 * Math.max(0, Math.sin(u * 8.3 + sd * 2.3)));
     const w = Math.sin(TAU * P.f * u + 0.3 * Math.sin(u * 1.9 + sd));
     const env = Math.max(0, Math.min(1, u / 0.1, (P.dur - u) / 0.1));
     return { x: cx + Math.cos(th) * a * w * env, y: cy + Math.sin(th) * a * w * env, ang: th + Math.PI / 2 };
@@ -415,7 +415,7 @@ export async function run({ plate, from }) {
   // go and, after a moment, it carries on by itself.
   let held = null;
   const drag = { vx: 0, vy: 0, c2: 0, s2: 0 };
-  const canHold = () => phase === 'travel' || phase === 'patch' || phase === 'rest' || phase === 'held';
+  const canHold = () => phase === 'land' || phase === 'travel' || phase === 'patch' || phase === 'rest' || phase === 'held';
   function centre() {
     const off = R * Math.cos(s.tilt) * s.scale;
     return [s.x - Math.sin(s.head) * off, s.y - Math.cos(s.head) * off];
@@ -469,7 +469,7 @@ export async function run({ plate, from }) {
     const t = (now - t0) / 1000;
     const dt = Math.min(0.05, Math.max(0.001, (now - prev) / 1000));
 
-    if (revealed && (phase === 'travel' || phase === 'patch' || phase === 'held' || phase === 'rest')) {
+    if (revealed && (phase === 'land' || phase === 'travel' || phase === 'patch' || phase === 'held' || phase === 'rest')) {
       if (held) { held = null; document.documentElement.style.cursor = ''; }
       scratch.lift(); phase = 'stop'; t0 = now;
     }
@@ -512,7 +512,13 @@ export async function run({ plate, from }) {
       s.flip = (1 - ease.out(k)) * TAU * 2;
       s.z = MathUtils.lerp(start.z, restZ, e) + Math.sin(Math.PI * Math.min(1, k * 1.05)) * 240 * (1 - k * 0.3);
       s.head = near(-first.ang, 0) * ease.out(k);
-      if (k >= 1) { phase = 'patch'; t0 = now; lastU = 0; s.flip = 0; s.z = restZ; }
+      if (k >= 1) { phase = 'land'; t0 = now; s.flip = 0; s.z = restZ; }
+    } else if (phase === 'land') {
+      // Landed on the plate. It stands a second and takes in the space before
+      // it starts, which is also the chance to pick it up.
+      s.x = first.x; s.y = first.y; s.z = restZ;
+      s.tilt += (TILT - s.tilt) * Math.min(1, dt * 8);
+      if (t >= 1) { phase = 'patch'; t0 = now; lastU = 0; }
     } else if (phase === 'travel') {
       const k = Math.min(1, Math.max(0, t - hop.wait) / hop.dur);
       const e = ease.inOut(k);
