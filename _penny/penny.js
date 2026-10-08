@@ -364,9 +364,17 @@ export async function run({ plate, from }) {
   window.addEventListener('pointermove', onMove, { passive: false });
   window.addEventListener('pointerup', onUp);
   window.addEventListener('pointercancel', onUp);
-  // While the coin is on the page a drag on it is a drag, not a scroll.
-  const touchWas = document.documentElement.style.touchAction;
-  document.documentElement.style.touchAction = 'none';
+  // A finger on the coin is a grab and a drag on it is a drag: not a
+  // scroll, not a zoom. Safari honours that only through its own touch
+  // events, cancelled as they happen, so the page keeps every gesture
+  // everywhere else, pinch-to-zoom included.
+  function onTouchStart(e) {
+    const t = e.touches[0];
+    if (t && e.touches.length === 1 && alive && canHold() && over(t)) e.preventDefault();
+  }
+  function onTouchMove(e) { if (held) e.preventDefault(); }
+  document.addEventListener('touchstart', onTouchStart, { capture: true, passive: false });
+  document.addEventListener('touchmove', onTouchMove, { capture: true, passive: false });
 
   function frame(now) {
     if (!alive) return;
@@ -588,7 +596,8 @@ export async function run({ plate, from }) {
     window.removeEventListener('pointermove', onMove);
     window.removeEventListener('pointerup', onUp);
     window.removeEventListener('pointercancel', onUp);
-    document.documentElement.style.touchAction = touchWas;
+    document.removeEventListener('touchstart', onTouchStart, true);
+    document.removeEventListener('touchmove', onTouchMove, true);
     document.documentElement.style.cursor = '';
     window.removeEventListener('resize', layout);
     window.removeEventListener('resize', sizeDust);
