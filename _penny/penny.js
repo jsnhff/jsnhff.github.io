@@ -202,7 +202,9 @@ export async function run({ plate, from }) {
 
   // ---- choreography ------------------------------------------------------
   const scratch = plate.scratch;
-  if (scratch.need) scratch.need(0.86);
+  // Nothing is filled in for it: the coin scrapes off every last bit.
+  if (scratch.need) scratch.need(1);
+  if (scratch.fray) scratch.fray(true);
   const TILT = MathUtils.degToRad(36);
   const restZ = R * Math.sin(TILT) + (T / 2) * Math.cos(TILT);
   const band = R * 0.95;            // half the width of the band the edge scrapes
@@ -213,9 +215,22 @@ export async function run({ plate, from }) {
   // somewhere else, another burst. Each spot is chosen among the places still
   // covered: a few at random, and the one with the most covering round it,
   // so it wanders here and there without wasting itself on clean ground.
-  function pickSpot() {
-    const open = scratch.covered();
+  //
+  // At the very end, with only scraps left, it changes: it goes to the
+  // nearest scrap, works it in a small tight burst, and stops leaving
+  // slivers behind, so the job can actually be finished.
+  let total = 0, tidy = false;
+  function pickSpot(open) {
     if (!open.length) return null;
+    if (tidy) {
+      let best = null, bd = Infinity;
+      for (let i = 0; i < 6; i++) {
+        const c = open[Math.floor(Math.random() * open.length)];
+        const d = Math.hypot(c[0] - s.x, c[1] - s.y);
+        if (d < bd) { bd = d; best = c; }
+      }
+      return best;
+    }
     const reach = band * 3 * big;
     let best = null, score = -1;
     for (let i = 0; i < 8; i++) {
@@ -238,7 +253,7 @@ export async function run({ plate, from }) {
   function makePatch(c) {
     const theta = rnd(0, Math.PI);
     const f = rnd(3, 4.2);
-    const dur = rnd(1.4, 2.6);
+    const dur = tidy ? rnd(0.6, 1.0) : rnd(1.4, 2.6);
     const drift = theta + Math.PI / 2 + rnd(-0.45, 0.45);
     const dv = rnd(1.0, 1.4) * band * f;
     // The centre's path bends as it goes, the way a wrist drifts in an arc,
@@ -253,7 +268,7 @@ export async function run({ plate, from }) {
     const mx = pts.reduce((a, q) => a + q[0], 0) / pts.length;
     const my = pts.reduce((a, q) => a + q[1], 0) / pts.length;
     for (const q of pts) { q[0] += c[0] - mx; q[1] += c[1] - my; }
-    return { theta, f, dur, pts, seed, amp: band * rnd(1.9, 2.9) * big };
+    return { theta, f, dur, pts, seed, amp: tidy ? band * rnd(0.8, 1.2) : band * rnd(1.9, 2.9) * big };
   }
 
   // Where the edge is at time u in a burst, and the angle it is held at.
@@ -300,14 +315,21 @@ export async function run({ plate, from }) {
       m.opacity = a;
     }
   }
-  patch = makePatch(pickSpot() || [pb.left + pb.width / 2, pb.top + pb.height / 2]);
+  const open0 = scratch.covered();
+  total = open0.length || 1;
+  patch = makePatch(pickSpot(open0) || [pb.left + pb.width / 2, pb.top + pb.height / 2]);
   const first = pose(patch, 0);
 
   // Lift, move to the next spot, put down: a short glide with a little
   // height, the coin turning on the way to the angle the next burst wants.
   function nextPatch(now) {
     scratch.lift();
-    const c = pickSpot();
+    const open = scratch.covered();
+    if (!tidy && (open.length < total * 0.035 || open.length < 40)) {
+      tidy = true;
+      if (scratch.fray) scratch.fray(false);
+    }
+    const c = pickSpot(open);
     if (!c) { phase = 'settle'; t0 = now; return; }
     patch = makePatch(c);
     const to = pose(patch, 0);
@@ -316,7 +338,7 @@ export async function run({ plate, from }) {
       x0: s.x, y0: s.y, x1: to.x, y1: to.y, h0: s.head, h1: near(-to.ang, s.head),
       dur: Math.max(0.35, Math.min(0.9, d / 520)), lift: Math.min(34, 8 + d * 0.08),
       // a moment between bursts, the way a person stops to look
-      wait: rnd(0.3, 0.9)
+      wait: tidy ? rnd(0.1, 0.35) : rnd(0.3, 0.9)
     };
     phase = 'travel'; t0 = now;
   }
@@ -443,7 +465,7 @@ export async function run({ plate, from }) {
       // just at this frame's point: a slow frame would otherwise cut corners
       // and leave stripes. The path, not the frame rate, decides the scrape.
       for (let v = lastU + 0.003; v < u; v += 0.003) {
-        const q = pose(P, v); scratch.to(q.x, q.y, band, q.ang); crumbs(q.x, q.y);
+        const q = pose(P, v); crumbs(q.x, q.y, q.ang); scratch.to(q.x, q.y, band, q.ang);
       }
       lastU = u;
       const p = pose(P, u), p2 = pose(P, u + 0.003);
@@ -470,8 +492,8 @@ export async function run({ plate, from }) {
       const n = Math.max(1, Math.ceil(d / 3));
       for (let i = 1; i <= n; i++) {
         const x = s.x + dx * i / n, y = s.y + dy * i / n;
+        crumbs(x, y, -s.head);
         scratch.to(x, y, band, -s.head);
-        if (i % 2 === 0) crumbs(x, y);
       }
       s.x = held.tx; s.y = held.ty; s.z = restZ;
       lean(s.head, drag.vx, -drag.vy);
@@ -502,10 +524,13 @@ export async function run({ plate, from }) {
     requestAnimationFrame(frame);
   }
 
-  // ---- crumbs ------------------------------------------------------------
-  // Coating comes off a ticket as grit: little flakes thrown back from the
-  // edge, skidding to a stop and fading. Drawn on a 2D canvas under the
-  // coin's, so the coin passes over its own mess.
+  // ---- shavings ---------------------------------------------------------
+  // What comes off is what was there: black flecks where the edge goes
+  // through the statement's letters, white everywhere else, and nothing at
+  // all where the coating is already gone. They fly off the ends of the
+  // edge, land, and lie where they fell, each with a shadow cast by the same
+  // light as the coin's (down and to the right), long while a flake is in
+  // the air and tight once it is down. They go when the coin does.
   const dust = document.createElement('canvas');
   dust.className = 'penny-dust';
   dust.setAttribute('aria-hidden', 'true');
@@ -517,57 +542,108 @@ export async function run({ plate, from }) {
   }
   sizeDust();
   window.addEventListener('resize', sizeDust);
-  const flakes = [];
-  let since = 0, cx0 = null, cy0 = null;
-  function crumbs(x, y) {
-    if (cx0 === null) { cx0 = x; cy0 = y; return; }
-    const dx = x - cx0, dy = y - cy0, d = Math.hypot(dx, dy);
-    cx0 = x; cy0 = y;
-    since += d;
-    if (d < 0.01) return;
-    const ux = dx / d, uy = dy / d;
-    while (since > 16) {
-      since -= 16;
-      if (flakes.length > 90) flakes.shift();
-      // mostly off the ends of the edge, where a ticket sheds
-      const end = Math.random() < 0.5 ? -1 : 1;
-      const along = end * band * (0.55 + Math.random() * 0.45);
-      const sp = 40 + Math.random() * 140;
-      const a = Math.atan2(-uy, -ux) + (Math.random() - 0.5) * 1.6;
-      flakes.push({
-        x: x - uy * along, y: y + ux * along,
-        vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
-        r: 0.5 + Math.random() * 1.0, rot: Math.random() * TAU,
-        life: 0, max: 0.3 + Math.random() * 0.45,
-        shade: 244 + Math.floor(Math.random() * 11)
-      });
+
+  // Where the ink is: the statement's line boxes. Letters fill roughly a
+  // third of a line box, so a flake from inside one is ink about that often.
+  const inkBoxes = [];
+  const stmt = document.querySelector('.statement');
+  if (stmt) {
+    const walk = document.createTreeWalker(stmt, NodeFilter.SHOW_TEXT);
+    for (let n = walk.nextNode(); n; n = walk.nextNode()) {
+      const rg = document.createRange(); rg.selectNodeContents(n);
+      for (const b of rg.getClientRects()) inkBoxes.push(b);
     }
   }
+  const inInk = (x, y) => inkBoxes.some((b) => x >= b.left && x <= b.right && y >= b.top + b.height * 0.18 && y <= b.bottom - b.height * 0.12);
+
+  const flakes = [];
+  let ex0 = null, ey0 = null, owe = [0, 0];
+  function crumbs(x, y, ang) {
+    if (ex0 === null) { ex0 = x; ey0 = y; return; }
+    const mx = x - ex0, my = y - ey0, d = Math.hypot(mx, my);
+    ex0 = x; ey0 = y;
+    if (d < 0.01) return;
+    const nx = Math.cos(ang), ny = Math.sin(ang);
+    for (let e = 0; e < 2; e++) {
+      owe[e] += d;
+      while (owe[e] > 7.5) {
+        owe[e] -= 7.5;
+        const sgn = e ? 1 : -1, along = sgn * band * (0.6 + Math.random() * 0.45);
+        const px = x + nx * along, py = y + ny * along;
+        if (!scratch.coveredAt(px, py)) continue;
+        if (flakes.length > 320) flakes.shift();
+        const ink = inInk(px, py) && Math.random() < 0.38;
+        // white grit is finer and sparser than the ink that comes off letters
+        if (!ink && Math.random() < 0.3) continue;
+        // thrown back from the travel and out past the end of the edge
+        const a = Math.atan2(-my, -mx) * 0.6 + Math.atan2(ny * sgn, nx * sgn) * 0.4 + (Math.random() - 0.5) * 1.2;
+        const sp = 30 + Math.pow(Math.random(), 2) * 160;
+        const r = (ink ? 0.45 : 0.55) + Math.pow(Math.random(), 2.2) * (ink ? 1.3 : 2.0);
+        const pts = [], k = 4 + Math.floor(Math.random() * 3);
+        for (let i = 0; i < k; i++) {
+          const t = (i / k) * TAU + Math.random() * 0.6;
+          const rr = r * (0.55 + Math.random() * 0.6);
+          pts.push([Math.cos(t) * rr, Math.sin(t) * rr * (0.6 + Math.random() * 0.4)]);
+        }
+        flakes.push({
+          x: px, y: py, z: 1 + Math.random() * 4,
+          vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, vz: 20 + Math.random() * 60,
+          rot: Math.random() * TAU, spin: (Math.random() - 0.5) * 14, pts,
+          shade: ink ? 18 + Math.floor(Math.random() * 30) : 242 + Math.floor(Math.random() * 13),
+          ink, life: 0, stay: 4 + Math.random() * 3, gone: 1
+        });
+      }
+    }
+  }
+  let fading = 0;   // > 0 once the coin has gone: the last of the dust fades with it
   function drawCrumbs(dt) {
     dg.setTransform(dpr, 0, 0, dpr, 0, 0);
     dg.clearRect(0, 0, W(), H());
     if (!(dt > 0)) dt = 0.016;
+    dt = Math.min(dt, 0.05);
     for (let i = flakes.length - 1; i >= 0; i--) {
       const f = flakes[i];
       f.life += dt;
-      if (f.life >= f.max) { flakes.splice(i, 1); continue; }
-      const drag = Math.exp(-dt * 7);
-      f.vx *= drag; f.vy *= drag;
-      f.x += f.vx * dt; f.y += f.vy * dt;
-      const o = 1 - Math.pow(f.life / f.max, 2);
+      if (f.z > 0) {
+        f.vz -= 900 * dt; f.z += f.vz * dt;
+        f.x += f.vx * dt; f.y += f.vy * dt; f.rot += f.spin * dt;
+        const drag = Math.exp(-dt * 3);
+        f.vx *= drag; f.vy *= drag;
+        if (f.z <= 0) { f.z = 0; f.vx *= 0.25; f.vy *= 0.25; f.spin = 0; }
+      } else {
+        const drag = Math.exp(-dt * 14);
+        f.vx *= drag; f.vy *= drag;
+        f.x += f.vx * dt; f.y += f.vy * dt;
+      }
+      if (f.life > f.stay) f.gone -= dt / 1.2;
+      if (fading) f.gone = Math.min(f.gone, fading);
+      if (f.gone <= 0) { flakes.splice(i, 1); continue; }
+      const o = Math.min(1, f.gone);
+      // shadow: the light is up and to the left, as it is for the coin
+      const sx = 0.5 + f.z * 0.45, sy = 0.7 + f.z * 0.6;
+      dg.save();
+      dg.translate(f.x + sx, f.y + sy); dg.rotate(f.rot);
+      dg.fillStyle = `rgba(0,0,0,${(f.ink ? 0.22 : 0.16) * o * Math.max(0.35, 1 - f.z / 14)})`;
+      shape(f.pts, 1.08);
+      dg.restore();
       dg.save();
       dg.translate(f.x, f.y); dg.rotate(f.rot);
-      // Flakes of the page itself: white, with just enough edge to read
-      // against the white they came off.
       dg.fillStyle = `rgba(${f.shade},${f.shade},${f.shade},${o})`;
-      dg.strokeStyle = `rgba(0,0,0,${0.1 * o})`;
-      dg.lineWidth = 0.5;
-      dg.beginPath();
-      dg.moveTo(-f.r, -f.r * 0.5); dg.lineTo(f.r, -f.r * 0.2); dg.lineTo(f.r * 0.2, f.r * 0.7);
-      dg.closePath();
-      dg.fill(); dg.stroke();
+      shape(f.pts, 1);
+      if (!f.ink) {
+        dg.strokeStyle = `rgba(0,0,0,${0.07 * o})`;
+        dg.lineWidth = 0.4;
+        dg.stroke();
+      }
       dg.restore();
     }
+  }
+  function shape(pts, k) {
+    dg.beginPath();
+    dg.moveTo(pts[0][0] * k, pts[0][1] * k);
+    for (let i = 1; i < pts.length; i++) dg.lineTo(pts[i][0] * k, pts[i][1] * k);
+    dg.closePath();
+    dg.fill();
   }
 
   function puff() {
@@ -600,11 +676,19 @@ export async function run({ plate, from }) {
     document.removeEventListener('touchmove', onTouchMove, true);
     document.documentElement.style.cursor = '';
     window.removeEventListener('resize', layout);
-    window.removeEventListener('resize', sizeDust);
-    dust.remove();
     renderer.dispose();
     pmrem.dispose();
     cvs.remove();
+    // The shavings outlast the coin by a moment, then fade.
+    fading = 1;
+    let last = performance.now();
+    (function settleDust(now) {
+      const dt = (now - last) / 1000; last = now;
+      fading = Math.max(0, fading - dt / 0.9);
+      drawCrumbs(dt);
+      if (fading > 0 && flakes.length) requestAnimationFrame(settleDust);
+      else { window.removeEventListener('resize', sizeDust); dust.remove(); }
+    })(last);
   }
 
   place();
