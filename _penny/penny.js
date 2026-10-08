@@ -345,18 +345,14 @@ export async function run({ plate, from }) {
   // Standing up to look: nearly upright on its edge, face to the picture.
   const ADMIRE = MathUtils.degToRad(70);
   const zAt = (tilt) => R * Math.sin(tilt) + (T / 2) * Math.cos(tilt);
-  // Where to stand to look at the finished picture: just off whichever side
-  // of the plate is nearest, on the page, facing the plate's centre. Its
-  // face turns to the picture, so it is the shield the reader sees.
+  // Where to stand to look at the finished picture: always off the plate's
+  // bottom left corner, facing the plate's centre, so whatever it says has
+  // the room to its right. Its face turns to the picture, so it is the
+  // shield the reader sees.
   function viewSpot() {
     const b = plate.getBoundingClientRect(), m = R * 1.6;
-    const spots = [
-      [b.left + b.width * 0.2, b.bottom + m], [b.right - b.width * 0.2, b.bottom + m],
-      [b.left - m, b.top + b.height * 0.7], [b.right + m, b.top + b.height * 0.7]
-    ].filter(([x, y]) => x > R * 1.5 && x < W() - R * 1.5 && y > R * 2 && y < H() - R);
-    if (!spots.length) spots.push([b.left + b.width / 2, Math.min(H() - R, b.bottom + m)]);
-    spots.sort((p, q) => Math.hypot(p[0] - s.x, p[1] - s.y) - Math.hypot(q[0] - s.x, q[1] - s.y));
-    const [x, y] = spots[0];
+    const x = Math.max(R * 1.5, b.left + Math.min(b.width * 0.12, R * 1.2));
+    const y = Math.max(R * 2, Math.min(H() - R, b.bottom + m));
     // front face's reach across the page is (sin h, -cos h) in world axes
     const cx = b.left + b.width / 2, cy = b.top + b.height / 2;
     // a face has a front, so the nearest turn is taken round the full circle
@@ -578,7 +574,7 @@ export async function run({ plate, from }) {
       s.roll *= Math.exp(-dt * 8);
       if (t >= 0.5) { view = viewSpot(); phase = 'step'; t0 = now; }
     } else if (phase === 'step') {
-      // A hop back to just off the plate, turning to face the picture.
+      // A hop to just off the plate's corner, turning to face the picture.
       const k = Math.min(1, t / 0.75), e = ease.inOut(k);
       s.x = view.x0 + (view.x - view.x0) * e;
       s.y = view.y0 + (view.y - view.y0) * e;
