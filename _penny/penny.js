@@ -311,14 +311,35 @@ export async function run({ plate, from }) {
     const mx = pts.reduce((a, q) => a + q[0], 0) / pts.length;
     const my = pts.reduce((a, q) => a + q[1], 0) / pts.length;
     for (const q of pts) { q[0] += c[0] - mx; q[1] += c[1] - my; }
-    return { theta, f, dur, pts, seed, amp: tidy ? band * rnd(0.8, 1.2) : band * rnd(1.5, 2.3) * big };
+    const P = { theta, f, dur, pts, seed, amp: tidy ? band * rnd(0.8, 1.2) : band * rnd(1.5, 2.3) * big };
+    // Near the picture's edge it is more careful: strokes are shortened until
+    // the swing stays on the plate. (pose() also holds the line, for a drift
+    // that wanders out on its own.)
+    const lo = band * 0.6;
+    for (let k = 0; k < 8 && P.amp > lo; k++) {
+      let out = false;
+      for (let u = 0; u <= dur; u += 0.03) {
+        const q = rawPose(P, u);
+        if (q.x < pb.left + EDGE || q.x > pb.right - EDGE || q.y < pb.top + EDGE || q.y > pb.bottom - EDGE) { out = true; break; }
+      }
+      if (!out) break;
+      P.amp = Math.max(lo, P.amp * 0.8);
+    }
+    return P;
   }
 
   // Where the edge is at time u in a burst, and the angle it is held at.
   // Strokes run long by uneven amounts, their direction wanders a little, and
   // they ease in and out at the ends of the burst rather than starting and
   // stopping mid-swing.
+  const EDGE = band * 0.35;   // how far past the plate's edge the coin's contact may go
   function pose(P, u) {
+    const q = rawPose(P, u);
+    q.x = Math.max(pb.left - EDGE, Math.min(pb.right + EDGE, q.x));
+    q.y = Math.max(pb.top - EDGE, Math.min(pb.bottom + EDGE, q.y));
+    return q;
+  }
+  function rawPose(P, u) {
     const sd = P.seed;
     const k = Math.max(0, Math.min(1, u / P.dur)) * (P.pts.length - 1);
     const i = Math.min(P.pts.length - 2, Math.floor(k)), fr = k - i;
