@@ -620,7 +620,10 @@
      left always runs clockwise from twelve, and shrinks back towards it. */
   .timer {
     position: fixed;
-    top: var(--edge);
+    /* Level with the upcoming-events capsule: the same top as it, moved down
+       by half the difference in height, so the two share a centre line. With
+       no capsule the difference is nothing and it sits at the edge. */
+    top: calc(max(var(--edge), env(safe-area-inset-top, 0px)) + (var(--island-h, 1.75rem) - 1.75rem) / 2);
     right: var(--edge);
     z-index: 30;
     width: 1.75rem;
