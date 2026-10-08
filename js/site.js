@@ -384,13 +384,25 @@
     img.src = srcUrl;
 
     var wrap = canvas.parentNode;
-    var credit = el('p', 'egg-credit', canvas.getAttribute('data-credit') || '');
+    var credit = el('p', 'egg-credit', '');
+    // A title given in curly quotes is set in italics instead, as a work's
+    // title is; the text itself stays plain, so nothing in it is markup.
+    function setCredit(node, text) {
+      node.textContent = '';
+      text.split(/\u201C([^\u201D]*)\u201D/).forEach(function (part, i) {
+        if (!part) return;
+        if (i % 2) { var t = document.createElement('i'); t.textContent = part; node.appendChild(t); }
+        else node.appendChild(document.createTextNode(part));
+      });
+    }
+    var firstCredit = canvas.getAttribute('data-credit') || '';
+    setCredit(credit, firstCredit);
     wrap.appendChild(credit);
 
     // Once the plate is open it becomes a small show of three: the picture it
     // revealed, then two more, switched by a row of dots under the credit, a
     // tap on the picture, a swipe, or the arrow keys.
-    var slides = [{ src: srcUrl, credit: credit.textContent, fit: 'cover', img: img }];
+    var slides = [{ src: srcUrl, credit: firstCredit, fit: 'cover', img: img }];
     try {
       JSON.parse(canvas.getAttribute('data-slides') || '[]').forEach(function (d) {
         slides.push({ src: d.src, credit: d.credit, fit: d.fit || 'cover', img: null });
@@ -423,6 +435,10 @@
       var w = Math.min((stmt ? stmt.offsetWidth : 560) + 40, window.innerWidth * 0.92);
       var h = Math.min(w / 1.5, window.innerHeight * 0.78);
       w = Math.min(w, h * 1.5);
+      // Safari calls a toolbar sliding in or out a resize. Setting a
+      // canvas's size wipes it, even to the size it already is, so a plate
+      // that has not changed size is left alone.
+      if (Math.round(w * dpr) === canvas.width && Math.round(h * dpr) === canvas.height) return;
       canvas.style.width = w + 'px';
       canvas.style.height = h + 'px';
       canvas.width = mask.width = Math.round(w * dpr);
@@ -433,6 +449,12 @@
       credit.style.width = w + 'px';
       placeDots();
       photos = {};
+      // an open plate stays open at its new size
+      if (done) {
+        mctx.fillStyle = '#fff';
+        mctx.fillRect(0, 0, mask.width, mask.height);
+        for (var g = 0; g < grid.length; g++) setPt(g, 1);
+      }
       paintPlate();
     }
 
@@ -761,7 +783,7 @@
       probe.style.width = credit.style.width;
       var tall = 0;
       slides.forEach(function (sl) {
-        probe.textContent = sl.credit;
+        setCredit(probe, sl.credit);
         tall = Math.max(tall, probe.offsetHeight);
       });
       dots.style.marginTop = (h / 2 + 14 + tall + 8) + 'px';
@@ -786,7 +808,11 @@
         from.getContext('2d').drawImage(canvas, 0, 0);
         cur = i; mark(); fading = true;
         credit.classList.remove('on');
-        setTimeout(function () { credit.textContent = sl.credit; placeDots(); credit.classList.add('on'); }, 200);
+        setTimeout(function () {
+          // the show may have been put away in the meantime
+          if (!showing) return;
+          setCredit(credit, sl.credit); placeDots(); credit.classList.add('on');
+        }, 200);
         var t0 = null;
         (function step(ts) {
           if (!t0) t0 = ts;
@@ -813,6 +839,7 @@
     var swipe = null;
 
     canvas.addEventListener('pointerdown', function (e) {
+      if (clearing) return;
       if (showing) { swipe = [e.clientX, e.clientY]; return; }
       drawing = true; last = null;
       canvas.setPointerCapture(e.pointerId);
@@ -881,14 +908,18 @@
       reset: reset
     };
 
+    var clearing = false;
     function reset() {
-      if (!done) return;
+      if (!done || clearing) return;
+      // Put away at once, so a tap during the fade cannot switch a slide in.
+      showing = false; swipe = null; clearing = true;
       wrap.classList.add('is-clearing');
       wrap.classList.remove('is-show');
       credit.classList.remove('on');
       setTimeout(function () {
-        showing = false; fading = false; cur = 0; swipe = null;
-        credit.textContent = slides[0].credit;
+        fading = false; cur = 0; clearing = false;
+        setCredit(credit, slides[0].credit);
+        credit.classList.remove('on');
         mark();
         mctx.clearRect(0, 0, mask.width, mask.height);
         batch.quads = batch.dots = batch.holes = null; batch.own.length = 0;
