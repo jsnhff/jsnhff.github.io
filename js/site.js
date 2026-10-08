@@ -146,6 +146,16 @@
     }
   }
 
+  // ---- home timer ---------------------------------------------------------
+  // The countdown itself is the stylesheet's; this only says when it is over,
+  // for whatever wants to happen at the end.
+  var timerPie = document.querySelector('.timer-pie');
+  if (timerPie) {
+    timerPie.addEventListener('animationend', function () {
+      document.dispatchEvent(new CustomEvent('home-timer-done'));
+    });
+  }
+
   // ---- nav ----------------------------------------------------------------
   // The selected chip is one element that travels, placed from the live
   // geometry of the current link so it survives resizes and the
