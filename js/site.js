@@ -179,7 +179,8 @@
     });
     // Once the picture is open the timer runs again, for a while in the
     // gallery. When that runs out the plate covers itself back over, and the
-    // timer's spot holds a loop: tapped, the penny comes out of it again.
+    // timer's spot holds a loop: tapped, it all starts again from the top,
+    // the timer winding down and then the penny.
     var egg = document.querySelector('.egg-canvas');
     var timer = document.getElementById('timer');
     var again = document.getElementById('timer-again');
@@ -197,10 +198,10 @@
     if (again) again.addEventListener('click', function () {
       if (again.disabled) return;
       again.disabled = true;
-      // the penny fades in on the same spot as the loop fades out
+      // the timer comes back, full, as the loop goes
       again.classList.remove('on');
       setTimeout(function () { again.hidden = true; }, 500);
-      sendPenny();
+      rewind();
     });
     function rewind() {
       timerPie.getAnimations().forEach(function (a) {
