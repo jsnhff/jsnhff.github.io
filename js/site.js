@@ -178,10 +178,30 @@
       }, quick ? 0 : 20000);
     });
     // Once the picture is open the timer runs again, for a while in the
-    // gallery. When that runs out the plate covers itself back over and the
-    // whole thing starts again from the top: the timer, then the penny.
+    // gallery. When that runs out the plate covers itself back over, and the
+    // timer's spot holds a loop: tapped, the penny comes out of it again.
     var egg = document.querySelector('.egg-canvas');
     var timer = document.getElementById('timer');
+    var again = document.getElementById('timer-again');
+    function sendPenny() {
+      import(pennyUrl).then(function (m) {
+        m.run({ plate: egg, from: timer });
+      }).catch(function () {});
+    }
+    function offerAgain() {
+      if (!again) return;
+      again.hidden = false;
+      again.disabled = false;
+      requestAnimationFrame(function () { again.classList.add('on'); });
+    }
+    if (again) again.addEventListener('click', function () {
+      if (again.disabled) return;
+      again.disabled = true;
+      // the penny fades in on the same spot as the loop fades out
+      again.classList.remove('on');
+      setTimeout(function () { again.hidden = true; }, 500);
+      sendPenny();
+    });
     function rewind() {
       timerPie.getAnimations().forEach(function (a) {
         a.cancel();
@@ -191,6 +211,11 @@
       timer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, easing: 'ease' });
     }
     document.addEventListener('egg-revealed', function () {
+      if (again && !again.hidden) {
+        again.disabled = true;
+        again.classList.remove('on');
+        setTimeout(function () { again.hidden = true; }, 500);
+      }
       if (!reduce) setTimeout(rewind, 600);
     });
     timerPie.addEventListener('animationend', function () {
@@ -198,12 +223,10 @@
       if (reduce || !egg || !egg.scratch) return;
       if (egg.scratch.isDone()) {
         egg.scratch.reset();
-        setTimeout(rewind, 900);
+        setTimeout(offerAgain, 900);
         return;
       }
-      import(pennyUrl).then(function (m) {
-        m.run({ plate: egg, from: timer });
-      }).catch(function () {});
+      sendPenny();
     });
   }
 
