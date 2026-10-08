@@ -184,6 +184,15 @@
     var egg = document.querySelector('.egg-canvas');
     var timer = document.getElementById('timer');
     var again = document.getElementById('timer-again');
+    // Act three: the gallery has faded, and a poem about nature writes itself
+    // word by word; then the critic's pen shows up. See poem.js. `after` runs
+    // when it is over. The code is fetched when it is needed, and if it cannot
+    // be, the loop is offered at once.
+    function poem(after) {
+      import('/js/poem.js?v=' + buildStamp).then(function (m) {
+        m.run({ wrap: egg.parentNode, after: after, penUrl: '/js/pen.js?v=' + buildStamp });
+      }).catch(function () { after(); });
+    }
     function sendPenny() {
       import(pennyUrl).then(function (m) {
         m.run({ plate: egg, from: timer });
@@ -224,7 +233,8 @@
       if (reduce || !egg || !egg.scratch) return;
       if (egg.scratch.isDone()) {
         egg.scratch.reset();
-        setTimeout(offerAgain, 900);
+        // the plate takes 900ms to cover back over; the poem starts after it
+        setTimeout(function () { poem(offerAgain); }, 1100);
         return;
       }
       sendPenny();

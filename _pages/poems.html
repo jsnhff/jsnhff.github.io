@@ -1,0 +1,70 @@
+---
+layout: site
+title: Poem log
+permalink: /poems/
+sitemap: false
+dark: true
+---
+
+<h1 class="sr-only">Poem log</h1>
+
+{%- comment -%}
+  Act three's log. The home page's poems are written in the visitor's own
+  browser and kept there (localStorage, key jh.poems), so this page shows what
+  has been written in the browser you are reading it with, newest first. There
+  is no server on this site to collect them in one place.
+{%- endcomment -%}
+<div class="col poem-log">
+  <p class="poem-log-bar">
+    <span id="poem-count">No poems yet.</span>
+    <button type="button" id="poem-copy">Copy as JSON</button>
+    <button type="button" id="poem-clear">Clear</button>
+  </p>
+  <div id="poem-list"></div>
+</div>
+
+<style>
+  .poem-log-bar { display: flex; gap: 1rem; align-items: baseline; margin: 0 0 2rem; font-size: 0.85rem; color: var(--dim); }
+  .poem-log-bar span { flex: 1; }
+  .poem-log-bar button { font: inherit; color: inherit; background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
+  .poem-entry { margin: 0 0 3rem; }
+  .poem-entry h2 { font-size: 1rem; font-weight: 400; font-style: italic; margin: 0 0 0.2rem; }
+  .poem-entry time { display: block; font-size: 0.75rem; color: var(--dim); margin-bottom: 1rem; }
+  .poem-entry pre { font: inherit; line-height: 1.5; margin: 0 0 1rem; white-space: pre-wrap; }
+  .poem-entry .first { color: var(--dim); font-size: 0.85rem; }
+  .poem-entry details { font-size: 0.8rem; color: var(--dim); }
+  .poem-entry details summary { cursor: pointer; margin-bottom: 0.5rem; }
+  .poem-entry li { margin: 0.1rem 0; }
+</style>
+
+<script>
+(function () {
+  var KEY = 'jh.poems', list = document.getElementById('poem-list'), count = document.getElementById('poem-count');
+  function load() { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } }
+  function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+  function draw() {
+    var all = load();
+    list.textContent = '';
+    count.textContent = all.length ? all.length + (all.length === 1 ? ' poem' : ' poems') + ' in this browser' : 'No poems yet. Let the home page run to the end.';
+    all.forEach(function (p) {
+      var e = el('article', 'poem-entry');
+      e.appendChild(el('h2', '', p.title));
+      e.appendChild(el('time', '', new Date(p.at).toLocaleString() + ' · ' + p.rounds + (p.rounds === 1 ? ' round' : ' rounds')));
+      e.appendChild(el('pre', '', p.final.join('\n')));
+      var d = el('details'); d.appendChild(el('summary', '', 'first draft and the critic’s notes'));
+      d.appendChild(el('pre', 'first', p.first.join('\n')));
+      var ul = el('ul'); (p.notes || []).forEach(function (n) { ul.appendChild(el('li', '', n.w + ' → ' + n.n)); });
+      d.appendChild(ul); e.appendChild(d); list.appendChild(e);
+    });
+  }
+  document.getElementById('poem-clear').addEventListener('click', function () {
+    if (confirm('Clear the poem log in this browser?')) { try { localStorage.removeItem(KEY); } catch (e) {} draw(); }
+  });
+  document.getElementById('poem-copy').addEventListener('click', function (ev) {
+    var b = ev.target, t = JSON.stringify(load(), null, 2);
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = 'Copied'; }, function () { b.textContent = 'Copy failed'; });
+    setTimeout(function () { b.textContent = 'Copy as JSON'; }, 1500);
+  });
+  draw();
+})();
+</script>

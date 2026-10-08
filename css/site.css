@@ -311,6 +311,59 @@
   .egg-credit.on { opacity: 1; pointer-events: auto; }
   .egg-canvas:active { cursor: grabbing; }
 
+  /* Act three. The gallery has faded; the statement gives way to a poem set
+     in the same type and place, under the same plate. Words pop in one at a
+     time. Then the critic: a red pen circles words, notes go in the margin in
+     hand, and the poem is revised. */
+  .egg .statement { transition: opacity 700ms ease; }
+  .egg.is-poem .statement { opacity: 0; pointer-events: none; }
+  .poem {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    width: max-content;
+    max-width: min(39rem, calc(100vw - 2rem));
+    transform: translate(-50%, -50%);
+    font-size: clamp(1.15rem, min(4.4vw, 3.4vh), 1.7rem);
+    letter-spacing: -0.012em;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 600ms ease;
+  }
+  .poem.on { opacity: 1; }
+  .poem.out { opacity: 0; transition-duration: 900ms; }
+  .poem-title { margin: 0 0 0.9em; font-style: italic; color: var(--dim); font-size: 0.8em; }
+  .poem-line { margin: 0; line-height: 1.45; min-height: 1.45em; transition: line-height 300ms ease; }
+  .poem.critic .poem-line { line-height: 1.7; }
+  .pw {
+    display: inline-block;
+    transition: opacity 260ms ease, transform 420ms var(--rise);
+  }
+  .pw.hid { opacity: 0; transform: scale(0.6) translateY(0.25em); transition: none; }
+  .pw.swap { opacity: 0; transform: translateY(-0.2em); }
+  .poem-ink { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+  .poem-ink .pen { fill: none; stroke: #d2352b; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; transition: opacity 500ms ease; }
+  .poem-ink .pen.thin { stroke-width: 1.1; opacity: 0.8; }
+  .poem-ink .gone { opacity: 0; }
+  /* the critic's hand: whatever handwriting the device has */
+  .poem-note {
+    position: absolute;
+    white-space: nowrap;
+    font-family: "Bradley Hand", "Segoe Print", "Chalkboard SE", "Marker Felt", "Comic Sans MS", cursive;
+    font-size: 0.62em;
+    line-height: 1.2;
+    color: #d2352b;
+    letter-spacing: 0;
+    transform: rotate(var(--rot, 0deg));
+    transition: opacity 500ms ease;
+  }
+  .poem-note.gone { opacity: 0; }
+  .poem-note.final { right: 0; bottom: -1.6em; font-size: 0.8em; }
+  .poem-status { margin: 1.4em 0 0; font-size: 0.7em; color: var(--dim); opacity: 0; transition: opacity 400ms ease; pointer-events: auto; }
+  .poem-status.on { opacity: 1; }
+  .poem-status a { color: inherit; }
+
   /* Clearing puts the picture back under the coating: it dissolves into the
      statement waiting underneath, rather than blinking out. */
   .egg.is-clearing .egg-canvas { opacity: 0; transition: opacity 900ms ease; }

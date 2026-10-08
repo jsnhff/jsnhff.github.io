@@ -19,7 +19,7 @@ import {
   CircleGeometry, PlaneGeometry, MeshStandardMaterial, ShadowMaterial,
   DirectionalLight, HemisphereLight, TextureLoader, SRGBColorSpace,
   PMREMGenerator, PCFSoftShadowMap, ACESFilmicToneMapping, Euler, MathUtils,
-  Color
+  Color, Vector2
 } from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
@@ -38,6 +38,25 @@ function loadFaces(maxAniso) {
     one(MAPS + n + '-rough.webp', false)
   ]).then(([map, normal, rough]) => ({ map, normal, rough }));
   return Promise.all([side('obverse'), side('reverse')]);
+}
+
+
+// A shadow is darkest where the thing touches the page and thins out as it
+// gets away from it. The page only knows "shadowed or not", so its alpha is
+// also multiplied by a falloff from the point under the object.
+function fadeShadow(mat) {
+  const u = { uC: { value: new Vector2() }, uR: { value: new Vector2(30, 120) } };
+  mat.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, u);
+    sh.vertexShader = sh.vertexShader
+      .replace('void main() {', 'varying vec3 vW;\nvoid main() {')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvW = (modelMatrix * vec4(position, 1.0)).xyz;');
+    sh.fragmentShader = sh.fragmentShader
+      .replace('void main() {', 'varying vec3 vW;\nuniform vec2 uC;\nuniform vec2 uR;\nvoid main() {')
+      .replace('gl_FragColor = vec4( color, opacity * ( 1.0 - getShadowMask() ) );',
+        'gl_FragColor = vec4( color, opacity * ( 1.0 - getShadowMask() ) * ( 1.0 - smoothstep( uR.x, uR.y, distance( vW.xy, uC ) ) ) );');
+  };
+  return u;
 }
 
 const TAU = Math.PI * 2;
@@ -99,7 +118,9 @@ export async function run({ plate, from }) {
   key.shadow.radius = 6;
   scene.add(key, key.target);
 
-  const floor = new Mesh(new PlaneGeometry(1, 1), new ShadowMaterial({ opacity: 0.2 }));
+  const floorMat = new ShadowMaterial({ opacity: 0.2 });
+  const shadowFade = fadeShadow(floorMat);
+  const floor = new Mesh(new PlaneGeometry(1, 1), floorMat);
   floor.receiveShadow = true;
   scene.add(floor);
 
@@ -207,6 +228,11 @@ export async function run({ plate, from }) {
     // itself at the top of the hop.
     floor.material.opacity = 0.2 * s.alpha * (1 - 0.75 * Math.min(1, Math.max(0, s.z - restZ) / 220));
     followShadow(holder.position.x, holder.position.y);
+    // full out to about the coin's own width, gone by two and a half more,
+    // and further the higher it is, since the shadow is then longer
+    shadowFade.uC.value.set(holder.position.x, holder.position.y);
+    const rr = R * s.scale;
+    shadowFade.uR.value.set(rr * 1.1 + s.z * 0.15, rr * 3.2 + s.z * 0.55);
     // Move the window over the coin and its shadow, and render just that.
     const top = s.z + R * s.scale;
     const wx = holder.position.x + 0.29 * top / 2, wy = -holder.position.y + 0.47 * top / 2;
