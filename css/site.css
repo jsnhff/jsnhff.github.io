@@ -710,6 +710,9 @@
     background: var(--ground);
     border-bottom-right-radius: 0.55rem;
   }
+  .penny-bubble.flip { transform-origin: calc(100% - 0.7rem) 100%; }
+  .penny-bubble.flip::before { left: auto; right: -0.42rem; border-bottom-right-radius: 0; border-bottom-left-radius: 0.9rem 0.75rem; }
+  .penny-bubble.flip::after { left: auto; right: -0.65rem; border-bottom-right-radius: 0; border-bottom-left-radius: 0.55rem; }
   .penny-bubble.out { animation: bubble-out 300ms cubic-bezier(0.4, 0, 1, 1) both; }
   @keyframes bubble-in {
     from { opacity: 0; scale: 0.3; }

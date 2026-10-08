@@ -784,12 +784,18 @@ export async function run({ plate, from }) {
     return el;
   }
   function placeBubble() {
-    // just above the coin's top, a touch to the right, kept on the screen
-    const c = centre();
-    const r = { width: bubble.offsetWidth, height: bubble.offsetHeight };
-    let x = c[0] - R * 0.15, y = c[1] - R * 1.05 - r.height;
-    x = Math.max(8, Math.min(W() - r.width - 8, x));
-    y = Math.max(8, y);
+    // Off the coin's upper right shoulder, the tail's tip on its rim, the way
+    // a message comes from whoever sent it. With no room on the right it
+    // flips, tail and all, to the left shoulder.
+    const c = centre(), k = s.scale;
+    const w = bubble.offsetWidth, h = bubble.offsetHeight, tail = 6;
+    const tipY = c[1] - R * 0.55 * k;
+    let x = c[0] + R * 0.6 * k + tail;
+    const flip = x + w > W() - 8;
+    if (flip) x = c[0] - R * 0.6 * k - tail - w;
+    bubble.classList.toggle('flip', flip);
+    x = Math.max(8, Math.min(W() - w - 8, x));
+    const y = Math.max(8, tipY - h);
     bubble.style.translate = `${Math.round(x)}px ${Math.round(y)}px`;
   }
 
