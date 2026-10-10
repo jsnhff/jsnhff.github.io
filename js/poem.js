@@ -613,7 +613,11 @@ export function run({ wrap, after, penUrl, script, extend }) {
     const b = box.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight;
     const right = q.side > 0, room = right ? vw - b.right : b.left;
     if (room >= 110) return [right ? b.right + 30 : b.left - 30, b.top + b.height * (right ? 0.4 : 0.6)];
-    return [right ? vw - 40 : 30, Math.min(vh - 30, b.bottom + 150)];
+    // on a phone: just under the poem, in from the edge so the whole pen
+    // shows, above the nav
+    const nav = document.querySelector('.navwrap nav');
+    const floor = Math.min(vh, nav ? nav.getBoundingClientRect().top : vh) - 14;
+    return [right ? vw - 64 : 60, Math.min(floor, b.bottom + 70)];
   }
   async function rest(q, ms = 650) {
     if (!q || dead) return;
@@ -889,14 +893,14 @@ export function run({ wrap, after, penUrl, script, extend }) {
     await handwrite(end, verdict);
     addBtn.classList.remove('on');
     if (penB) {
-      // the Bic steps back for the Flair's tick
-      await rest(pen);
+      // the Bic has signed off and goes; the Flair ticks the verdict and
+      // follows it out
+      if (pen) await pen.leave(700 * speed + 1);
       const r = end.getBoundingClientRect(), b = box.getBoundingClientRect();
       const x = r.right - b.left + 10, y = r.top - b.top + r.height * 0.55;
       await draw([[x, y], [x + 4, y + 5], [x + 13, y - 9]], false, 'tick', penB, 'green');
-      penB.leave(700 * speed + 1);
-    }
-    if (pen) await pen.leave(700 * speed + 1);
+      await penB.leave(700 * speed + 1);
+    } else if (pen) await pen.leave(700 * speed + 1);
     const count = log(round);
     status.textContent = '';
     const a = document.createElement('a');
