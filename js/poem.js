@@ -14,7 +14,12 @@ const shuffle = (a) => a.map((x) => [Math.random(), x]).sort((p, q) => p[0] - q[
 // ---- vocabulary -----------------------------------------------------------
 const NOUNS = ['moss', 'creek', 'heron', 'pine', 'frost', 'fern', 'thistle', 'moth', 'ridge', 'marsh',
   'lichen', 'owl', 'bramble', 'willow', 'hawk', 'snowmelt', 'cedar', 'fox', 'pebble', 'reed'];
-const VERBS = ['whispers', 'glows', 'bends', 'sleeps', 'waits', 'drifts', 'hums', 'leans'];
+// Nouns you cannot count (no "every moss"), and the verbs in both numbers:
+// a fox waits, things wait.
+const MASS = ['moss', 'frost', 'lichen', 'snowmelt'];
+const COUNT = NOUNS.filter((x) => !MASS.includes(x));
+const VERB = ['whisper', 'glow', 'bend', 'sleep', 'wait', 'drift', 'hum', 'lean'];
+const VERBS = VERB.map((v) => v + 's');
 const PREPS = ['beside', 'above', 'beneath', 'among'];
 const TIMES = ['dawn', 'dusk', 'noon', 'midnight'];
 
@@ -56,13 +61,14 @@ const ADV = ['gently', 'softly', 'quietly', 'beautifully'];
 // ---- drafting -------------------------------------------------------------
 function draft() {
   for (;;) {
-    const n = shuffle(NOUNS);
+    // the one after "every" has to be countable
+    const every = rnd(COUNT), n = shuffle(NOUNS.filter((x) => x !== every));
     const lines = [
       `the ${rnd(ADJ)} ${n[0]} ${rnd(VERBS)} ${rnd(PREPS)} the ${n[1]}`,
       `${rnd(FILL)} ${rnd(ADJ)} is the ${n[2]} at ${rnd(TIMES)}`,
-      `i see ${rnd(ABS)} in every ${n[3]}`,
+      `i see ${rnd(ABS)} in every ${every}`,
       `the ${n[4]} ${rnd(VERBS)} ${rnd(ADV)}, ${rnd(FILL)} ${rnd(ADJ)}`,
-      `things of ${n[5]} ${rnd(VERBS)} ${rnd(PREPS)} ${rnd(ABS)}`,
+      `things of the ${n[5]} ${rnd(VERB)} ${rnd(PREPS)} ${rnd(ABS)}`,
       `oh ${rnd(ABS)}, you ${rnd(ADV)} ${rnd(['hold', 'warm', 'bless'])} the ${n[6]}`
     ].map((l) => l.split(' '));
     const flaws = lines.flat().filter((w) => WEAK[w.replace(/,$/, '')]).length;
@@ -86,8 +92,12 @@ function flaws(p) {
 function revise(p, f) {
   const w = bare(p.lines[f.li][f.wi]);
   if (f.kind === 'repeat') {
-    const used = p.lines.flat().map(bare);
-    return rnd(NOUNS.filter((x) => !used.includes(x)));
+    const used = p.lines.flat().map(bare).concat(p.proposed || []);
+    // after "every", only a noun that can be counted
+    const pool = p.lines[f.li][f.wi - 1] === 'every' ? COUNT : NOUNS;
+    const pick = rnd(pool.filter((x) => !used.includes(x)));
+    (p.proposed = p.proposed || []).push(pick);
+    return pick;
   }
   const alts = WEAK[w][1];
   if (!alts) return null;
@@ -637,3 +647,6 @@ export function run({ wrap, after, penUrl }) {
   go().catch(() => {});
   return { stop: () => finish(true) };
 }
+
+// for checking the grammar of drafts and revisions outside the page
+export { draft, flaws, revise };
