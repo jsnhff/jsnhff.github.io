@@ -253,34 +253,63 @@ function bic() {
   return pen;
 }
 
-// A Paper Mate Flair: a felt point in a white plastic nose, a round barrel
-// in the colour of its ink, a silver band, and the cap posted on the end
-// with its clip. Felt pens are held more upright, and this one is in the
-// left hand.
+// A Paper Mate Flair, from the photograph: all one green, matte. A green
+// felt point; a long nose tapering out in two steps to a short collar; the
+// barrel with "Paper Mate ♥ FLAIR M" in silver near its front; and the cap
+// posted over the back third, flat at the end, with a long silver clip
+// that curls under at its foot. Felt pens are held more upright, and this
+// one is in the left hand.
 function flair() {
-  const green = mat({ color: '#1f8a4c', metalness: 0, roughness: 0.32 });
-  const deep = mat({ color: '#166b3a', metalness: 0, roughness: 0.4 });
-  const felt = mat({ color: '#25713f', metalness: 0, roughness: 0.95 });
-  const nose = mat({ color: '#b9bdb6', metalness: 0, roughness: 0.4 });
-  const silver = mat({ color: '#c9ccd1', metalness: 0.9, roughness: 0.25 });
+  const green = mat({ color: '#0b8a37', metalness: 0, roughness: 0.45 });
+  const felt = mat({ color: '#0b7a33', metalness: 0, roughness: 0.95 });
+  const silver = mat({ color: '#dfe2e6', metalness: 0.95, roughness: 0.18 });
   const pen = new Group();
   const add = (geo, m, y) => { const e = new Mesh(geo, m); e.position.y = y; e.castShadow = true; pen.add(e); return e; };
-  add(new CylinderGeometry(1.5, 0.35, 6, 20), felt, 3);
-  add(new CylinderGeometry(3.6, 1.5, 11, 24), nose, 11.5);
-  add(new CylinderGeometry(4.3, 3.6, 4, 24), nose, 19);
-  add(new CylinderGeometry(4.35, 4.35, 3, 28), silver, 22.5);
-  add(new CylinderGeometry(4.3, 4.3, 92, 28), green, 70);
-  // the face toward the reader is the one at about 30 degrees round
-  pen.add(printed({ faces: [2], runs: [['PAPER MATE', 0, '700 17px Arial, Helvetica, sans-serif', '#ffffff'], ['Flair', 150, 'italic 700 21px Arial, Helvetica, sans-serif', '#ffffff']] }, 4.33, 92, 28, 70));
-  // the cap, posted: a little wider, rounded at the top, its clip in silver
+  add(new CylinderGeometry(0.85, 0.3, 7, 16), felt, 3.5);          // the point, 0..7
+  add(new CylinderGeometry(1.9, 0.95, 12, 24), green, 13);          // nose, 7..19
+  add(new CylinderGeometry(3.4, 1.9, 9, 24), green, 23.5);          // flaring, 19..28
+  add(new CylinderGeometry(3.65, 3.65, 3, 28), green, 29.5);        // collar, 28..31
+  add(new CylinderGeometry(4.0, 3.6, 22, 28), green, 42);           // front, 31..53
+  add(new CylinderGeometry(4.35, 4.35, 2, 28), green, 54);          // step, 53..55
+  add(new CylinderGeometry(4.3, 4.3, 55, 28), green, 82.5);         // barrel, 55..110
+  // the print: silver, along the barrel from its front end, toward the reader
   {
-    const prof = [[4.85, 0], [4.85, 34], [4.4, 38], [3.2, 40.5], [1.6, 41.6], [0, 42]].map((p) => new Vector2(p[0], p[1]));
-    const cap = new Mesh(new LatheGeometry(prof, 32), deep);
-    cap.position.y = 104; cap.castShadow = true;
-    pen.add(cap);
-    const clip = new Mesh(new BoxGeometry(1.3, 30, 3), silver);
-    clip.position.set(5.2, 128, 0); clip.castShadow = true;
-    pen.add(clip);
+    const c = document.createElement('canvas');
+    c.width = 28 * 32; c.height = 1024;
+    const g = c.getContext('2d');
+    g.save();
+    g.translate(80, 1000);
+    g.rotate(-Math.PI / 2);
+    g.textBaseline = 'middle';
+    g.fillStyle = '#e9ecef';
+    g.font = 'italic 600 58px Georgia, "Times New Roman", serif';
+    g.fillText('Paper', 30, 0);
+    g.font = '600 34px Arial, Helvetica, sans-serif';
+    g.fillText('♥', 192, 2);
+    g.font = 'italic 600 58px Georgia, "Times New Roman", serif';
+    g.fillText('Mate', 226, 0);
+    g.font = '700 48px Arial, Helvetica, sans-serif';
+    g.fillText('FLAIR  M', 386, 0);
+    g.restore();
+    const tex = new CanvasTexture(c);
+    tex.colorSpace = SRGBColorSpace;
+    tex.anisotropy = 8;
+    const print = new Mesh(new CylinderGeometry(4.33, 4.33, 55, 28, 1, true),
+      new MeshStandardMaterial({ map: tex, transparent: true, metalness: 0.6, roughness: 0.3, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1 }));
+    print.position.y = 82.5; print.renderOrder = 3;
+    pen.add(print);
+  }
+  // the cap, posted: a little wider, flat at the end with a slight bevel
+  add(new CylinderGeometry(5.1, 5.1, 49, 32), green, 134.5);        // 110..159
+  add(new CylinderGeometry(4.8, 5.1, 1.2, 32), green, 159.6);       // bevel
+  // the clip: a long silver bar standing off the cap, curling under at its foot
+  {
+    const bar = new Mesh(new BoxGeometry(1.0, 32, 2.4), silver);
+    bar.position.set(6.3, 142, 0); bar.castShadow = true; pen.add(bar);
+    const root = new Mesh(new BoxGeometry(1.4, 3, 2.4), silver);
+    root.position.set(5.7, 157, 0); root.castShadow = true; pen.add(root);
+    const foot = new Mesh(new SphereGeometry(1.2, 12, 8), silver);
+    foot.scale.set(1, 1.4, 1.1); foot.position.set(5.9, 126, 0); foot.castShadow = true; pen.add(foot);
   }
   return pen;
 }
