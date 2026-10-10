@@ -39,7 +39,7 @@ const NOTES = {
   // the full remarks, and the shorthand editors use in the margin:
   // wc word choice, awk awkward, wdy wordy, rep repetition, del delete
   vague: ['vague. what kind?', 'says nothing', 'every poem says this', "show me, don't tell", 'wc', 'wc?'],
-  abstract: ['give me a leaf, not this', 'abstract. what can i touch?', 'too big', 'can you hold it?', 'show it'],
+  abstract: ['abstract', 'name a real thing', 'what does it look like?', 'can you touch it?', 'too big', 'show it', 'make it concrete'],
   filler: ['cut', 'filler', "why 'very'?", 'del'],
   adverb: ['let the verb do this', 'cut -ly', 'lazy'],
   things: ['which things?', 'name one'],
@@ -420,29 +420,33 @@ export function run({ wrap, after, penUrl }) {
     }
     return m;
   }
-  // Reading: the pen held just off the page, moving under a line a word at a
-  // time, the way a finger keeps the place. Without a pen, the same time
-  // passes.
-  function stopsFor(li) {
-    // eyes go a word or two at a time, not every word
-    const ws = [...lineEls[li].querySelectorAll('.pw')], out = [];
-    for (let i = 0; i < ws.length; i += 1 + (Math.random() < 0.6)) {
-      const r = ws[i].getBoundingClientRect();
-      out.push([r.left + r.width * 0.5, r.bottom - r.height * 0.05]);
-    }
-    return out;
+  // Reading: the pen held just off the page, drifting slowly under a line
+  // the way a finger keeps the place. It does not trace everything: some
+  // lines it follows most of the way, some it trails off from, and now and
+  // then it skips one on its way down. Without a pen, the same time passes.
+  function lineSpan(li) {
+    const ws = [...lineEls[li].querySelectorAll('.pw')];
+    if (!ws.length) return null;
+    const a = ws[0].getBoundingClientRect(), z = ws[ws.length - 1].getBoundingClientRect();
+    return { x0: a.left, x1: z.right, y: a.bottom + 2 };
   }
-  async function read(lis) {
-    for (const li of lis) {
-      const stops = stopsFor(li);
-      if (!stops.length) continue;
+  async function read(lis, skim) {
+    for (let i = 0; i < lis.length; i++) {
+      const sp = lineSpan(lis[i]);
+      if (!sp) continue;
+      // on a long read, a line now and then gets only a glance on the way past
+      if (skim && i > 0 && i < lis.length - 1 && Math.random() < 0.25) continue;
+      const w = sp.x1 - sp.x0, reach = sp.x0 + w * (Math.random() < 0.65 ? between(0.85, 1) : between(0.45, 0.75));
       if (pen) {
-        await pen.hover(stops[0][0] - 12, stops[0][1], 420 * speed + 1, 20);
+        // back to the start of the line, quicker, as eyes return
+        await pen.drift([[sp.x0 + between(-6, 10), sp.y + between(-2, 3)]], 420 * (1 / speed), 22);
         if (dead) throw 0;
-        await pen.scan(stops.map((q) => [q[0], q[1]]), 115 * speed + 1, 150 * speed + 1);
+        // then slowly along it, the line not quite level
+        const mid = [(sp.x0 + reach) / 2, sp.y + between(-3, 3)];
+        await pen.drift([mid, [reach, sp.y + between(-3, 4)]], between(95, 130) / speed, 18);
         if (dead) throw 0;
-      } else await nap(stops.length * 300);
-      await nap(between(100, 240));
+      } else await nap((reach - sp.x0) / 110 * 1000);
+      await nap(between(150, 400));
     }
   }
   // Considering: over the word, still, then a small lift away while it
@@ -474,7 +478,7 @@ export function run({ wrap, after, penUrl }) {
     status.textContent = round === 1 ? 'the critic' : 'the critic, again';
     status.classList.add('on');
     // the whole poem the first time; after that a line or two, now and then
-    if (round === 1) await read(p.lines.map((_, i) => i));
+    if (round === 1) await read(p.lines.map((_, i) => i), true);
     else if (!quick && Math.random() < 0.6) await read(shuffle(p.lines.map((_, i) => i)).slice(0, 1 + (Math.random() < 0.4)).sort());
     const done = [];
     for (const g of gs) {
