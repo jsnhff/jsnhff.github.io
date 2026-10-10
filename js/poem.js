@@ -126,8 +126,17 @@ function letters(node, text) {
     return c;
   });
 }
-// A person writes unevenly: quick inside a word, a beat between words.
-const hand = (ch) => (ch === ' ' ? 70 + Math.random() * 60 : 22 + Math.random() * 38);
+// A person writes by hand at a few letters a second at most (sustained
+// adult handwriting runs nearer one or two), unevenly: some letters quicker,
+// a beat between words.
+const hand = (ch) => (ch === ' ' ? 280 + Math.random() * 220 : 230 + Math.random() * 200);
+// A letter coming in as ink does, from its left edge to its right, over the
+// time the hand takes to form it.
+function inkIn(c, ms) {
+  c.classList.remove('hid');
+  c.animate([{ clipPath: 'inset(-30% 100% -30% -10%)' }, { clipPath: 'inset(-30% -10% -30% -10%)' }],
+    { duration: Math.max(1, ms * 0.9), easing: 'ease-out', fill: 'backwards' });
+}
 
 // The marks a red pen makes, as polylines in the poem's own pixels, given the
 // box (l, t, r, b) round what is marked. No two come out the same.
@@ -380,17 +389,25 @@ export function run({ wrap, after, penUrl }) {
     n.style.setProperty('--rot', (between(-1, 1) * Math.min(2, 160 / n.offsetWidth)).toFixed(2) + 'deg');
     const cs = letters(n, text);
     n.style.visibility = '';
+    const gaps = cs.map((c) => hand(c.textContent));
     if (pen) {
-      const nr = n.getBoundingClientRect();
-      const y = nr.top + nr.height * 0.78;
-      const gaps = cs.map((c) => hand(c.textContent));
-      const total = gaps.reduce((a, g) => a + g, 0);
-      await pen.glide(nr.left, y, 380 * speed + 1);
+      const r0 = cs[0].getBoundingClientRect();
+      await pen.glide(r0.left, r0.bottom - r0.height * 0.22, 380 * speed + 1);
       if (dead) throw 0;
-      const typing = (async () => { for (let i = 0; i < cs.length; i++) { cs[i].classList.remove('hid'); await nap(gaps[i]); } })();
-      await Promise.all([typing, pen.write(nr.left, y, nr.left + nr.width, total * speed + 1)]);
+      for (let i = 0; i < cs.length; i++) {
+        const r = cs[i].getBoundingClientRect(), base = r.bottom - r.height * 0.22, ms = gaps[i] * speed + 1;
+        if (cs[i].textContent === ' ') {
+          const nx = cs[i + 1] ? cs[i + 1].getBoundingClientRect().left : r.right;
+          cs[i].classList.remove('hid');
+          await pen.skip(nx, base, ms);
+        } else {
+          inkIn(cs[i], ms);
+          await pen.letter(r.left, r.right, base, r.height * 0.45, ms);
+        }
+        if (dead) throw 0;
+      }
     } else {
-      for (const c of cs) { c.classList.remove('hid'); await nap(hand(c.textContent) * 0.8); }
+      for (let i = 0; i < cs.length; i++) { inkIn(cs[i], gaps[i] * speed); await nap(gaps[i]); }
     }
   }
 
@@ -627,7 +644,7 @@ export function run({ wrap, after, penUrl }) {
     box.appendChild(end);
     if (pen) pen.leave(700 * speed + 1);
     const verdict = flaws(p).length ? 'out of time. print it.' : round > 1 ? 'better. print it.' : 'fine.';
-    for (const c of letters(end, verdict)) { c.classList.remove('hid'); await nap(hand(c.textContent) + 15); }
+    for (const c of letters(end, verdict)) { const g = hand(c.textContent); inkIn(c, g * speed); await nap(g); }
     const count = log(round);
     status.textContent = '';
     const a = document.createElement('a');
