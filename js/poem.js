@@ -607,6 +607,21 @@ export function run({ wrap, after, penUrl, script, extend }) {
   async function talk(lines) {
     for (const [who, text] of lines || []) { if (dead) throw 0; await say(who, text); }
   }
+  // Two hands, one page: the pens take turns. The one not working rests
+  // off the poem on its own hand's side, lifted, so they never cross: in the
+  // side margin when there is room, else below the poem's corner, the Bic
+  // to the right, the Flair to the left, each leaning away from the other.
+  function restAt(q) {
+    const b = box.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight;
+    const right = q.side > 0, room = right ? vw - b.right : b.left;
+    if (room >= 110) return [right ? b.right + 30 : b.left - 30, b.top + b.height * (right ? 0.4 : 0.6)];
+    return [right ? vw - 40 : 30, Math.min(vh - 30, b.bottom + 150)];
+  }
+  async function rest(q, ms = 650) {
+    if (!q || dead) return;
+    const [x, y] = restAt(q);
+    await q.hover(x, y, ms * speed + 1, 34);
+  }
   // Brought in at the next moment the first critic is between things.
   async function maybeJoin() {
     if (!wantB || joined || dead) return;
@@ -617,10 +632,10 @@ export function run({ wrap, after, penUrl, script, extend }) {
     // there is more to do now: the act, and the timer, run longer
     budget += 30000;
     if (extend) extend(30000);
-    const b = box.getBoundingClientRect();
-    // it waits at the poem's lower left, leaning off into the margin, out of
-    // the way of the words
-    await penB.enter(b.left + 14, b.bottom - 8, 900 * speed + 1);
+    // it comes in to its resting place, and the first steps back off the
+    // poem to say hello
+    const [x, y] = restAt(penB);
+    await Promise.all([penB.enter(x, y, 900 * speed + 1), rest(pen, 700)]);
     if (dead) throw 0;
     status.textContent = status.textContent.replace(/^the critic /, 'the critics ');
     await talk(rnd(HELLO));
@@ -839,10 +854,13 @@ export function run({ wrap, after, penUrl, script, extend }) {
         const done = await critique(round);
         let next = script.rounds[round - 1].after;
         if (penB && left() > 14000) {
+          // the Bic steps off the poem; they talk across it
+          await rest(pen);
           const d = script.duet && script.duet.rounds[round - 1];
           await talk(d ? d.talk : [['b', rnd(['fair.', 'agreed.', 'hm. ok.'])]]);
           if (d && d.alt && round === last) {
             const won = await stet(d.alt.line, script.rounds[round - 1].marks.find((m) => m.line === d.alt.line).text);
+            await rest(penB);
             done.push({ inks: won.filter((x) => x.path), extra: won.filter((x) => !x.path) });
             next = next.slice(); next[d.alt.line] = d.alt.text;
           }
@@ -873,6 +891,8 @@ export function run({ wrap, after, penUrl, script, extend }) {
     await handwrite(end, verdict);
     addBtn.classList.remove('on');
     if (penB) {
+      // the Bic steps back for the Flair's tick
+      await rest(pen);
       const r = end.getBoundingClientRect(), b = box.getBoundingClientRect();
       const x = r.right - b.left + 10, y = r.top - b.top + r.height * 0.55;
       await draw([[x, y], [x + 4, y + 5], [x + 13, y - 9]], false, 'tick', penB, 'green');
