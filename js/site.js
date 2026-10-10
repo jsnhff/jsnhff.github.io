@@ -201,7 +201,11 @@
         acting = 'poem';
         rewind(m.DURATION);
         m.run({ wrap: egg.parentNode, after: after, penUrl: '/js/pen.js?v=' + buildStamp,
-          script: m.choose ? m.choose(got[1]) : null });
+          script: m.choose ? m.choose(got[1]) : null,
+          // a second critic makes the act longer, and the timer says so
+          extend: function (ms) {
+            if (run) run.effect.updateTiming({ duration: run.effect.getComputedTiming().duration + ms });
+          } });
       }).catch(function () { egg.parentNode.classList.remove('is-poem'); after(); });
     }
     function sendPenny() {

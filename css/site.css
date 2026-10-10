@@ -380,6 +380,57 @@
   .poem-note .c.hid { opacity: 0; }
   .poem-note.gone { opacity: 0; }
   .poem-note.final { right: 0; bottom: -1.9em; font-size: 1.2em; }
+  /* The second critic's ink: a green felt-tip. */
+  .poem-ink .pen.green { stroke: #1f8a4c; stroke-width: 2.3; }
+  .poem-note.green { color: #1f8a4c; }
+  .penny-bubble.green { background: #E2F0E6; }
+  .penny-bubble.green::before { background: #E2F0E6; }
+  /* While the poem is up the plate takes no touches, so what sits over it
+     (the log link, "add critic") can be pressed. */
+  .egg.is-poem .egg-canvas { pointer-events: none; }
+  /* "add critic": under the poem, in the timer's grey, its dot the timer's
+     own disc with a plus. Quiet until pressed. */
+  .poem-add {
+    position: absolute;
+    left: 50%;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    padding: 0.5rem 0.7rem;
+    border: 0;
+    background: none;
+    color: #B4B4B4;
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transform: translateX(-50%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 500ms ease, color 200ms ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .poem-add.on { opacity: 1; pointer-events: auto; }
+  .poem-add:hover { color: #8E8E8E; }
+  .poem-add-dot {
+    position: relative;
+    width: 1.05em;
+    height: 1.05em;
+    border-radius: 50%;
+    background: #E4E4E4;
+  }
+  .poem-add-dot::before, .poem-add-dot::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0.55em;
+    height: 1.5px;
+    background: #fff;
+    transform: translate(-50%, -50%);
+  }
+  .poem-add-dot::after { transform: translate(-50%, -50%) rotate(90deg); }
+  .poem-add:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
   .poem-status { margin: 1.4em 0 0; font-size: 0.7em; color: var(--dim); opacity: 0; transition: opacity 400ms ease; pointer-events: auto; }
   .poem-status.on { opacity: 1; }
   .poem-status a { color: inherit; }

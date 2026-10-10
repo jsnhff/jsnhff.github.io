@@ -6,7 +6,7 @@
 // line at that moment, so the page can find them and the pen can mark them.
 import fs from 'fs';
 
-export const LIMITS = { line: 44, note: 24, verdict: 26, marks: 4 };
+export const LIMITS = { line: 44, note: 24, verdict: 26, marks: 4, talk: 30 };
 const HOWS = ['delete', 'replace', 'circle', 'underline'];
 export const words = (s) => s.toLowerCase().split(/\s+/).map((w) => w.replace(/^[^\w']+|[^\w']+$/g, '')).filter(Boolean);
 export function find(line, text) {
@@ -41,6 +41,24 @@ export function check(poem) {
     lines = r.after;
   });
   if (!poem.verdict || poem.verdict.length > LIMITS.verdict) say('verdict missing or too long');
+  // With a second critic: what the two say each round, and in the last round
+  // perhaps a line the second wins back (stet: it stays as it was).
+  if (poem.duet) {
+    const R = poem.rounds || [], D = poem.duet.rounds || [];
+    if (D.length !== R.length) say('duet has a different number of rounds');
+    D.forEach((d, ri) => {
+      (d.talk || []).forEach(([who, text], ti) => {
+        if (who !== 'a' && who !== 'b') say(`duet round ${ri + 1} line ${ti + 1}: speaker '${who}'`);
+        if (!text || text.length > LIMITS.talk) say(`duet round ${ri + 1} line ${ti + 1}: too long (${text && text.length})`);
+      });
+      if (d.alt) {
+        if (ri !== R.length - 1) say(`duet round ${ri + 1}: a win only in the last round`);
+        const before = (R[ri - 1] || { after: poem.draft }).after;
+        if (!(R[ri].marks || []).some((m) => m.line === d.alt.line)) say(`duet round ${ri + 1}: wins a line the first critic did not mark`);
+        if (d.alt.how === 'stet' && d.alt.text !== before[d.alt.line]) say(`duet round ${ri + 1}: stet has to keep the line as it was`);
+      }
+    });
+  }
   return bad;
 }
 
