@@ -198,7 +198,7 @@ function deleatur(l, r, mid) {
 
 // How long the act runs, start to finish, so the home timer can count it
 // down: the poem ends as the timer runs out, never before or after.
-export const DURATION = 95000;
+export const DURATION = 115000;
 
 // One script from the corpus, not one this browser has seen lately.
 export function choose(corpus) {

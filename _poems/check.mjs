@@ -33,7 +33,11 @@ export function check(poem) {
       if (m.note && m.note.length > LIMITS.note) say(`${at}: note too long (${m.note.length})`);
       if (r.after[m.line] === lines[m.line]) say(`${at}: line ${m.line} marked but not revised`);
     });
-    r.after.forEach((l, i) => { if (l.length > LIMITS.line) say(`round ${ri + 1} line ${i} too long (${l.length})`); });
+    r.after.forEach((l, i) => {
+      if (l.length > LIMITS.line) say(`round ${ri + 1} line ${i} too long (${l.length})`);
+      // every change answers a mark: a line no mark touched stays as it was
+      if (l !== lines[i] && !(r.marks || []).some((m) => m.line === i)) say(`round ${ri + 1}: line ${i} revised without a mark`);
+    });
     lines = r.after;
   });
   if (!poem.verdict || poem.verdict.length > LIMITS.verdict) say('verdict missing or too long');
