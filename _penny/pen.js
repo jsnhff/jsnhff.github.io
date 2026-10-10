@@ -280,6 +280,37 @@ export function makePen() {
       const x = s.x, y = s.y, z = s.z, seed = Math.random() * 9;
       await move(ms, (k) => [x + Math.sin(k * 3 + seed) * 1.5, y + Math.sin(k * 2.3 + seed) * 1.2, z + Math.sin(k * 4 + seed) * 2]);
     },
+    // Drift: a slow, smooth pass just off the page along a curve through
+    // `pts`, at `speed` px/s, easing in and out, the hand breathing a little
+    // as it goes. How a reader's pen follows a line, or wanders down a page.
+    async drift(pts, speed = 120, z = 20) {
+      s.want = 0.15;
+      const all = [[s.x, s.y], ...pts];
+      if (all.length < 2) return;
+      // a Catmull-Rom curve through the points, sampled finely
+      const P = (i) => all[Math.max(0, Math.min(all.length - 1, i))], dense = [];
+      for (let i = 0; i < all.length - 1; i++) {
+        const p0 = P(i - 1), p1 = P(i), p2 = P(i + 1), p3 = P(i + 2);
+        for (let k = 0; k < 12; k++) {
+          const t = k / 12, t2 = t * t, t3 = t2 * t;
+          const c = (a, b, c2, d) => 0.5 * ((2 * b) + (-a + c2) * t + (2 * a - 5 * b + 4 * c2 - d) * t2 + (-a + 3 * b - 3 * c2 + d) * t3);
+          dense.push([c(p0[0], p1[0], p2[0], p3[0]), c(p0[1], p1[1], p2[1], p3[1])]);
+        }
+      }
+      dense.push(all[all.length - 1]);
+      const len = [0];
+      for (let i = 1; i < dense.length; i++) len.push(len[i - 1] + Math.hypot(dense[i][0] - dense[i - 1][0], dense[i][1] - dense[i - 1][1]));
+      const L = len[len.length - 1], z0 = s.z, seed = Math.random() * 9;
+      let j = 1;
+      await move(Math.max(200, L / speed * 1000), (k) => {
+        const d = ease.inOut(k) * L;
+        while (j < len.length - 1 && len[j] < d) j++;
+        const f = (d - len[j - 1]) / Math.max(1e-6, len[j] - len[j - 1]);
+        const a = dense[j - 1], b = dense[j];
+        return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f + Math.sin(k * 9 + seed) * 1.2,
+          z0 + (z - z0) * Math.min(1, k * 4) + Math.sin(k * 5 + seed) * 2];
+      });
+    },
     // Read along a line, held just off the page: from stop to stop (a word
     // at a time, as eyes go), with a short rest on each.
     async scan(stops, step = 150, rest = 200) {
