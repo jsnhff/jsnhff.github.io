@@ -1,0 +1,871 @@
+[
+  {
+    "title": "the creek in march",
+    "draft": [
+      "the beautiful creek runs so gently",
+      "through the peaceful valley of my soul",
+      "a heron stands like a gray thought",
+      "the snowmelt whispers secrets to the stones",
+      "i feel so alive and truly free",
+      "nature is the greatest gift of all"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "beautiful", "how": "replace", "rep": "brown" },
+          { "line": 0, "text": "so gently", "how": "delete" },
+          { "line": 1, "text": "peaceful valley of my soul", "how": "underline", "note": "whose valley?" },
+          { "line": 5, "text": "nature is the greatest gift of all", "how": "underline", "note": "you showed it. cut." }
+        ],
+        "after": [
+          "the brown creek runs",
+          "through the cut below the road",
+          "a heron stands like a gray thought",
+          "the snowmelt whispers secrets to the stones",
+          "i feel so alive and truly free",
+          "my boots fill with water. i let them."
+        ]
+      },
+      {
+        "marks": [
+          { "line": 3, "text": "whispers secrets", "how": "circle", "note": "cliché" },
+          { "line": 4, "text": "i feel so alive and truly free", "how": "underline", "note": "the boots say this" }
+        ],
+        "after": [
+          "the brown creek runs",
+          "through the cut below the road",
+          "a heron stands like a gray thought",
+          "the snowmelt knocks the stones loose",
+          "i stand there too long",
+          "my boots fill with water. i let them."
+        ]
+      }
+    ],
+    "verdict": "better. the boots stay."
+  },
+  {
+    "title": "laundromat, 11pm",
+    "draft": [
+      "the dryers spin like the wheel of time",
+      "a woman folds her life into a basket",
+      "the fluorescent lights are so very bright",
+      "i think about how lonely everyone is",
+      "the warm towels are like a hug from god",
+      "we are all just clothes in the machine"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "like the wheel of time", "how": "underline", "note": "too big" },
+          { "line": 2, "text": "so very", "how": "delete" },
+          { "line": 3, "text": "i think about how lonely everyone is", "how": "underline", "note": "show me one" }
+        ],
+        "after": [
+          "the dryers spin and no one watches",
+          "a woman folds her life into a basket",
+          "the fluorescent lights are bright",
+          "a man asleep on the bench, one sock on",
+          "the warm towels are like a hug from god",
+          "we are all just clothes in the machine"
+        ]
+      },
+      {
+        "marks": [
+          { "line": 1, "text": "her life", "how": "replace", "rep": "his shirts" },
+          { "line": 4, "text": "like a hug from god", "how": "circle", "note": "really?" },
+          { "line": 5, "text": "we are all just clothes in the machine", "how": "underline", "note": "don't explain" }
+        ],
+        "after": [
+          "the dryers spin and no one watches",
+          "a woman folds his shirts into a basket",
+          "the fluorescent lights are bright",
+          "a man asleep on the bench, one sock on",
+          "i hold a towel to my face",
+          "it is still warm. it is not mine."
+        ]
+      }
+    ],
+    "verdict": "yes. end there."
+  },
+  {
+    "title": "my father's garage",
+    "draft": [
+      "in the dusty garage of memories",
+      "my father's tools hang silently",
+      "each one a beautiful story untold",
+      "the smell of oil is the smell of love",
+      "i miss him more than words can say",
+      "time is a thief that takes everything"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "of memories", "how": "delete" },
+          { "line": 1, "text": "silently", "how": "delete" },
+          { "line": 3, "text": "is the smell of love", "how": "underline", "note": "show it" },
+          { "line": 5, "text": "time is a thief that takes everything", "how": "underline", "note": "cliché" }
+        ],
+        "after": [
+          "in the dusty garage",
+          "my father's tools hang",
+          "each one a beautiful story untold",
+          "the oil smell still on the vise handle",
+          "i miss him more than words can say",
+          "the outlines he drew around each wrench"
+        ]
+      },
+      {
+        "marks": [
+          { "line": 2, "text": "each one a beautiful story untold", "how": "underline", "note": "cut" },
+          { "line": 4, "text": "i miss him more than words can say", "how": "underline", "note": "the outlines say it" }
+        ],
+        "after": [
+          "in the dusty garage",
+          "my father's tools hang",
+          "where he traced them in black marker",
+          "the oil smell still on the vise handle",
+          "one outline empty. the hammer's.",
+          "it's on my counter, two states away"
+        ]
+      }
+    ],
+    "verdict": "now it hurts. good."
+  },
+  {
+    "title": "jacaranda",
+    "draft": [
+      "the purple trees are so amazing in may",
+      "their flowers fall like gentle rain",
+      "covering the cars in nature's beauty",
+      "everyone stops to take a picture",
+      "life is short so enjoy the moment",
+      "and let the beauty fill your heart"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "so amazing", "how": "replace", "rep": "sticky" },
+          { "line": 2, "text": "nature's beauty", "how": "replace", "rep": "purple mush" },
+          { "line": 4, "text": "life is short so enjoy the moment", "how": "underline", "note": "fortune cookie" }
+        ],
+        "after": [
+          "the purple trees are sticky in may",
+          "their flowers fall like gentle rain",
+          "covering the cars in purple mush",
+          "everyone stops to take a picture",
+          "my neighbor hoses off his honda",
+          "and let the beauty fill your heart"
+        ]
+      },
+      {
+        "marks": [
+          { "line": 1, "text": "like gentle rain", "how": "circle", "note": "rain isn't sticky" },
+          { "line": 5, "text": "and let the beauty fill your heart", "how": "underline", "note": "end on him" }
+        ],
+        "after": [
+          "the purple trees are sticky in may",
+          "their flowers fall and stay",
+          "covering the cars in purple mush",
+          "everyone stops to take a picture",
+          "my neighbor hoses off his honda",
+          "then stands there, letting them land"
+        ]
+      }
+    ],
+    "verdict": "good. leave him there."
+  },
+  {
+    "title": "gate 34, delayed",
+    "draft": [
+      "we wait at the gate of destiny",
+      "strangers from all walks of life",
+      "the departure board is very cruel",
+      "a child cries softly in the corner",
+      "we are all travelers on life's journey",
+      "going somewhere, going nowhere"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "of destiny", "how": "delete" },
+          { "line": 1, "text": "from all walks of life", "how": "underline", "note": "cliché" },
+          { "line": 2, "text": "is very cruel", "how": "circle", "note": "say what it does" }
+        ],
+        "after": [
+          "we wait at the gate",
+          "a man charges his phone off my outlet",
+          "the departure board changes its mind",
+          "a child cries softly in the corner",
+          "we are all travelers on life's journey",
+          "going somewhere, going nowhere"
+        ]
+      },
+      {
+        "marks": [
+          { "line": 3, "text": "softly", "how": "delete" },
+          { "line": 4, "text": "we are all travelers on life's journey", "how": "underline", "note": "no" },
+          { "line": 5, "text": "going somewhere, going nowhere", "how": "circle", "note": "clever. cut." }
+        ],
+        "after": [
+          "we wait at the gate",
+          "a man charges his phone off my outlet",
+          "the departure board changes its mind",
+          "a child cries in the corner",
+          "her mother sings the gate number",
+          "like it's the only song she knows"
+        ]
+      }
+    ],
+    "verdict": "better. print it."
+  },
+  {
+    "title": "night swim",
+    "draft": [
+      "the moon shines so beautifully tonight",
+      "on the dark and mysterious water",
+      "we swim in the ocean of eternity",
+      "the cold embraces me like an old friend",
+      "i have never felt so truly free",
+      "this moment will last forever"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "so beautifully", "how": "delete" },
+          { "line": 2, "text": "in the ocean of eternity", "how": "underline", "note": "where, exactly?" },
+          { "line": 3, "text": "embraces me like an old friend", "how": "underline", "note": "cold doesn't hug" }
+        ],
+        "after": [
+          "the moon shines tonight",
+          "on the dark and mysterious water",
+          "we swim out past the buoy rope",
+          "the cold gets under my ribs",
+          "i have never felt so truly free",
+          "this moment will last forever"
+        ]
+      },
+      {
+        "marks": [
+          { "line": 1, "text": "dark and mysterious", "how": "replace", "rep": "black" },
+          { "line": 4, "text": "i have never felt so truly free", "how": "underline", "note": "show it" },
+          { "line": 5, "text": "this moment will last forever", "how": "circle", "note": "it won't. say that." }
+        ],
+        "after": [
+          "the moon shines tonight",
+          "on the black water",
+          "we swim out past the buoy rope",
+          "the cold gets under my ribs",
+          "you laugh and swallow seawater",
+          "we will forget this. we swim anyway."
+        ]
+      }
+    ],
+    "verdict": "yes."
+  },
+  {
+    "title": "the store at 6am",
+    "draft": [
+      "the store is so quiet and peaceful",
+      "rows of colorful fruit like a rainbow",
+      "a worker stacks the oranges with love",
+      "the music plays a song from my youth",
+      "i feel nostalgic and a little sad",
+      "life goes on in aisle seven"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "so quiet and peaceful", "how": "replace", "rep": "empty" },
+          { "line": 1, "text": "like a rainbow", "how": "delete" },
+          { "line": 2, "text": "with love", "how": "circle", "note": "how do you know?" }
+        ],
+        "after": [
+          "the store is empty",
+          "rows of colorful fruit",
+          "a worker stacks the oranges, pyramids",
+          "the music plays a song from my youth",
+          "i feel nostalgic and a little sad",
+          "life goes on in aisle seven"
+        ]
+      },
+      {
+        "marks": [
+          { "line": 3, "text": "a song from my youth", "how": "underline", "note": "which song?" },
+          { "line": 4, "text": "i feel nostalgic and a little sad", "how": "underline", "note": "cut" },
+          { "line": 5, "text": "life goes on", "how": "circle", "note": "almost" }
+        ],
+        "after": [
+          "the store is empty",
+          "rows of colorful fruit",
+          "a worker stacks the oranges, pyramids",
+          "the speakers play don't you want me",
+          "he mouths the words to the pears",
+          "i almost do too"
+        ]
+      }
+    ],
+    "verdict": "keep the pears."
+  },
+  {
+    "title": "bus stop, january",
+    "draft": [
+      "the winter wind is so cold and cruel",
+      "we stand like statues in the snow",
+      "waiting for the bus of life",
+      "an old man shares his umbrella kindly",
+      "humanity is beautiful after all"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "so cold and cruel", "how": "replace", "rep": "in my teeth" },
+          { "line": 2, "text": "of life", "how": "delete" },
+          { "line": 3, "text": "kindly", "how": "delete" }
+        ],
+        "after": [
+          "the winter wind is in my teeth",
+          "we stand like statues in the snow",
+          "waiting for the bus",
+          "an old man shares his umbrella",
+          "humanity is beautiful after all"
+        ]
+      },
+      {
+        "marks": [
+          { "line": 1, "text": "like statues", "how": "circle", "note": "statues don't stamp" },
+          { "line": 4, "text": "humanity is beautiful after all", "how": "underline", "note": "let him do it" }
+        ],
+        "after": [
+          "the winter wind is in my teeth",
+          "we stamp our feet in the slush",
+          "waiting for the bus",
+          "an old man shares his umbrella",
+          "then leaves it with me at his stop"
+        ]
+      }
+    ],
+    "verdict": "yes. print it."
+  },
+  {
+    "title": "before anyone wakes",
+    "draft": [
+      "in the golden light of morning",
+      "the coffee brews its magic potion",
+      "my heart is full of gratitude",
+      "for this beautiful simple life",
+      "the birds sing their happy songs",
+      "and everything is perfect"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 1, "text": "its magic potion", "how": "underline", "note": "it's coffee" },
+          { "line": 2, "text": "my heart is full of gratitude", "how": "underline", "note": "show me" },
+          { "line": 5, "text": "everything is perfect", "how": "circle", "note": "nothing is" }
+        ],
+        "after": [
+          "in the golden light of morning",
+          "the coffee maker ticks and spits",
+          "i eat the crusts my son left",
+          "for this beautiful simple life",
+          "the birds sing their happy songs",
+          "the dishwasher still not emptied"
+        ]
+      },
+      {
+        "marks": [
+          { "line": 0, "text": "golden", "how": "delete" },
+          { "line": 3, "text": "for this beautiful simple life", "how": "underline", "note": "cut" },
+          { "line": 4, "text": "sing their happy songs", "how": "circle", "note": "happy?" }
+        ],
+        "after": [
+          "in the gray light before six",
+          "the coffee maker ticks and spits",
+          "i eat the crusts my son left",
+          "standing up, the way my mother did",
+          "the birds argue at the feeder",
+          "the dishwasher still not emptied"
+        ]
+      }
+    ],
+    "verdict": "the crusts. yes."
+  },
+  {
+    "title": "on-ramp",
+    "draft": [
+      "the cars rush by like a river of steel",
+      "everyone in a hurry to nowhere",
+      "the city is a monster that never sleeps",
+      "a man sells oranges at the light",
+      "he smiles at me with his soul",
+      "and i am deeply moved"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "like a river of steel", "how": "delete", "note": "cliché" },
+          { "line": 2, "text": "the city is a monster that never sleeps", "how": "underline", "note": "seen it" },
+          { "line": 4, "text": "with his soul", "how": "delete" }
+        ],
+        "after": [
+          "the cars rush by",
+          "everyone in a hurry to nowhere",
+          "the 101 is red for six miles",
+          "a man sells oranges at the light",
+          "he smiles at me",
+          "and i am deeply moved"
+        ]
+      },
+      {
+        "marks": [
+          { "line": 1, "text": "to nowhere", "how": "delete" },
+          { "line": 5, "text": "and i am deeply moved", "how": "underline", "note": "did you buy any?" }
+        ],
+        "after": [
+          "the cars rush by",
+          "everyone in a hurry",
+          "the 101 is red for six miles",
+          "a man sells oranges at the light",
+          "he smiles at me",
+          "i roll the window down too late"
+        ]
+      }
+    ],
+    "verdict": "honest. print it."
+  },
+  {
+    "title": "waiting room",
+    "draft": [
+      "the waiting room is full of sadness",
+      "the clock ticks loudly on the wall",
+      "each second feels like an eternity",
+      "i pray to the universe for news",
+      "the vending machine hums a lullaby",
+      "hope is a light in the darkness"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "full of sadness", "how": "underline", "note": "show me one face" },
+          { "line": 2, "text": "each second feels like an eternity", "how": "underline", "note": "cliché" },
+          { "line": 5, "text": "hope is a light in the darkness", "how": "underline", "note": "no" }
+        ],
+        "after": [
+          "a boy asleep across three chairs",
+          "the clock ticks loudly on the wall",
+          "his mother reads the same page",
+          "i pray to the universe for news",
+          "the vending machine hums a lullaby",
+          "i buy a pretzel i won't eat"
+        ]
+      },
+      {
+        "marks": [
+          { "line": 1, "text": "loudly", "how": "delete" },
+          { "line": 3, "text": "to the universe", "how": "delete" },
+          { "line": 4, "text": "a lullaby", "how": "circle", "note": "too sweet" }
+        ],
+        "after": [
+          "a boy asleep across three chairs",
+          "the clock ticks on the wall",
+          "his mother reads the same page",
+          "i pray for news",
+          "the vending machine hums and drops nothing",
+          "i buy a pretzel i won't eat"
+        ]
+      }
+    ],
+    "verdict": "leave the pretzel."
+  },
+  {
+    "title": "the beach in january",
+    "draft": [
+      "the lonely beach in winter time",
+      "the waves crash with mighty power",
+      "a dog runs with pure joy and freedom",
+      "seagulls cry their mournful songs",
+      "i realize we are all connected",
+      "to the great infinite ocean"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 1, "text": "with mighty power", "how": "delete" },
+          { "line": 2, "text": "with pure joy and freedom", "how": "replace", "rep": "after a tennis ball" },
+          { "line": 4, "text": "i realize we are all connected", "how": "underline", "note": "do you?" }
+        ],
+        "after": [
+          "the lonely beach in winter time",
+          "the waves crash",
+          "a dog runs after a tennis ball",
+          "seagulls cry their mournful songs",
+          "its owner throws it badly, every time",
+          "to the great infinite ocean"
+        ]
+      },
+      {
+        "marks": [
+          { "line": 0, "text": "lonely", "how": "delete" },
+          { "line": 3, "text": "their mournful songs", "how": "circle", "note": "they scream" },
+          { "line": 5, "text": "to the great infinite ocean", "how": "underline", "note": "end on the dog" }
+        ],
+        "after": [
+          "the beach in january",
+          "the waves crash",
+          "a dog runs after a tennis ball",
+          "the gulls scream about something",
+          "its owner throws it badly, every time",
+          "the dog brings it back anyway"
+        ]
+      }
+    ],
+    "verdict": "the dog. good."
+  },
+  {
+    "title": "2am",
+    "draft": [
+      "the glowing screen in the dark of night",
+      "i scroll through endless lives",
+      "everyone is happy except for me",
+      "the blue light burns my tired eyes",
+      "social media is the poison of our age",
+      "i should sleep but i cannot"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "glowing", "how": "delete" },
+          { "line": 2, "text": "everyone is happy except for me", "how": "underline", "note": "who? one person" },
+          { "line": 4, "text": "social media is the poison of our age", "how": "underline", "note": "op-ed. cut." }
+        ],
+        "after": [
+          "the screen in the dark of night",
+          "i scroll through endless lives",
+          "my cousin's baby, wearing sunglasses",
+          "the blue light burns my tired eyes",
+          "i like it. i like the next one too.",
+          "i should sleep but i cannot"
+        ]
+      },
+      {
+        "marks": [
+          { "line": 0, "text": "in the dark of night", "how": "replace", "rep": "on my chest" },
+          { "line": 5, "text": "i should sleep but i cannot", "how": "underline", "note": "show it" }
+        ],
+        "after": [
+          "the screen on my chest",
+          "i scroll through endless lives",
+          "my cousin's baby, wearing sunglasses",
+          "the blue light burns my tired eyes",
+          "i like it. i like the next one too.",
+          "it drops on my face. i keep going."
+        ]
+      }
+    ],
+    "verdict": "funny. keep it."
+  },
+  {
+    "title": "in the driveway",
+    "draft": [
+      "the rain falls softly on the roof",
+      "like the tears of angels above",
+      "i sit in the parked car alone",
+      "not ready to go inside the house",
+      "my heart is heavy with emotions",
+      "the rain understands my pain"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "softly", "how": "delete" },
+          { "line": 1, "text": "like the tears of angels above", "how": "underline", "note": "no angels" },
+          { "line": 5, "text": "the rain understands my pain", "how": "circle", "note": "it doesn't" }
+        ],
+        "after": [
+          "the rain falls on the roof",
+          "loud as gravel on the windshield",
+          "i sit in the parked car alone",
+          "not ready to go inside the house",
+          "my heart is heavy with emotions",
+          "the porch light comes on. someone's up."
+        ]
+      },
+      {
+        "marks": [
+          { "line": 2, "text": "alone", "how": "delete" },
+          { "line": 4, "text": "my heart is heavy with emotions", "how": "underline", "note": "which ones?" }
+        ],
+        "after": [
+          "the rain falls on the roof",
+          "loud as gravel on the windshield",
+          "i sit in the parked car",
+          "not ready to go inside the house",
+          "the engine off, the wipers mid-swipe",
+          "the porch light comes on. someone's up."
+        ]
+      }
+    ],
+    "verdict": "stop there. good."
+  },
+  {
+    "title": "her garden, after",
+    "draft": [
+      "grandma's garden is so beautiful",
+      "the roses bloom in her memory",
+      "she is with the angels now",
+      "but her spirit lives in every flower",
+      "i water them with my tears",
+      "love never dies"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "so beautiful", "how": "replace", "rep": "overgrown" },
+          { "line": 2, "text": "she is with the angels now", "how": "underline", "note": "where's she here?" },
+          { "line": 5, "text": "love never dies", "how": "circle", "note": "cut" }
+        ],
+        "after": [
+          "grandma's garden is overgrown",
+          "the roses bloom in her memory",
+          "her gloves still on the fence post",
+          "but her spirit lives in every flower",
+          "i water them with my tears",
+          "the tomatoes don't know. they keep coming."
+        ]
+      },
+      {
+        "marks": [
+          { "line": 1, "text": "in her memory", "how": "delete" },
+          { "line": 3, "text": "but her spirit lives in every flower", "how": "underline", "note": "the gloves did this" },
+          { "line": 4, "text": "with my tears", "how": "replace", "rep": "with her hose" }
+        ],
+        "after": [
+          "grandma's garden is overgrown",
+          "the roses bloom",
+          "her gloves still on the fence post",
+          "the fingers curled the way hers were",
+          "i water them with her hose",
+          "the tomatoes don't know. they keep coming."
+        ]
+      }
+    ],
+    "verdict": "yes. that's her."
+  },
+  {
+    "title": "the hoop in the park",
+    "draft": [
+      "the snow falls white and pure",
+      "on the basketball hoop in the park",
+      "where the children played in summer",
+      "now it is silent as a tomb",
+      "the seasons change like our lives",
+      "and nothing stays the same"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "white and pure", "how": "delete" },
+          { "line": 3, "text": "silent as a tomb", "how": "circle", "note": "too much" },
+          { "line": 4, "text": "the seasons change like our lives", "how": "underline", "note": "you mean you" }
+        ],
+        "after": [
+          "the snow falls",
+          "on the basketball hoop in the park",
+          "where the children played in summer",
+          "a little drift sits on the rim",
+          "i haven't shot a ball in twenty years",
+          "and nothing stays the same"
+        ]
+      },
+      {
+        "marks": [
+          { "line": 2, "text": "where the children played in summer", "how": "underline", "note": "which kid?" },
+          { "line": 5, "text": "and nothing stays the same", "how": "underline", "note": "cliché" }
+        ],
+        "after": [
+          "the snow falls",
+          "on the basketball hoop in the park",
+          "the one i hung on once, at fifteen",
+          "a little drift sits on the rim",
+          "i haven't shot a ball in twenty years",
+          "i make a snowball. i miss."
+        ]
+      }
+    ],
+    "verdict": "ha. yes."
+  },
+  {
+    "title": "moving day",
+    "draft": [
+      "the empty rooms echo with memories",
+      "boxes full of our whole lives",
+      "goodbye old home you were so good to us",
+      "the walls have stories they cannot tell",
+      "but we must move on to new adventures",
+      "home is where the heart is"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "with memories", "how": "circle", "note": "what echoes?" },
+          { "line": 3, "text": "the walls have stories they cannot tell", "how": "underline", "note": "cliché" },
+          { "line": 5, "text": "home is where the heart is", "how": "circle", "note": "pillow" }
+        ],
+        "after": [
+          "the empty rooms echo when we talk",
+          "boxes full of our whole lives",
+          "goodbye old home you were so good to us",
+          "pencil marks on the pantry door",
+          "but we must move on to new adventures",
+          "we leave them. the next people can wonder."
+        ]
+      },
+      {
+        "marks": [
+          { "line": 1, "text": "full of our whole lives", "how": "underline", "note": "what's in them?" },
+          { "line": 2, "text": "goodbye old home you were so good to us", "how": "underline", "note": "cut" },
+          { "line": 4, "text": "but we must move on to new adventures", "how": "underline", "note": "no" }
+        ],
+        "after": [
+          "the empty rooms echo when we talk",
+          "boxes marked kitchen, misc, misc",
+          "the outline of the couch on the rug",
+          "pencil marks on the pantry door",
+          "the highest one says four, in my hand",
+          "we leave them. the next people can wonder."
+        ]
+      }
+    ],
+    "verdict": "the marks. good."
+  },
+  {
+    "title": "through the wall",
+    "draft": [
+      "through the paper thin wall",
+      "i hear my neighbor's beautiful music",
+      "it speaks to my very soul",
+      "we have never met but we are connected",
+      "two strangers in the city of dreams",
+      "music is the universal language"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 1, "text": "beautiful music", "how": "replace", "rep": "trumpet" },
+          { "line": 2, "text": "it speaks to my very soul", "how": "underline", "note": "how does it sound?" },
+          { "line": 5, "text": "music is the universal language", "how": "underline", "note": "slogan" }
+        ],
+        "after": [
+          "through the paper thin wall",
+          "i hear my neighbor's trumpet",
+          "the same four bars, wrong, then right",
+          "we have never met but we are connected",
+          "two strangers in the city of dreams",
+          "then wrong again. i start to hum it."
+        ]
+      },
+      {
+        "marks": [
+          { "line": 3, "text": "but we are connected", "how": "delete" },
+          { "line": 4, "text": "two strangers in the city of dreams", "how": "underline", "note": "cut" }
+        ],
+        "after": [
+          "through the paper thin wall",
+          "i hear my neighbor's trumpet",
+          "the same four bars, wrong, then right",
+          "we have never met",
+          "i know when he runs out of breath",
+          "then wrong again. i start to hum it."
+        ]
+      }
+    ],
+    "verdict": "good. hum it."
+  },
+  {
+    "title": "pickup",
+    "draft": [
+      "the children pour out like a river of joy",
+      "backpacks bigger than their tiny bodies",
+      "my child runs to me with open arms",
+      "this is what life is all about",
+      "precious moments we must treasure",
+      "they grow up so fast"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "like a river of joy", "how": "delete" },
+          { "line": 3, "text": "this is what life is all about", "how": "underline", "note": "greeting card" },
+          { "line": 5, "text": "they grow up so fast", "how": "circle", "note": "show it" }
+        ],
+        "after": [
+          "the children pour out",
+          "backpacks bigger than their tiny bodies",
+          "my child runs to me with open arms",
+          "and past me, to the ice cream truck",
+          "precious moments we must treasure",
+          "he asks for two dollars. i have a five."
+        ]
+      },
+      {
+        "marks": [
+          { "line": 1, "text": "tiny", "how": "delete" },
+          { "line": 2, "text": "with open arms", "how": "delete" },
+          { "line": 4, "text": "precious moments we must treasure", "how": "underline", "note": "cut" }
+        ],
+        "after": [
+          "the children pour out",
+          "backpacks bigger than their bodies",
+          "my child runs to me",
+          "and past me, to the ice cream truck",
+          "i stand there with my arms still open",
+          "he asks for two dollars. i have a five."
+        ]
+      }
+    ],
+    "verdict": "the arms. yes."
+  },
+  {
+    "title": "3:12",
+    "draft": [
+      "the refrigerator light glows like heaven",
+      "i stand in my underwear in the kitchen",
+      "searching for something to fill the void",
+      "the leftovers stare back at me sadly",
+      "insomnia is my only friend",
+      "the night is long and full of thoughts"
+    ],
+    "rounds": [
+      {
+        "marks": [
+          { "line": 0, "text": "glows like heaven", "how": "delete" },
+          { "line": 2, "text": "to fill the void", "how": "underline", "note": "the void? come on" },
+          { "line": 4, "text": "insomnia is my only friend", "how": "circle", "note": "self-pity" }
+        ],
+        "after": [
+          "the refrigerator light",
+          "i stand in my underwear in the kitchen",
+          "eating cold rice with my fingers",
+          "the leftovers stare back at me sadly",
+          "the clock on the stove says 3:12",
+          "the night is long and full of thoughts"
+        ]
+      },
+      {
+        "marks": [
+          { "line": 3, "text": "stare back at me sadly", "how": "underline", "note": "it's rice" },
+          { "line": 5, "text": "the night is long and full of thoughts", "how": "underline", "note": "which thought?" }
+        ],
+        "after": [
+          "the refrigerator light",
+          "i stand in my underwear in the kitchen",
+          "eating cold rice with my fingers",
+          "the hum. the cold on my shins.",
+          "the clock on the stove says 3:12",
+          "i do the dishes. it's that kind of night."
+        ]
+      }
+    ],
+    "verdict": "yes. that kind."
+  }
+]

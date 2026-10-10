@@ -192,11 +192,16 @@
     // when it is over. The code is fetched when it is needed, and if it cannot
     // be, the loop is offered at once.
     function poem(after) {
-      import('/js/poem.js?v=' + buildStamp).then(function (m) {
+      // the scripts are fetched with the code; without them it still runs
+      var corpus = fetch('/js/poem-corpus.json?v=' + buildStamp)
+        .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+      Promise.all([import('/js/poem.js?v=' + buildStamp), corpus]).then(function (got) {
+        var m = got[0];
         // the timer counts the poem down, so folks know what they are in for
         acting = 'poem';
         rewind(m.DURATION);
-        m.run({ wrap: egg.parentNode, after: after, penUrl: '/js/pen.js?v=' + buildStamp });
+        m.run({ wrap: egg.parentNode, after: after, penUrl: '/js/pen.js?v=' + buildStamp,
+          script: m.choose ? m.choose(got[1]) : null });
       }).catch(function () { egg.parentNode.classList.remove('is-poem'); after(); });
     }
     function sendPenny() {
