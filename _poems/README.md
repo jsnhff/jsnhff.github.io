@@ -41,8 +41,8 @@ corpus if it fails.
     the revised line.
   - `circle` or `underline`: look at this. Optional `note`, at most 24
     characters, written in the margin.
-- At most 4 marks a round, two or three rounds. Each line that is marked
-  is revised; other lines may be revised too.
+- At most 4 marks a round, three rounds. Each line that is marked is
+  revised, and only marked lines are: every change answers a mark.
 - `verdict`: the critic's last word, at most 26 characters.
 
 `node _poems/check.mjs` checks the corpus (or a file you pass it).
@@ -68,7 +68,7 @@ A starting prompt:
 > this shape: [the shape above]. The draft: six lines about one specific,
 > ordinary scene with a person in it, written badly the way an earnest
 > beginner writes (abstraction, cliché, filler words, adverbs, explaining
-> the feeling), with the real poem hidden inside it. Then two rounds of a
+> the feeling), with the real poem hidden inside it. Then three rounds of a
 > sharp editor's marks, each with the revised poem, that make it more
 > specific each time and end on a line that turns. Notes are terse and
 > concrete. Follow the limits exactly.

@@ -29,12 +29,36 @@
             "text": "alive",
             "how": "circle",
             "note": "three exclamation marks?"
-          },
+          }
+        ],
+        "after": [
+          "the brown creek runs",
+          "through the cut below the road",
+          "a heron stands there majestically",
+          "the snowmelt whispers secrets untold",
+          "i feel so alive and truly free",
+          "nature is the greatest gift of all"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 5,
             "text": "nature is the greatest gift of all",
             "how": "underline",
             "note": "you showed it. cut."
+          },
+          {
+            "line": 2,
+            "text": "majestically",
+            "how": "circle",
+            "note": "adverb. show it"
+          },
+          {
+            "line": 3,
+            "text": "secrets untold",
+            "how": "underline",
+            "note": "rhyme again"
           }
         ],
         "after": [
@@ -102,10 +126,27 @@
             "text": "everyone is lonely here, it's not right",
             "how": "underline",
             "note": "show me one"
-          },
+          }
+        ],
+        "after": [
+          "the dryers spin and no one watches",
+          "a woman folds her life into a basket, oh!",
+          "the fluorescent lights are bright",
+          "a man asleep on the bench, one sock on",
+          "the warm towels are like a hug from god",
+          "we're all clothes in life's machine. how odd"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 5,
             "text": "how odd",
+            "how": "delete"
+          },
+          {
+            "line": 1,
+            "text": "oh",
             "how": "delete"
           }
         ],
@@ -173,7 +214,19 @@
             "line": 1,
             "text": "silently here",
             "how": "delete"
-          },
+          }
+        ],
+        "after": [
+          "in the dusty garage",
+          "my father's tools hang",
+          "each one a beautiful story untold",
+          "the smell of oil is love's sweet gold",
+          "i miss him more than words can say",
+          "time is a thief that steals all away"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 3,
             "text": "is love's sweet gold",
@@ -209,6 +262,12 @@
             "text": "i miss him more than words can say",
             "how": "underline",
             "note": "the outlines say it"
+          },
+          {
+            "line": 5,
+            "text": "the outlines he drew around each wrench",
+            "how": "underline",
+            "note": "say where it is now"
           }
         ],
         "after": [
@@ -247,7 +306,19 @@
             "text": "nature's beauty",
             "how": "replace",
             "rep": "purple mush"
-          },
+          }
+        ],
+        "after": [
+          "the purple trees are sticky in may",
+          "their flowers fall like gentle rain",
+          "covering the cars in purple mush",
+          "everyone stops to take a picture, yay!",
+          "life is short, so seize the day!!",
+          "and let the beauty fill your heart"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 3,
             "text": "yay",
@@ -319,7 +390,19 @@
             "text": "from all walks of life, you see",
             "how": "underline",
             "note": "cliché"
-          },
+          }
+        ],
+        "after": [
+          "we wait at the gate",
+          "a man charges his phone off my outlet",
+          "the departure board is very cruel to me",
+          "a child cries softly in the corner",
+          "we are all travelers on life's journey",
+          "going somewhere, going nowhere"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 2,
             "text": "is very cruel to me",
@@ -392,7 +475,19 @@
             "text": "in the ocean of eternity",
             "how": "underline",
             "note": "where, exactly?"
-          },
+          }
+        ],
+        "after": [
+          "the moon shines tonight",
+          "on the dark and mysterious water",
+          "we swim out past the buoy rope",
+          "the cold embraces me like an old friend",
+          "i have never felt so truly free",
+          "this moment will last forever"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 3,
             "text": "embraces me like an old friend",
@@ -465,7 +560,19 @@
             "line": 1,
             "text": "like a rainbow",
             "how": "delete"
-          },
+          }
+        ],
+        "after": [
+          "the store is empty",
+          "rows of colorful fruit",
+          "a worker stacks the oranges with love",
+          "the music plays a song from my youth",
+          "i feel nostalgic and a little sad",
+          "life goes on in aisle seven, egad"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 2,
             "text": "with love",
@@ -542,7 +649,18 @@
             "line": 2,
             "text": "of life, the fools",
             "how": "delete"
-          },
+          }
+        ],
+        "after": [
+          "the winter wind is in my teeth",
+          "we stand like statues in the snow",
+          "waiting for the bus",
+          "an old man shares his umbrella kindly",
+          "humanity is beautiful after all"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 3,
             "text": "kindly",
@@ -607,7 +725,19 @@
             "text": "my heart is full of gratitude and emotion",
             "how": "underline",
             "note": "show me"
-          },
+          }
+        ],
+        "after": [
+          "in the golden light of morning",
+          "the coffee maker ticks and spits",
+          "i eat the crusts my son left",
+          "for this beautiful simple life",
+          "the birds sing their happy songs",
+          "and everything is perfect!!!"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 5,
             "text": "everything is perfect",
@@ -679,7 +809,19 @@
             "line": 1,
             "text": "how real",
             "how": "delete"
-          },
+          }
+        ],
+        "after": [
+          "the cars rush by",
+          "everyone in a hurry to nowhere",
+          "the city is a monster that never sleeps",
+          "a man sells oranges at the light",
+          "he smiles at me with his soul so deep",
+          "and i am deeply moved"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 2,
             "text": "the city is a monster that never sleeps",
@@ -751,7 +893,19 @@
             "text": "an eternity of madness",
             "how": "underline",
             "note": "cliché"
-          },
+          }
+        ],
+        "after": [
+          "a boy asleep across three chairs",
+          "the clock ticks loudly on the wall",
+          "his mother reads the same page",
+          "i pray to the universe for news",
+          "the vending machine hums a lullaby",
+          "hope is a light in the darkness, oh my"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 5,
             "text": "hope is a light in the darkness, oh my",
@@ -822,7 +976,19 @@
             "text": "with pure joy and freedom",
             "how": "replace",
             "rep": "after a tennis ball"
-          },
+          }
+        ],
+        "after": [
+          "the lonely beach in winter time",
+          "the waves crash",
+          "a dog runs after a tennis ball",
+          "seagulls cry their mournful songs",
+          "i realize we're all connected. we belong",
+          "to the great infinite ocean"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 4,
             "text": "i realize we're all connected. we belong",
@@ -893,7 +1059,19 @@
             "line": 1,
             "text": "what a sight",
             "how": "delete"
-          },
+          }
+        ],
+        "after": [
+          "the screen in the dark of night",
+          "i scroll through endless lives",
+          "everyone is happy except for me",
+          "the blue light burns my tired eyes",
+          "social media is the poison of society",
+          "i should sleep but i cannot"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 2,
             "text": "everyone is happy except for me",
@@ -966,7 +1144,19 @@
             "text": "like the tears of angels up above",
             "how": "underline",
             "note": "no angels"
-          },
+          }
+        ],
+        "after": [
+          "the rain falls on the roof",
+          "loud as gravel on the windshield",
+          "i sit in the parked car alone",
+          "not ready to go inside the house",
+          "my heart is heavy with emotions",
+          "the rain understands my pain, my love"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 5,
             "text": "the rain understands my pain, my love",
@@ -1033,7 +1223,19 @@
             "text": "she is with the angels now, so dutiful",
             "how": "underline",
             "note": "where's she here?"
-          },
+          }
+        ],
+        "after": [
+          "grandma's garden is overgrown",
+          "the roses bloom in her memory",
+          "her gloves still on the fence post",
+          "but her spirit lives in every flower",
+          "i water them with my tears",
+          "love never dies, it's love's great power"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 5,
             "text": "love never dies, it's love's great power",
@@ -1104,7 +1306,19 @@
             "line": 2,
             "text": "for sure",
             "how": "delete"
-          },
+          }
+        ],
+        "after": [
+          "the snow falls",
+          "on the basketball hoop in the park",
+          "where the children played in summer",
+          "now it is silent as a tomb, how stark",
+          "the seasons change like our lives",
+          "and nothing stays the same"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 3,
             "text": "silent as a tomb, how stark",
@@ -1178,7 +1392,19 @@
             "text": "walls with stories they can't tell anymore",
             "how": "underline",
             "note": "cliché"
-          },
+          }
+        ],
+        "after": [
+          "the empty rooms echo when we talk",
+          "boxes full of our whole lives",
+          "goodbye old home you were so good to us",
+          "pencil marks on the pantry door",
+          "but we must move on to new adventures",
+          "home is where the heart is, forevermore"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 5,
             "text": "home is where the heart is, forevermore",
@@ -1252,7 +1478,19 @@
             "text": "it speaks to my very soul, oh delight",
             "how": "underline",
             "note": "how does it sound?"
-          },
+          }
+        ],
+        "after": [
+          "through the paper thin wall",
+          "i hear my neighbor's trumpet",
+          "the same four bars, wrong, then right",
+          "we have never met but we are connected",
+          "two strangers in the city of dreams",
+          "music is the universal language of the heart"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 5,
             "text": "music is the universal language of the heart",
@@ -1318,7 +1556,19 @@
             "text": "this is what life is all about, oh boy",
             "how": "underline",
             "note": "greeting card"
-          },
+          }
+        ],
+        "after": [
+          "the children pour out",
+          "backpacks bigger than their tiny bodies",
+          "my child runs to me with open arms",
+          "and past me, to the ice cream truck",
+          "precious moments we must treasure",
+          "they grow up so fast, beyond measure"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 5,
             "text": "they grow up so fast, beyond measure",
@@ -1389,7 +1639,19 @@
             "text": "to fill the void within",
             "how": "underline",
             "note": "the void? come on"
-          },
+          }
+        ],
+        "after": [
+          "the refrigerator light",
+          "i stand in my underwear in the kitchen",
+          "eating cold rice with my fingers",
+          "the leftovers stare back at me sadly",
+          "insomnia, my only friend, my only one",
+          "the night is long and full of thoughts"
+        ]
+      },
+      {
+        "marks": [
           {
             "line": 4,
             "text": "insomnia, my only friend, my only one",
