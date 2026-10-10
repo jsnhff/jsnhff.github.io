@@ -321,6 +321,24 @@ export function makePen() {
         await move(rest * (0.6 + Math.random() * 0.8), (k) => [x, y, 18 + Math.sin(k * 3) * 1.5]);
       }
     },
+    // One letter, written: the tip on the page, moving across the letter's
+    // width while it loops up and down through its height, a stroke or two,
+    // as a hand forms a letter rather than sliding under it.
+    async letter(x0, x1, y, h, ms) {
+      s.want = 1;
+      const loops = 1 + Math.floor(Math.random() * 2), seed = Math.random() * 6;
+      await move(ms, (k) => [
+        x0 + (x1 - x0) * k + Math.sin(k * Math.PI * 2 * loops + seed) * Math.min(3, (x1 - x0) * 0.3),
+        y - h * 0.5 * (1 - Math.cos(k * Math.PI * 2 * loops)) + Math.sin(k * 13 + seed) * 0.6,
+        0
+      ]);
+    },
+    // Between words: off the page a moment and across to the next.
+    async skip(x, y, ms) {
+      s.want = 0.5;
+      const x0 = s.x, y0 = s.y;
+      await move(ms, (k) => { const e = ease.inOut(k); return [x0 + (x - x0) * e, y0 + (y - y0) * e, Math.sin(Math.PI * k) * 6]; });
+    },
     // Hold the tip up a little, off the page.
     async lift(ms = 200) { const z0 = s.z, x = s.x, y = s.y; await move(ms, (k) => [x, y, z0 + 16 * ease.inOut(k)]); },
     async leave(ms = 800) {
