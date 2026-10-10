@@ -326,7 +326,9 @@
      time. Then the critic: a red pen circles words, notes go in the margin in
      hand, and the poem is revised. */
   .egg .statement { transition: opacity 700ms ease; }
-  .egg.is-poem .statement { opacity: 0; pointer-events: none; }
+  /* gone at once, while the picture still covers it, so it never shows
+     between the picture and the poem; back with a fade once the poem has gone */
+  .egg.is-poem .statement { opacity: 0; pointer-events: none; transition: none; }
   .poem {
     position: absolute;
     left: 50%;
@@ -344,14 +346,18 @@
   .poem.on { opacity: 1; }
   .poem.out { opacity: 0; transition-duration: 900ms; }
   .poem-title { margin: 0 0 0.9em; font-style: italic; color: var(--dim); font-size: 0.8em; }
-  .poem-line { margin: 0; line-height: 1.45; min-height: 1.45em; transition: line-height 300ms ease; }
-  .poem.critic .poem-line { line-height: 1.7; }
+  /* One size and spacing from the first word to the last: nothing reflows
+     when the critic arrives. Set double-spaced where there is no margin, as a
+     manuscript is, so the notes have a row of their own under each line. */
+  .poem-line { margin: 0; line-height: 1.5; min-height: 1.5em; white-space: nowrap; }
+  .poem.ms .poem-line { padding-bottom: 1.3em; }
+  .poem.ms .poem-note { font-size: 0.88em; }
   .pw {
     display: inline-block;
     transition: opacity 260ms ease, transform 420ms var(--rise);
   }
   .pw.hid { opacity: 0; transform: scale(0.6) translateY(0.25em); transition: none; }
-  .pw.swap { opacity: 0; transform: translateY(-0.2em); }
+  .pw.swap { opacity: 0; transform: translateY(-0.2em); transition: opacity 300ms ease, transform 300ms ease; }
   .poem-ink { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
   .poem-ink .pen { fill: none; stroke: #d2352b; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; transition: opacity 500ms ease; }
   .poem-ink .pen.thin { stroke-width: 1.1; opacity: 0.8; }

@@ -191,7 +191,7 @@
     function poem(after) {
       import('/js/poem.js?v=' + buildStamp).then(function (m) {
         m.run({ wrap: egg.parentNode, after: after, penUrl: '/js/pen.js?v=' + buildStamp });
-      }).catch(function () { after(); });
+      }).catch(function () { egg.parentNode.classList.remove('is-poem'); after(); });
     }
     function sendPenny() {
       import(pennyUrl).then(function (m) {
@@ -232,9 +232,12 @@
       document.dispatchEvent(new CustomEvent('home-timer-done'));
       if (reduce || !egg || !egg.scratch) return;
       if (egg.scratch.isDone()) {
+        // The statement goes now, under the picture, so the picture fades
+        // to an empty page and never to the statement; the poem comes in as
+        // the last of the picture goes.
+        egg.parentNode.classList.add('is-poem');
         egg.scratch.reset();
-        // the plate takes 900ms to cover back over; the poem starts after it
-        setTimeout(function () { poem(offerAgain); }, 1100);
+        setTimeout(function () { poem(offerAgain); }, 700);
         return;
       }
       sendPenny();

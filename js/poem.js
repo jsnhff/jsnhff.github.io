@@ -41,7 +41,10 @@ const NOTES = {
   filler: ['cut', 'filler', "why 'very'?"],
   adverb: ['let the verb do this', 'cut -ly', 'lazy'],
   things: ['which things?', 'name one'],
-  repeat: ['again?', 'you said this already', 'used it']
+  repeat: ['again?', 'you said this already', 'used it'],
+  phrase: ['all of this', 'too much', 'say it plainer', 'overwritten'],
+  // when there is no room left on the line for the note it meant to write
+  short: ['this too', 'same', 'and this']
 };
 const ADJ = ['beautiful', 'nice', 'majestic', 'sparkling', 'amazing', 'peaceful'];
 const ABS = ['nature', 'beauty', 'peace', 'serenity', 'magic'];
@@ -91,6 +94,7 @@ function revise(p, f) {
 // ---- the stage ------------------------------------------------------------
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const SVG = 'http://www.w3.org/2000/svg';
+const between = (a, b) => a + Math.random() * (b - a);
 
 // Handwriting: every letter its own span, set a hair off the line and off the
 // vertical, hidden until the pen gets to it. Returns the letters.
@@ -108,11 +112,55 @@ function letters(node, text) {
 // A person writes unevenly: quick inside a word, a beat between words.
 const hand = (ch) => (ch === ' ' ? 70 + Math.random() * 60 : 22 + Math.random() * 38);
 
+// The marks a red pen makes, as polylines in the poem's own pixels, given the
+// box (l, t, r, b) round what is marked. No two come out the same.
+function loop(l, t, r, b) {
+  const cx = (l + r) / 2 + between(-2, 2), cy = (t + b) / 2 + between(-1.5, 1.5);
+  const rx = (r - l) / 2 + between(3, 7), ry = (b - t) / 2 + between(1, 5);
+  const tilt = between(-0.16, 0.16), c = Math.cos(tilt), sn = Math.sin(tilt);
+  // mostly a loop and a bit, now and then round twice
+  const turn = Math.PI * 2 * (Math.random() < 0.15 ? between(1.6, 1.85) : between(1.04, 1.3));
+  const a0 = between(-2.9, -1.9), amp = between(0.02, 0.09), freq = between(5, 11), drift = between(-0.04, 0.1);
+  const n = 48, pts = [];
+  for (let i = 0; i <= n; i++) {
+    const u = i / n, a = a0 + turn * u, k = 1 + amp * Math.sin(u * freq + cx) + drift * u;
+    const x = Math.cos(a) * rx * k, y = Math.sin(a) * ry * k;
+    pts.push([cx + x * c - y * sn, cy + x * sn + y * c]);
+  }
+  return pts;
+}
+// Under a phrase: a quick line, a little off level and not quite straight,
+// sometimes back again underneath, sometimes with a flick at the end.
+function underline(l, r, base) {
+  const x0 = l - between(2, 6), x1 = r + between(2, 8), slope = between(-2, 2), wave = between(0.4, 1.3);
+  const y = (x) => base + slope * (x - x0) / (x1 - x0) + Math.sin(x / 9 + x0) * wave;
+  const pts = [];
+  for (let i = 0; i <= 24; i++) { const x = x0 + (x1 - x0) * i / 24; pts.push([x, y(x)]); }
+  if (Math.random() < 0.3) {
+    for (let i = 1; i <= 18; i++) { const x = x1 - (x1 - x0) * 0.9 * i / 18; pts.push([x, y(x) + 3.2]); }
+  } else if (Math.random() < 0.35) {
+    pts.push([x1 + 3, y(x1) - 3], [x1 + 5, y(x1) - 7]);
+  }
+  return pts;
+}
+// Through a word that is to go: struck out, sometimes with a curl after it.
+function strike(l, r, mid) {
+  const x0 = l - between(2, 5), x1 = r + between(2, 6), slope = between(-1.5, 1.5);
+  const pts = [];
+  for (let i = 0; i <= 16; i++) { const x = x0 + (x1 - x0) * i / 16; pts.push([x, mid + slope * i / 16 + between(-0.4, 0.4)]); }
+  if (Math.random() < 0.4) {
+    const ex = x1, ey = mid + slope;
+    for (let i = 1; i <= 12; i++) { const a = -Math.PI / 2 + i / 12 * Math.PI * 1.6; pts.push([ex + 3 + Math.cos(a) * 3.5, ey - 4 + Math.sin(a) * 3.5]); }
+  }
+  return pts;
+}
+
 export function run({ wrap, after, penUrl }) {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const speed = reduce ? 0.15 : 1;
   const t0 = performance.now();
   const budget = 30000;
+  const left = () => budget - (performance.now() - t0);
   let dead = false;
   const nap = (ms) => sleep(ms * speed).then(() => { if (dead) throw 0; });
 
@@ -140,15 +188,16 @@ export function run({ wrap, after, penUrl }) {
   box.appendChild(ink);
   const status = document.createElement('p');
   status.className = 'poem-status';
+  status.textContent = ' ';
   box.appendChild(status);
   wrap.appendChild(box);
   wrap.classList.add('is-poem');
-  const narrow = () => window.innerWidth < 820;
 
   const wordEl = {};
   const key = (li, wi) => li + ':' + wi;
   function render(li) {
     lineEls[li].textContent = '';
+    const out = [];
     p.lines[li].forEach((w, wi) => {
       const s = document.createElement('span');
       s.className = 'pw';
@@ -156,137 +205,228 @@ export function run({ wrap, after, penUrl }) {
       lineEls[li].appendChild(s);
       lineEls[li].appendChild(document.createTextNode(' '));
       wordEl[key(li, wi)] = s;
+      out.push(s);
     });
+    return out;
   }
+
+  // ---- the page is set once, before a word shows, and never moves ----------
+  // Every line is laid out (unseen) to find the longest; the type comes down
+  // until that one fits with room to spare for a longer revision, and the
+  // poem keeps that size and width to the end, so nothing is ever rewrapped
+  // or recentred. Where there is no margin for the critic, the poem is set
+  // double-spaced, as a manuscript is for an editor, and each note goes in
+  // the space under its line.
+  p.lines.forEach((_, li) => render(li).forEach((w) => w.classList.add('hid')));
+  const vw = window.innerWidth;
+  const room = Math.min(624, vw - 32);
+  const widest = () => Math.max(title.scrollWidth, ...lineEls.map((e) => e.scrollWidth));
+  let fs = parseFloat(getComputedStyle(box).fontSize);
+  const need = widest() * 1.06;
+  if (need > room) { fs = Math.max(14, fs * room / need); box.style.fontSize = fs + 'px'; }
+  box.style.width = Math.min(room, Math.ceil(widest() * 1.06)) + 'px';
+  const margin = (vw - box.offsetWidth) / 2 - 28 >= 190;
+  if (!margin) box.classList.add('ms');
 
   async function write() {
     box.classList.add('on');
     await nap(700);
     for (let li = 0; li < p.lines.length; li++) {
-      render(li);
-      const ws = lineEls[li].querySelectorAll('.pw');
-      ws.forEach((w) => w.classList.add('hid'));
-      for (const w of ws) { w.classList.remove('hid'); await nap(110); }
-      await nap(220);
+      for (const w of lineEls[li].querySelectorAll('.pw')) { w.classList.remove('hid'); await nap(95); }
+      await nap(180);
     }
   }
 
-  // A pen-drawn loop round a word, a little rough, overshooting where it started.
-  function circle(el) {
-    const b = box.getBoundingClientRect(), r = el.getBoundingClientRect();
-    const cx = r.left - b.left + r.width / 2, cy = r.top - b.top + r.height / 2;
-    const rx = r.width / 2 + 8, ry = r.height / 2 + 4;
-    const a0 = -2.4 + Math.random() * 0.6, turn = Math.PI * 2 * (1.12 + Math.random() * 0.08), n = 44;
+  // Where a set of words sits, in the poem's own pixels.
+  function spanOf(els) {
+    const b = box.getBoundingClientRect();
+    const rs = els.map((e) => e.getBoundingClientRect());
+    return { l: Math.min(...rs.map((r) => r.left)) - b.left, r: Math.max(...rs.map((r) => r.right)) - b.left,
+      t: Math.min(...rs.map((r) => r.top)) - b.top, b: Math.max(...rs.map((r) => r.bottom)) - b.top, bx: b };
+  }
+
+  // Draws a polyline in red, and gives back how to animate it and where the
+  // pen's tip goes on the screen.
+  function ink_(pts) {
     let d = '';
-    for (let i = 0; i <= n; i++) {
-      const u = i / n, a = a0 + turn * u, k = 1 + 0.07 * Math.sin(u * 9 + cx) + 0.05 * u;
-      d += (i ? 'L' : 'M') + (cx + Math.cos(a) * rx * k).toFixed(1) + ' ' + (cy + Math.sin(a) * ry * k).toFixed(1);
-    }
+    pts.forEach((q, i) => { d += (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1); });
     const path = document.createElementNS(SVG, 'path');
     path.setAttribute('d', d);
     path.setAttribute('class', 'pen');
+    path.style.strokeWidth = between(1.6, 2.2).toFixed(2);
     ink.appendChild(path);
     const len = path.getTotalLength();
     path.style.strokeDasharray = len;
     path.style.strokeDashoffset = len;
-    // the same loop in viewport pixels, for the pen to follow
-    const pts = [];
-    for (let i = 0; i <= n; i++) pts.push([b.left + path.getPointAtLength(len * i / n).x, b.top + path.getPointAtLength(len * i / n).y]);
-    const ms = 620;
+    const b = box.getBoundingClientRect();
+    const ms = Math.min(700, 180 + len * 2.4);
     const play = () => path.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }],
       { duration: ms * speed + 1, easing: 'linear', fill: 'forwards' });
-    return { path, cx, cy, rx, ry, pts, ms, play };
+    return { path, pts: pts.map((q) => [b.left + q[0], b.top + q[1]]), ms, play };
   }
 
-  const slots = {};
-  async function note(el, line, text, c) {
-    const b = box.getBoundingClientRect(), lr = lineEls[line].getBoundingClientRect(), r = el.getBoundingClientRect();
+  // ---- notes ------------------------------------------------------------------
+  // Each line's note row (or the margin) knows what is already written in it,
+  // and a note goes only where it fits whole and on the screen.
+  const rows = {};
+  let marginLow = -Infinity;
+  function place(n, li, sp) {
+    const b = box.getBoundingClientRect(), lr = lineEls[li].getBoundingClientRect();
+    const nw = n.offsetWidth, nh = n.offsetHeight;
+    if (margin) {
+      const y = Math.max(lr.top - b.top - 2, marginLow + 4);
+      const x = b.width + 28;
+      if (b.left + x + nw > vw - 12) return false;
+      marginLow = y + nh;
+      n.style.left = x + 'px'; n.style.top = y + 'px';
+      return true;
+    }
+    // under the line, starting under the marked words
+    const y = sp.b + fs * 0.08;
+    const lo = 10 - b.left, hi = vw - 10 - b.left - nw;
+    if (hi < lo) return false;
+    const taken = rows[li] || (rows[li] = []);
+    const free = (x) => taken.every((t) => x + nw + 10 <= t[0] || x >= t[1] + 10);
+    const want = Math.max(lo, Math.min(hi, sp.l - 2));
+    const tries = [want];
+    taken.forEach((t) => { tries.push(t[1] + 10, t[0] - 10 - nw); });
+    let x = null;
+    for (const c of tries.sort((a, z) => Math.abs(a - want) - Math.abs(z - want))) {
+      if (c >= lo && c <= hi && free(c)) { x = c; break; }
+    }
+    if (x == null) return false;
+    taken.push([x, x + nw]);
+    n.style.left = x + 'px'; n.style.top = y + 'px';
+    return true;
+  }
+
+  async function note(li, sp, kind) {
     const n = document.createElement('span');
     n.className = 'poem-note';
-    n.style.setProperty('--rot', (Math.random() * 4 - 2).toFixed(1) + 'deg');
-    const used = slots[line] = (slots[line] || 0) + 1;
-    if (narrow()) {
-      n.style.left = Math.max(0, r.left - b.left - 4) + 'px';
-      n.style.top = (lr.bottom - b.top - 6) + 'px';
-    } else {
-      n.style.left = (b.width + 28) + 'px';
-      n.style.top = (lr.top - b.top - 3 + (used - 1) * 20) + 'px';
-    }
+    n.style.visibility = 'hidden';
     box.appendChild(n);
+    // what it means to say, and failing room for that, something shorter
+    const wants = [rnd(NOTES[kind]), ...shuffle(NOTES[kind]).sort((a, b) => a.length - b.length), ...NOTES.short];
+    let text = null;
+    for (const w of wants) {
+      n.textContent = w;
+      if (place(n, li, sp)) { text = w; break; }
+    }
+    if (text == null) { n.remove(); return null; }
+    // a hand tilts a short note more than a long one, and a long one tilted
+    // as far would run its far end into the next line
+    n.style.setProperty('--rot', (between(-1, 1) * Math.min(2, 160 / n.offsetWidth)).toFixed(2) + 'deg');
+    const cs = letters(n, text);
+    n.style.visibility = '';
     if (pen) {
-      // set the whole note (hidden) to measure it, then write it letter by letter
-      const cs = letters(n, text);
       const nr = n.getBoundingClientRect();
       const y = nr.top + nr.height * 0.78;
       const gaps = cs.map((c) => hand(c.textContent));
       const total = gaps.reduce((a, g) => a + g, 0);
-      await pen.glide(nr.left, y, 380 * speed + 1);
+      await pen.glide(nr.left, y, 300 * speed + 1);
       if (dead) throw 0;
       const typing = (async () => { for (let i = 0; i < cs.length; i++) { cs[i].classList.remove('hid'); await nap(gaps[i]); } })();
       await Promise.all([typing, pen.write(nr.left, y, nr.left + nr.width, total * speed + 1)]);
-      return n;
+    } else {
+      for (const c of cs) { c.classList.remove('hid'); await nap(hand(c.textContent) * 0.8); }
     }
-    const cs = letters(n, text);
-    for (const c of cs) { c.classList.remove('hid'); await nap(hand(c.textContent) * 0.8); }
-    return n;
+    return { n, text };
   }
 
-  async function critique(round, all) {
-    let fl = flaws(p);
-    if (!fl.length) return [];
-    // A critic does not catch everything at once, until time is short.
-    const left = budget - (performance.now() - t0);
-    const take = all || left < 9000 ? fl.length : Math.min(fl.length, 3);
-    fl = shuffle(fl).slice(0, take).sort((a, b) => a.li - b.li || a.wi - b.wi);
-    Object.keys(slots).forEach((k) => delete slots[k]);
-    box.classList.add('critic');
+  // ---- the critic ----------------------------------------------------------------
+  // What is wrong, gathered into marks: next-door words that are both weak are
+  // one phrase, underlined with one note; a word to cut is struck out or
+  // circled; a long word now and then underlined; the rest circled.
+  function marks() {
+    const out = [];
+    flaws(p).forEach((f) => {
+      const g = out[out.length - 1];
+      if (g && g.li === f.li && g.fs[g.fs.length - 1].wi === f.wi - 1 && f.kind !== 'repeat' && g.fs[0].kind !== 'repeat') g.fs.push(f);
+      else out.push({ li: f.li, fs: [f] });
+    });
+    return out;
+  }
+  async function critique(round) {
+    let gs = marks();
+    if (!gs.length) return [];
+    // a critic does not catch everything at once; short of time, it skips
+    // the notes and just marks
+    const quick = left() < 12000;
+    gs = shuffle(gs).slice(0, quick ? 6 : 4).sort((a, b) => a.li - b.li || a.fs[0].wi - b.fs[0].wi);
     status.textContent = round === 1 ? 'the critic' : 'the critic, again';
     status.classList.add('on');
-    const marks = [];
-    for (const f of fl) {
-      const el = wordEl[key(f.li, f.wi)];
-      const c = circle(el);
+    const done = [];
+    for (const g of gs) {
+      if (left() < 4000) break;
+      const els = g.fs.map((f) => wordEl[key(f.li, f.wi)]);
+      const sp = spanOf(els), word = els.map((e) => e.textContent).join(' ');
+      const cut = g.fs.length === 1 && (g.fs[0].kind === 'filler' || g.fs[0].kind === 'adverb');
+      const h = sp.b - sp.t;
+      const pts = g.fs.length > 1 || (word.length >= 8 && Math.random() < 0.35) ? underline(sp.l, sp.r, sp.b - h * 0.12)
+        : cut && Math.random() < 0.6 ? strike(sp.l, sp.r, sp.t + h * 0.56)
+        : loop(sp.l, sp.t, sp.r, sp.b);
+      const m = ink_(pts);
       if (pen) {
-        await pen.glide(c.pts[0][0], c.pts[0][1], 380 * speed + 1);
+        await pen.glide(m.pts[0][0], m.pts[0][1], (quick ? 220 : 300) * speed + 1);
         if (dead) throw 0;
-        c.play();
-        await pen.stroke(c.pts, c.ms * speed + 1);
+        m.play();
+        await pen.stroke(m.pts, m.ms * speed + 1);
       } else {
-        c.play();
-        await nap(c.ms);
+        m.play();
+        await nap(m.ms);
       }
-      await nap(120);
-      const text = rnd(NOTES[f.kind]);
-      const n = await note(el, f.li, text, c);
-      notesMade.push({ w: bare(p.lines[f.li][f.wi]), n: text });
-      marks.push({ f, c, n, el });
-      await nap(180);
+      let n = null;
+      if (!quick) {
+        await nap(100);
+        const kind = g.fs.length > 1 ? 'phrase' : g.fs[0].kind;
+        n = await note(g.li, sp, kind);
+        if (n) notesMade.push({ w: word.replace(/,/g, ''), n: n.text });
+      }
+      done.push({ g, m, n: n && n.n });
+      await nap(quick ? 80 : 160);
     }
-    return marks;
+    return done;
   }
 
-  async function rewrite(marks) {
-    await nap(500);
-    // cut from the end of each line backwards so positions hold
-    const cuts = [];
-    for (const m of marks) {
-      const rep = revise(p, m.f);
-      const w = p.lines[m.f.li][m.f.wi], tail = comma(w);
-      if (rep == null) cuts.push(m); else p.lines[m.f.li][m.f.wi] = rep + tail;
-      m.el.classList.add('swap');
+  // The poem as revised: marks and old words fade together, the line is set
+  // again with its new words popping in where the old ones were, and the
+  // words that stay slide over to where they now belong.
+  async function rewrite(done) {
+    await nap(450);
+    const byLine = {};
+    done.forEach((d) => d.g.fs.forEach((f) => { (byLine[f.li] = byLine[f.li] || []).push(f); }));
+    done.forEach((d) => { d.m.path.classList.add('gone'); if (d.n) d.n.classList.add('gone'); });
+    Object.values(byLine).flat().forEach((f) => wordEl[key(f.li, f.wi)].classList.add('swap'));
+    await nap(320);
+    for (const li of Object.keys(byLine).map(Number)) {
+      const line = p.lines[li], fsx = byLine[li].sort((a, b) => a.wi - b.wi);
+      const olds = [...lineEls[li].querySelectorAll('.pw')];
+      const marked = new Set(fsx.map((f) => f.wi));
+      const keepOld = olds.filter((_, i) => !marked.has(i)).map((e) => e.getBoundingClientRect().left);
+      const reps = new Map(), cuts = [];
+      fsx.forEach((f) => { const r = revise(p, f); if (r == null) cuts.push(f.wi); else reps.set(f.wi, r); });
+      reps.forEach((r, wi) => { line[wi] = r + comma(line[wi]); });
+      const fresh = new Set();
+      reps.forEach((_, wi) => fresh.add(wi - cuts.filter((c) => c < wi).length));
+      cuts.sort((a, b) => b - a).forEach((wi) => {
+        const tail = comma(line[wi]);
+        line.splice(wi, 1);
+        if (tail && wi > 0 && line.length) line[wi - 1] = bare(line[wi - 1]) + tail;
+      });
+      const now = render(li);
+      const keepNew = now.filter((_, i) => !fresh.has(i));
+      keepNew.forEach((e, i) => {
+        const dx = (keepOld[i] ?? e.getBoundingClientRect().left) - e.getBoundingClientRect().left;
+        if (Math.abs(dx) > 0.5) e.animate([{ transform: `translateX(${dx}px)` }, { transform: 'none' }],
+          { duration: 380 * speed + 1, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' });
+      });
+      now.forEach((e, i) => { if (fresh.has(i)) e.classList.add('hid'); });
+      (async () => { for (const [i, e] of now.entries()) if (fresh.has(i)) { await nap(60); e.classList.remove('hid'); } })().catch(() => {});
     }
-    await nap(260);
-    cuts.sort((a, b) => b.f.wi - a.f.wi).forEach((m) => {
-      const l = p.lines[m.f.li], tail = comma(l[m.f.wi]);
-      l.splice(m.f.wi, 1);
-      if (tail && l.length && m.f.wi > 0) l[m.f.wi - 1] = bare(l[m.f.wi - 1]) + tail;
-    });
-    const touched = new Set(marks.map((m) => m.f.li));
-    touched.forEach((li) => { if (p.lines[li].length) render(li); });
-    marks.forEach((m) => { m.c.path.classList.add('gone'); m.n.classList.add('gone'); if (m.n._link) m.n._link.classList.add('gone'); });
-    await nap(700);
-    marks.forEach((m) => { m.c.path.remove(); m.n.remove(); if (m.n._link) m.n._link.remove(); });
-    box.classList.remove('critic');
+    await nap(600);
+    done.forEach((d) => { d.m.path.remove(); if (d.n) d.n.remove(); });
+    Object.keys(rows).forEach((k) => delete rows[k]);
+    marginLow = -Infinity;
     status.classList.remove('on');
   }
 
@@ -315,31 +455,29 @@ export function run({ wrap, after, penUrl }) {
       }
     }
     let round = 0;
-    for (;;) {
-      await nap(700);
+    while (left() > 6000) {
+      await nap(600);
       round++;
-      const last = performance.now() - t0 > budget - 6500 || round >= 4;
-      const marks = await critique(round, last);
-      if (!marks.length) break;
-      await rewrite(marks);
+      const done = await critique(round);
+      if (!done.length) break;
+      await rewrite(done);
       if (!flaws(p).length) break;
     }
-    // finished: the critic's last word, in the margin of the title
-    await nap(500);
-    box.classList.add('critic');
+    // finished, or out of time: the critic's last word, under the poem
+    await nap(400);
     const end = document.createElement('span');
     end.className = 'poem-note final';
     end.style.setProperty('--rot', '-3deg');
     box.appendChild(end);
     if (pen) pen.leave(700 * speed + 1);
-    const verdict = round > 1 ? 'better. print it.' : 'fine.';
+    const verdict = flaws(p).length ? 'out of time. print it.' : round > 1 ? 'better. print it.' : 'fine.';
     for (const c of letters(end, verdict)) { c.classList.remove('hid'); await nap(hand(c.textContent) + 15); }
     const count = log(round);
-    status.classList.add('on');
     status.textContent = '';
     const a = document.createElement('a');
     a.href = '/poems/'; a.textContent = count ? 'added to the log (' + count + ')' : 'could not save to the log';
     status.appendChild(a);
+    status.classList.add('on');
     await nap(5000);
     finish(false);
   }
@@ -350,8 +488,8 @@ export function run({ wrap, after, penUrl }) {
     if (pen) { const pp = pen; pen = null; pp.leave(500).then(() => pp.destroy(), () => pp.destroy()); }
     document.removeEventListener('egg-revealed', onReveal);
     box.classList.add('out');
-    wrap.classList.remove('is-poem');
-    setTimeout(() => { box.remove(); if (!aborted) after(); }, 900);
+    // the statement comes back only once the poem has gone, never under it
+    setTimeout(() => { box.remove(); wrap.classList.remove('is-poem'); if (!aborted) after(); }, 900);
   }
   const onReveal = () => finish(true);
   document.addEventListener('egg-revealed', onReveal);
