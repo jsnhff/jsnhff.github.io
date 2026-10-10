@@ -95,7 +95,47 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "the rhymes. oh no."
+            ],
+            [
+              "a",
+              "it gets worse."
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the heron is a real thing"
+            ],
+            [
+              "a",
+              "the only one so far"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "i like the boots"
+            ],
+            [
+              "a",
+              "so do i. don't tell them."
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "laundromat, 11pm",
@@ -190,7 +230,60 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "there's a person in here"
+            ],
+            [
+              "a",
+              "under a lot of time"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the man asleep is good"
+            ],
+            [
+              "a",
+              "one sock. yes."
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "wait. 'her life' was it."
+            ],
+            [
+              "a",
+              "it's too much."
+            ],
+            [
+              "b",
+              "it's the whole poem."
+            ],
+            [
+              "a",
+              "...fine. stet."
+            ]
+          ],
+          "alt": {
+            "line": 1,
+            "how": "stet",
+            "text": "a woman folds her life into a basket"
+          }
+        }
+      ]
+    }
   },
   {
     "title": "my father's garage",
@@ -280,7 +373,47 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "'love's sweet gold'"
+            ],
+            [
+              "a",
+              "i saw."
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the vise handle, though"
+            ],
+            [
+              "a",
+              "that's where it starts"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the outlines. god."
+            ],
+            [
+              "a",
+              "now say where the hammer is"
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "jacaranda",
@@ -365,7 +498,47 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "seize the day!!"
+            ],
+            [
+              "a",
+              "two exclamation marks"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "sticky is right"
+            ],
+            [
+              "a",
+              "that's what they are"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "end on the neighbor?"
+            ],
+            [
+              "a",
+              "end on the neighbor."
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "gate 34, delayed",
@@ -449,7 +622,47 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "destiny at gate 34"
+            ],
+            [
+              "a",
+              "no"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the outlet man is funny"
+            ],
+            [
+              "a",
+              "keep him"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the singing mother"
+            ],
+            [
+              "a",
+              "yes. that's the poem."
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "night swim",
@@ -535,7 +748,51 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "'thou shinest'"
+            ],
+            [
+              "a",
+              "i know"
+            ],
+            [
+              "b",
+              "in a swim poem"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the buoy rope helps"
+            ],
+            [
+              "a",
+              "now they're somewhere"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "'black' is plain"
+            ],
+            [
+              "a",
+              "plain is the point"
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "the store at 6am",
@@ -625,7 +882,47 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "'egad'?"
+            ],
+            [
+              "a",
+              "for the rhyme"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the pyramids are nice"
+            ],
+            [
+              "a",
+              "they're oranges. it's fine."
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "which song though"
+            ],
+            [
+              "a",
+              "they'll find one"
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "bus stop, january",
@@ -699,7 +996,51 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "'the fools'"
+            ],
+            [
+              "a",
+              "everyone at the stop"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "statues is a little much"
+            ],
+            [
+              "a",
+              "next time"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "i liked the statues"
+            ],
+            [
+              "a",
+              "statues don't stamp"
+            ],
+            [
+              "b",
+              "...fair"
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "before anyone wakes",
@@ -784,7 +1125,47 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "a magic potion"
+            ],
+            [
+              "a",
+              "it's a coffee maker"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "'perfect!!!'"
+            ],
+            [
+              "a",
+              "nothing is"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the crusts. yes."
+            ],
+            [
+              "a",
+              "standing up, too"
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "on-ramp",
@@ -867,7 +1248,51 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "a monster that never sleeps"
+            ],
+            [
+              "a",
+              "i've read that one"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the 101 is good"
+            ],
+            [
+              "a",
+              "red for six miles"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "stet 'to nowhere'?"
+            ],
+            [
+              "a",
+              "it's the cliché"
+            ],
+            [
+              "b",
+              "...ok"
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "waiting room",
@@ -951,7 +1376,47 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "'oh my'"
+            ],
+            [
+              "a",
+              "at the end. yes."
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the boy across three chairs"
+            ],
+            [
+              "a",
+              "now it's a room"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "lullaby is sweet"
+            ],
+            [
+              "a",
+              "too sweet. it's a machine."
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "the beach in january",
@@ -1035,7 +1500,47 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "'sublime'"
+            ],
+            [
+              "a",
+              "rhymes with time"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the bad thrower"
+            ],
+            [
+              "a",
+              "i like him"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "end on the dog?"
+            ],
+            [
+              "a",
+              "on the ball"
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "2am",
@@ -1119,7 +1624,47 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "the poison of society"
+            ],
+            [
+              "a",
+              "an op-ed with line breaks"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the baby in sunglasses"
+            ],
+            [
+              "a",
+              "finally"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the phone on the chest"
+            ],
+            [
+              "a",
+              "everyone does that"
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "in the driveway",
@@ -1197,7 +1742,60 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "angels again"
+            ],
+            [
+              "a",
+              "they're everywhere"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "gravel on the windshield"
+            ],
+            [
+              "a",
+              "good. loud."
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "stet 'alone'"
+            ],
+            [
+              "a",
+              "it's implied"
+            ],
+            [
+              "b",
+              "not to me"
+            ],
+            [
+              "a",
+              "stet."
+            ]
+          ],
+          "alt": {
+            "line": 2,
+            "how": "stet",
+            "text": "i sit in the parked car alone"
+          }
+        }
+      ]
+    }
   },
   {
     "title": "her garden, after",
@@ -1282,7 +1880,47 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "'so dutiful'"
+            ],
+            [
+              "a",
+              "for the rhyme"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the gloves on the post"
+            ],
+            [
+              "a",
+              "there she is"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "her hose. yes."
+            ],
+            [
+              "a",
+              "the fingers curled. careful."
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "the hoop in the park",
@@ -1366,7 +2004,47 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "'how stark'"
+            ],
+            [
+              "a",
+              "rhyme again"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "twenty years is good"
+            ],
+            [
+              "a",
+              "it's specific"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "fifteen. i see him."
+            ],
+            [
+              "a",
+              "now leave the net alone"
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "moving day",
@@ -1452,7 +2130,47 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "'galore'"
+            ],
+            [
+              "a",
+              "forevermore"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the pencil marks"
+            ],
+            [
+              "a",
+              "the poem"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "'four, in my hand'"
+            ],
+            [
+              "a",
+              "don't touch it"
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "through the wall",
@@ -1531,7 +2249,47 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "the universal language"
+            ],
+            [
+              "a",
+              "of the heart. yes."
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "four bars, wrong, then right"
+            ],
+            [
+              "a",
+              "that's practice"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "good cut"
+            ],
+            [
+              "a",
+              "they were never connected"
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "pickup",
@@ -1614,7 +2372,51 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "'oh boy'"
+            ],
+            [
+              "a",
+              "oh boy"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the ice cream truck"
+            ],
+            [
+              "a",
+              "there it is"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "stet 'tiny'?"
+            ],
+            [
+              "a",
+              "no"
+            ],
+            [
+              "b",
+              "ok"
+            ]
+          ]
+        }
+      ]
+    }
   },
   {
     "title": "3:12",
@@ -1693,6 +2495,46 @@
         ]
       }
     ],
-    "verdict": "better."
+    "verdict": "better.",
+    "duet": {
+      "rounds": [
+        {
+          "talk": [
+            [
+              "b",
+              "the void within"
+            ],
+            [
+              "a",
+              "at 3am. sure."
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "cold rice with fingers"
+            ],
+            [
+              "a",
+              "good"
+            ]
+          ]
+        },
+        {
+          "talk": [
+            [
+              "b",
+              "the cold on my shins"
+            ],
+            [
+              "a",
+              "yes. that's 3:12."
+            ]
+          ]
+        }
+      ]
+    }
   }
 ]

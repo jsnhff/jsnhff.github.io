@@ -1,6 +1,11 @@
-// The critic's pen, for act three of the home page. Built to /js/pen.js by
+// The critics' pens, for act three of the home page. Built to /js/pen.js by
 // `node _penny/build.mjs`; edit this file, not that one. Loaded by poem.js
 // when the poem is finished, and only then.
+//
+// Two pens, two hands: a Bic Cristal in red, held in the right hand, and a
+// Paper Mate Flair felt-tip in green, held in the left. They share one stage
+// (one canvas, one light, one shadow on the page), so a second pen costs
+// only its own geometry.
 //
 // The same stage as the penny: one transparent, click-through WebGL canvas
 // over the viewport in CSS pixels, x right, y up, the page the plane z = 0,
@@ -21,16 +26,21 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 // gets away from it. The page only knows "shadowed or not", so its alpha is
 // also multiplied by a falloff from the point under the object.
 function fadeShadow(mat) {
-  const u = { uC: { value: new Vector2() }, uR: { value: new Vector2(30, 120) } };
+  const u = {
+    uC0: { value: new Vector2() }, uR0: { value: new Vector2(30, 120) },
+    uC1: { value: new Vector2() }, uR1: { value: new Vector2(30, 120) },
+    uW: { value: new Vector2() }
+  };
   mat.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, u);
     sh.vertexShader = sh.vertexShader
       .replace('void main() {', 'varying vec3 vW;\nvoid main() {')
       .replace('#include <begin_vertex>', '#include <begin_vertex>\nvW = (modelMatrix * vec4(position, 1.0)).xyz;');
     sh.fragmentShader = sh.fragmentShader
-      .replace('void main() {', 'varying vec3 vW;\nuniform vec2 uC;\nuniform vec2 uR;\nvoid main() {')
+      .replace('void main() {', 'varying vec3 vW;\nuniform vec2 uC0, uR0, uC1, uR1, uW;\nvoid main() {')
       .replace('gl_FragColor = vec4( color, opacity * ( 1.0 - getShadowMask() ) );',
-        'gl_FragColor = vec4( color, opacity * ( 1.0 - getShadowMask() ) * ( 1.0 - smoothstep( uR.x, uR.y, distance( vW.xy, uC ) ) ) );');
+        'float f = max( uW.x * ( 1.0 - smoothstep( uR0.x, uR0.y, distance( vW.xy, uC0 ) ) ), uW.y * ( 1.0 - smoothstep( uR1.x, uR1.y, distance( vW.xy, uC1 ) ) ) );\n' +
+        'gl_FragColor = vec4( color, opacity * ( 1.0 - getShadowMask() ) * f );');
   };
   return u;
 }
@@ -40,7 +50,11 @@ const LIGHT = { x: -260, y: 420, z: 900 };
 const ease = { inOut: (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2) };
 const frame = () => new Promise((r) => requestAnimationFrame(r));
 
-export function makePen() {
+
+// ---- the stage, shared by every pen on the page -----------------------------
+let stage = null;
+function getStage() {
+  if (stage) return stage;
   let renderer;
   try {
     renderer = new WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha: true });
@@ -71,11 +85,9 @@ export function makePen() {
   key.shadow.normalBias = 0.6;
   key.shadow.radius = 5;
   scene.add(key, key.target);
-  const SPAN = 380;
-  { const c = key.shadow.camera; c.left = -SPAN; c.right = SPAN; c.top = SPAN; c.bottom = -SPAN; c.near = 10; c.far = 3000; c.updateProjectionMatrix(); }
   const floorMat = new ShadowMaterial({ opacity: 0.2 });
   const fade = fadeShadow(floorMat);
-  const floor = new Mesh(new PlaneGeometry(SPAN * 3, SPAN * 3), floorMat);
+  const floor = new Mesh(new PlaneGeometry(1, 1), floorMat);
   floor.receiveShadow = true;
   scene.add(floor);
 
@@ -88,15 +100,93 @@ export function makePen() {
     camera.near = dist * 0.2; camera.far = dist * 3;
     camera.lookAt(w / 2, -h / 2, 0);
     camera.updateProjectionMatrix();
+    floor.scale.set(w * 1.6, h * 1.6, 1);
+    floor.position.set(w / 2, -h / 2, 0);
   }
   layout();
   window.addEventListener('resize', layout);
 
-  // ---- the pen: a Bic Cristal, tip at the origin, length along +y ----------
+  const pens = [];
+  let span = 0;
+  // One light for every pen, aimed between them, its shadow wide enough to
+  // take them all in; each pen's shadow fades out from the point under it.
+  function frameAll() {
+    if (!stage) return;
+    const live = pens.filter((p) => p.s.a > 0.01);
+    let cx = W() / 2, cy = H() / 2, need = 380;
+    if (live.length) {
+      cx = live.reduce((a, p) => a + p.s.x, 0) / live.length;
+      cy = live.reduce((a, p) => a + p.s.y, 0) / live.length;
+      live.forEach((p) => { need = Math.max(need, Math.abs(p.s.x - cx) + 300, Math.abs(p.s.y - cy) + 300); });
+    }
+    need = Math.ceil(need / 40) * 40;
+    if (need !== span) {
+      span = need;
+      const c = key.shadow.camera;
+      c.left = -span; c.right = span; c.top = span; c.bottom = -span; c.near = 10; c.far = 3000;
+      c.updateProjectionMatrix();
+    }
+    key.target.position.set(cx + 70, -cy - 70, 0);
+    key.position.set(cx + 70 + LIGHT.x, -cy - 70 + LIGHT.y, LIGHT.z);
+    const slot = (i) => pens[i];
+    for (let i = 0; i < 2; i++) {
+      const p = slot(i), C = fade['uC' + i], R = fade['uR' + i];
+      if (!p) { fade.uW.value.setComponent(i, 0); continue; }
+      p.place();
+      C.value.set(p.s.x, -p.s.y);
+      R.value.set(14 + p.s.z * 0.2, 150 + p.s.z * 0.6);
+      // the shadow thins as the pen lifts, and goes with it when it leaves
+      fade.uW.value.setComponent(i, p.s.a * (1 - 0.6 * Math.min(1, p.s.z / 120)));
+    }
+    renderer.render(scene, camera);
+    requestAnimationFrame(frameAll);
+  }
+  stage = { renderer, scene, camera, pens, W, H, cvs, layout };
+  requestAnimationFrame(frameAll);
+  return stage;
+}
+function leaveStage(pen) {
+  if (!stage) return;
+  const i = stage.pens.indexOf(pen);
+  if (i >= 0) stage.pens.splice(i, 1);
+  stage.scene.remove(pen.holder);
+  if (!stage.pens.length) {
+    const st = stage;
+    stage = null;
+    window.removeEventListener('resize', st.layout);
+    st.renderer.dispose();
+    st.cvs.remove();
+  }
+}
+
+const mat = (o) => new MeshStandardMaterial(o);
+// Printing on a barrel: words along its length, on the face toward the reader.
+function printed(words, r, h, segments, y) {
+  const c = document.createElement('canvas');
+  c.width = 32 * segments; c.height = 1024;
+  const g = c.getContext('2d');
+  for (const face of words.faces) {
+    g.save();
+    g.translate(face * 32 + 16, 1000);
+    g.rotate(-Math.PI / 2);
+    g.textBaseline = 'middle';
+    for (const [text, x, font, color] of words.runs) { g.font = font; g.fillStyle = color; g.fillText(text, x, 0); }
+    g.restore();
+  }
+  const tex = new CanvasTexture(c);
+  tex.colorSpace = SRGBColorSpace;
+  tex.anisotropy = 8;
+  const m = new Mesh(new CylinderGeometry(r, r, h, segments, 1, true),
+    new MeshStandardMaterial({ map: tex, transparent: true, roughness: 0.5, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1 }));
+  m.position.y = y; m.renderOrder = 3;
+  return m;
+}
+
+// ---- the pens: tip at the origin, length along +y, about 160px long ---------
+function bic() {
   // A clear hexagonal barrel with the dark ink tube and its red plug showing
   // through, a brass point with a steel ball, and a red cap on the end with
   // its collar. About 160px from the ball to the top of the cap.
-  const mat = (o) => new MeshStandardMaterial(o);
   const redGloss = mat({ color: '#d42a20', metalness: 0, roughness: 0.22 });
   const brass = mat({ color: '#c79a52', metalness: 0.9, roughness: 0.3 });
   const amber = mat({ color: '#a9722f', metalness: 0.1, roughness: 0.4 });
@@ -160,12 +250,59 @@ export function makePen() {
     clip.position.set(4.6, 147, 0); clip.castShadow = true;
     pen.add(clip);
   }
+  return pen;
+}
+
+// A Paper Mate Flair: a felt point in a white plastic nose, a round barrel
+// in the colour of its ink, a silver band, and the cap posted on the end
+// with its clip. Felt pens are held more upright, and this one is in the
+// left hand.
+function flair() {
+  const green = mat({ color: '#1f8a4c', metalness: 0, roughness: 0.32 });
+  const deep = mat({ color: '#166b3a', metalness: 0, roughness: 0.4 });
+  const felt = mat({ color: '#25713f', metalness: 0, roughness: 0.95 });
+  const nose = mat({ color: '#b9bdb6', metalness: 0, roughness: 0.4 });
+  const silver = mat({ color: '#c9ccd1', metalness: 0.9, roughness: 0.25 });
+  const pen = new Group();
+  const add = (geo, m, y) => { const e = new Mesh(geo, m); e.position.y = y; e.castShadow = true; pen.add(e); return e; };
+  add(new CylinderGeometry(1.5, 0.35, 6, 20), felt, 3);
+  add(new CylinderGeometry(3.6, 1.5, 11, 24), nose, 11.5);
+  add(new CylinderGeometry(4.3, 3.6, 4, 24), nose, 19);
+  add(new CylinderGeometry(4.35, 4.35, 3, 28), silver, 22.5);
+  add(new CylinderGeometry(4.3, 4.3, 92, 28), green, 70);
+  // the face toward the reader is the one at about 30 degrees round
+  pen.add(printed({ faces: [2], runs: [['PAPER MATE', 0, '700 17px Arial, Helvetica, sans-serif', '#ffffff'], ['Flair', 150, 'italic 700 21px Arial, Helvetica, sans-serif', '#ffffff']] }, 4.33, 92, 28, 70));
+  // the cap, posted: a little wider, rounded at the top, its clip in silver
+  {
+    const prof = [[4.85, 0], [4.85, 34], [4.4, 38], [3.2, 40.5], [1.6, 41.6], [0, 42]].map((p) => new Vector2(p[0], p[1]));
+    const cap = new Mesh(new LatheGeometry(prof, 32), deep);
+    cap.position.y = 104; cap.castShadow = true;
+    pen.add(cap);
+    const clip = new Mesh(new BoxGeometry(1.3, 30, 3), silver);
+    clip.position.set(5.2, 128, 0); clip.castShadow = true;
+    pen.add(clip);
+  }
+  return pen;
+}
+
+const KINDS = {
+  // right hand: leaning up and to the right
+  bic: { build: bic, lean: 57, az: 62, side: 1 },
+  // left hand: leaning up and to the left, a felt pen held a little more upright
+  flair: { build: flair, lean: 50, az: 118, side: -1 }
+};
+
+export function makePen(kind = 'bic') {
+  const st = getStage();
+  if (!st) return null;
+  const { W, H } = st;
+  const K = KINDS[kind] || KINDS.bic;
+  const pen = K.build();
   const holder = new Group();
   holder.add(pen);
-  scene.add(holder);
+  st.scene.add(holder);
 
-  // Leaned the way a right hand holds one: up and to the right, back to the reader.
-  const lean = MathUtils.degToRad(57), az = MathUtils.degToRad(62);
+  const lean = MathUtils.degToRad(K.lean), az = MathUtils.degToRad(K.az);
   const dir = new Vector3(Math.sin(lean) * Math.cos(az), Math.sin(lean) * Math.sin(az), Math.cos(lean));
   const q0 = new Quaternion().setFromUnitVectors(new Vector3(0, 1, 0), dir);
   // Turn the pen on its own axis until the printed face looks at the reader.
@@ -209,18 +346,10 @@ export function makePen() {
     pen.rotation.y = facing + s.roll;
     holder.scale.setScalar(SCALE);
     holder.position.set(s.x, -s.y, s.z);
-    floor.position.set(s.x + 70, -s.y - 70, 0);
-    key.target.position.copy(floor.position);
-    key.position.set(floor.position.x + LIGHT.x, floor.position.y + LIGHT.y, LIGHT.z);
-    fade.uC.value.set(s.x, -s.y);
-    fade.uR.value.set(14 + s.z * 0.2, 150 + s.z * 0.6);
-    // the shadow thins as the pen lifts, and goes with it when it leaves
-    floor.material.opacity = 0.2 * s.a * (1 - 0.6 * Math.min(1, s.z / 120));
     holder.visible = s.a > 0.01;
-    renderer.render(scene, camera);
   }
-  let alive = true;
-  (function loop() { if (!alive) return; place(); requestAnimationFrame(loop); })();
+  const self = { s, holder, place };
+  st.pens.push(self);
 
   // A move in time: `at(k)` gives the tip's x, y, z at k in 0..1.
   async function move(ms, at, fade) {
@@ -234,7 +363,8 @@ export function makePen() {
       await frame();
     }
   }
-  const OFF = () => [W() + 160, H() * 0.55, 140];
+  // off the page on its own hand's side
+  const OFF = () => [K.side > 0 ? W() + 160 : -160, H() * 0.55, 140];
   s.x = OFF()[0]; s.y = OFF()[1]; s.z = 140; s.a = 0;
 
   const api = {
@@ -244,7 +374,7 @@ export function makePen() {
       const x0 = s.x, y0 = s.y, z0 = s.z, hop = Math.min(46, 10 + Math.hypot(x - x0, y - y0) * 0.1);
       await move(ms, (k) => { const e = ease.inOut(k); return [x0 + (x - x0) * e, y0 + (y - y0) * e, z0 * (1 - e) + Math.sin(Math.PI * k) * hop]; });
     },
-    // Come in from beyond the right edge, fading up as it arrives.
+    // Come in from beyond its own edge, fading up as it arrives.
     async enter(x, y, ms = 900) {
       const a = OFF();
       s.x = a[0]; s.y = a[1]; s.z = a[2]; s.a = 0;
@@ -347,12 +477,15 @@ export function makePen() {
       await move(ms, (k) => { const e = ease.inOut(k); return [x0 + (a[0] - x0) * e, y0 + (a[1] - y0) * e, z0 + (a[2] - z0) * e]; }, (k) => 1 - Math.max(0, (k - 0.4) / 0.6));
     },
     get tip() { return [s.x, s.y]; },
-    destroy() {
-      alive = false;
-      window.removeEventListener('resize', layout);
-      renderer.dispose();
-      cvs.remove();
-    }
+    // Where the pen's top end is on the screen, for a speech bubble to hang
+    // from: its own hand's side, up from the tip.
+    get top() {
+      holder.updateMatrixWorld(true);
+      const v = new Vector3(0, 150, 0).applyMatrix4(pen.matrixWorld).project(st.camera);
+      return [(v.x + 1) / 2 * W(), (1 - v.y) / 2 * H()];
+    },
+    side: K.side,
+    destroy() { leaveStage(self); }
   };
   return api;
 }

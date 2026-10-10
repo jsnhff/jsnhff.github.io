@@ -234,13 +234,13 @@ function keepPairs(a, b) {
   return out;
 }
 
-export function run({ wrap, after, penUrl, script }) {
+export function run({ wrap, after, penUrl, script, extend }) {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const speed = reduce ? 0.15 : 1;
   const t0 = performance.now();
   // The critic takes its time: it reads before it marks, and stops to think
   // before each mark. A poem needs room to breathe.
-  const budget = DURATION;
+  let budget = DURATION;
   const left = () => budget - (performance.now() - t0);
   let dead = false;
   const nap = (ms) => sleep(ms * speed).then(() => { if (dead) throw 0; });
@@ -339,12 +339,21 @@ export function run({ wrap, after, penUrl, script }) {
 
   // Draws a polyline in red, and gives back how to animate it and where the
   // pen's tip goes on the screen.
-  function ink_(pts) {
+  function ink_(pts, cls = '', dotted = false) {
     let d = '';
-    pts.forEach((q, i) => { d += (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1); });
+    if (dotted) {
+      // a dotted line, the editor's "leave it": short dashes along the run
+      for (let i = 0; i < pts.length - 1; i++) {
+        const [x0, y0] = pts[i], [x1, y1] = pts[i + 1], L = Math.hypot(x1 - x0, y1 - y0);
+        for (let u = 0; u < L; u += 7) {
+          const a = u / L, b = Math.min(1, (u + 0.8) / L);
+          d += 'M' + (x0 + (x1 - x0) * a).toFixed(1) + ' ' + (y0 + (y1 - y0) * a).toFixed(1) + 'L' + (x0 + (x1 - x0) * b).toFixed(1) + ' ' + (y0 + (y1 - y0) * b).toFixed(1);
+        }
+      }
+    } else pts.forEach((q, i) => { d += (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1); });
     const path = document.createElementNS(SVG, 'path');
     path.setAttribute('d', d);
-    path.setAttribute('class', 'pen');
+    path.setAttribute('class', 'pen' + (cls ? ' ' + cls : ''));
     path.style.strokeWidth = between(1.6, 2.2).toFixed(2);
     ink.appendChild(path);
     const len = path.getTotalLength();
@@ -408,9 +417,9 @@ export function run({ wrap, after, penUrl, script }) {
     return true;
   }
 
-  async function note(li, sp, kind, said) {
+  async function note(li, sp, kind, said, who = pen, cls = '') {
     const n = document.createElement('span');
-    n.className = 'poem-note';
+    n.className = 'poem-note' + (cls ? ' ' + cls : '');
     n.style.visibility = 'hidden';
     box.appendChild(n);
     // what it means to say, and failing room for that, something shorter
@@ -425,14 +434,14 @@ export function run({ wrap, after, penUrl, script }) {
     }
     if (text == null) { n.remove(); return null; }
     saidAll.add(text); saidPass.add(text);
-    await handwrite(n, text);
+    await handwrite(n, text, who);
     return { n, text };
   }
 
   // Writes `text` into n, letter by letter, the pen's tip running along
   // under it. A hand tilts a short note more than a long one; a long one
   // tilted as far would run its far end into the next line.
-  async function handwrite(n, text) {
+  async function handwrite(n, text, pen = penA()) {
     n.style.setProperty('--rot', (between(-1, 1) * Math.min(2, 160 / n.offsetWidth)).toFixed(2) + 'deg');
     const cs = letters(n, text);
     n.style.visibility = '';
@@ -487,8 +496,8 @@ export function run({ wrap, after, penUrl, script }) {
     return { how, say: Math.random() < (one ? 0.65 : 0.8) };
   }
   const lastHows = [];
-  async function draw(pts, quick, how) {
-    const m = ink_(pts);
+  async function draw(pts, quick, how, pen = penA(), cls = '', dotted = false) {
+    const m = ink_(pts, cls, dotted);
     m.path.dataset.how = how;
     if (pen) {
       await pen.glide(m.pts[0][0], m.pts[0][1], (quick ? 240 : 360) * speed + 1);
@@ -548,6 +557,88 @@ export function run({ wrap, after, penUrl, script }) {
       }
     } else await nap(ms);
   }
+  // ---- a second critic --------------------------------------------------------
+  // "add critic", under the poem, in the timer's grey. Pressed, a second pen
+  // comes in (a green Flair, in the left hand) and from then on the two talk:
+  // a greeting, a few words about each round before it is revised, and in
+  // the last round the second sometimes wins a line back.
+  const penA = () => pen;
+  let penB = null, wantB = false, joined = false, penMod = null;
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.className = 'poem-add';
+  addBtn.innerHTML = '<span class="poem-add-dot" aria-hidden="true"></span>add critic';
+  addBtn.addEventListener('click', () => { if (wantB) return; wantB = true; addBtn.classList.remove('on'); addBtn.disabled = true; });
+  wrap.appendChild(addBtn);
+  function offerB() {
+    if (wantB || dead || !pen) return;
+    const w = wrap.getBoundingClientRect(), b = box.getBoundingClientRect();
+    addBtn.style.top = (b.bottom - w.top + 10) + 'px';
+    addBtn.classList.add('on');
+  }
+  const HELLO = [
+    [['b', 'hi. what are we reading?'], ['a', 'a first draft.'], ['b', 'oh good.']],
+    [['b', 'room for one more?'], ['a', 'bring your own pen.']],
+    [['b', 'hello. am i late?'], ['a', 'just in time. it\'s bad.']]
+  ];
+  // Speech, in the coin's bubbles, hung from the top of whichever pen says it.
+  async function say(who, text) {
+    const p = who === 'b' ? penB : pen;
+    const el = document.createElement('div');
+    el.className = 'penny-bubble talk' + (who === 'b' ? ' green' : '');
+    el.textContent = text;
+    document.body.appendChild(el);
+    const place = () => {
+      const t = p ? p.top : [window.innerWidth / 2, window.innerHeight / 2];
+      const w = el.offsetWidth, h = el.offsetHeight, right = !p || p.side > 0;
+      el.classList.toggle('flip', !right);
+      let x = right ? t[0] + 6 : t[0] - w - 6;
+      x = Math.max(8, Math.min(window.innerWidth - w - 8, x));
+      el.style.translate = `${Math.round(x)}px ${Math.round(Math.max(8, t[1] - h - 8))}px`;
+    };
+    place();
+    const ms = (900 + text.length * 55) * speed;
+    if (p) await p.hold(ms); else await nap(900 + text.length * 55);
+    place();
+    el.classList.add('out');
+    setTimeout(() => el.remove(), 320);
+    await nap(260);
+  }
+  async function talk(lines) {
+    for (const [who, text] of lines || []) { if (dead) throw 0; await say(who, text); }
+  }
+  // Brought in at the next moment the first critic is between things.
+  async function maybeJoin() {
+    if (!wantB || joined || dead) return;
+    joined = true;
+    if (!penMod || !penMod.makePen || !pen) return;
+    penB = penMod.makePen('flair');
+    if (!penB) return;
+    // there is more to do now: the act, and the timer, run longer
+    budget += 30000;
+    if (extend) extend(30000);
+    const b = box.getBoundingClientRect();
+    // it waits at the poem's lower left, leaning off into the margin, out of
+    // the way of the words
+    await penB.enter(b.left + 14, b.bottom - 8, 900 * speed + 1);
+    if (dead) throw 0;
+    status.textContent = status.textContent.replace(/^the critic /, 'the critics ');
+    await talk(rnd(HELLO));
+  }
+  // The second critic's stet: a dotted line under the words the first
+  // marked, "stet" beside it in green, and the line kept as it was.
+  async function stet(li, text) {
+    const at = findRun(p.lines[li] || [], text);
+    if (!at || !penB) return [];
+    const els = []; for (let k = 0; k < at[1]; k++) els.push(wordEl[key(li, at[0] + k)]);
+    const sp = spanOf(els), h = sp.b - sp.t;
+    // one row of dots, just under the words
+    const y = sp.b - h * 0.04;
+    const m = await draw([[sp.l - 2, y], [(sp.l + sp.r) / 2, y + between(-0.6, 0.6)], [sp.r + 2, y + between(-1, 1)]], false, 'stet', penB, 'green', true);
+    const n = await note(li, sp, 'filler', 'stet', penB, 'green');
+    return [m, n && n.n].filter(Boolean);
+  }
+
   // The marks a script gives for a round, found in the poem as it stands.
   function scripted(round) {
     const r = script.rounds[round - 1];
@@ -569,13 +660,19 @@ export function run({ wrap, after, penUrl, script }) {
     let quick = left() < 15000;
     if (!script) gs = shuffle(gs).slice(0, quick ? 6 : 4);
     gs.sort((a, b) => a.li - b.li || a.fs[0].wi - b.fs[0].wi);
-    status.textContent = round === 1 ? 'the critic' : 'the critic, again';
+    // where the performance is: which round, of how many
+    const WORDS = ['one', 'two', 'three', 'four', 'five'];
+    const of = script ? ' of ' + (WORDS[script.rounds.length - 1] || script.rounds.length) : '';
+    status.textContent = (joined && penB ? 'the critics' : 'the critic') + ' \u00b7 round ' + (WORDS[round - 1] || round) + of;
     status.classList.add('on');
+    offerB();
+    await maybeJoin();
     // the whole poem the first time; after that a line or two, now and then
     if (round === 1) await read(p.lines.map((_, i) => i), true);
     else if (!quick && Math.random() < 0.6) await read(shuffle(p.lines.map((_, i) => i)).slice(0, 1 + (Math.random() < 0.4)).sort());
     const done = [];
     for (const g of gs) {
+      await maybeJoin();
       if (left() < 11000) break;
       // the clock is checked before every mark: short of time, it marks
       // without stopping to explain
@@ -720,6 +817,7 @@ export function run({ wrap, after, penUrl, script }) {
     await nap(2200);
     // the critic's pen shows up
     const mod = await penReady;
+    penMod = mod;
     if (dead) return;
     if (mod && mod.makePen) {
       pen = mod.makePen();
@@ -739,7 +837,17 @@ export function run({ wrap, after, penUrl, script }) {
         await nap(between(900, 1500));
         round++;
         const done = await critique(round);
-        const changed = await retell(script.rounds[round - 1].after, done);
+        let next = script.rounds[round - 1].after;
+        if (penB && left() > 14000) {
+          const d = script.duet && script.duet.rounds[round - 1];
+          await talk(d ? d.talk : [['b', rnd(['fair.', 'agreed.', 'hm. ok.'])]]);
+          if (d && d.alt && round === last) {
+            const won = await stet(d.alt.line, script.rounds[round - 1].marks.find((m) => m.line === d.alt.line).text);
+            done.push({ inks: won.filter((x) => x.path), extra: won.filter((x) => !x.path) });
+            next = next.slice(); next[d.alt.line] = d.alt.text;
+          }
+        }
+        const changed = await retell(next, done);
         if (round < last && left() > 20000) await read(changed.sort((a, b) => a - b).slice(0, 2));
       }
     }
@@ -763,6 +871,13 @@ export function run({ wrap, after, penUrl, script }) {
     box.appendChild(end);
     // the pen signs off, then goes
     await handwrite(end, verdict);
+    addBtn.classList.remove('on');
+    if (penB) {
+      const r = end.getBoundingClientRect(), b = box.getBoundingClientRect();
+      const x = r.right - b.left + 10, y = r.top - b.top + r.height * 0.55;
+      await draw([[x, y], [x + 4, y + 5], [x + 13, y - 9]], false, 'tick', penB, 'green');
+      penB.leave(700 * speed + 1);
+    }
     if (pen) await pen.leave(700 * speed + 1);
     const count = log(round);
     status.textContent = '';
@@ -770,8 +885,12 @@ export function run({ wrap, after, penUrl, script }) {
     a.href = '/poems/'; a.textContent = count ? 'added to the log (' + count + ')' : 'could not save to the log';
     status.appendChild(a);
     status.classList.add('on');
-    // the verdict stands until the time is up
-    await nap(reduce ? 4000 : Math.max(4000, left() - 900));
+    // The verdict stands a few seconds; if the critics finished early, the
+    // timer is shortened to match, so the end never just waits.
+    const stand = reduce ? 4000 : 6000;
+    const spare = left() - stand - 900;
+    if (spare > 0 && extend) { budget -= spare; extend(-spare); }
+    await nap(Math.max(stand, left() - 900));
     finish(false);
   }
 
@@ -779,6 +898,9 @@ export function run({ wrap, after, penUrl, script }) {
     if (dead) return;
     dead = true;
     if (pen) { const pp = pen; pen = null; pp.leave(500).then(() => pp.destroy(), () => pp.destroy()); }
+    if (penB) { const pb = penB; penB = null; pb.leave(500).then(() => pb.destroy(), () => pb.destroy()); }
+    document.querySelectorAll('.penny-bubble.talk').forEach((e) => e.remove());
+    addBtn.remove();
     document.removeEventListener('egg-revealed', onReveal);
     box.classList.add('out');
     // the statement comes back only once the poem has gone, never under it
