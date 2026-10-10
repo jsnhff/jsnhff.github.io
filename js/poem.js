@@ -588,7 +588,12 @@ export function run({ wrap, after, penUrl, script, extend }) {
     document.body.appendChild(el);
     const place = () => {
       const t = p ? p.top : [window.innerWidth / 2, window.innerHeight / 2];
-      const w = el.offsetWidth, h = el.offsetHeight, right = !p || p.side > 0;
+      // out on the pen's own side when it fits; when the pen is at the edge
+      // of the screen, the other way, so the tail still points at the pen
+      const w = el.offsetWidth, h = el.offsetHeight;
+      let right = !p || p.side > 0;
+      if (right && t[0] + 6 + w > window.innerWidth - 8) right = false;
+      else if (!right && t[0] - w - 6 < 8) right = true;
       el.classList.toggle('flip', !right);
       let x = right ? t[0] + 6 : t[0] - w - 6;
       x = Math.max(8, Math.min(window.innerWidth - w - 8, x));
