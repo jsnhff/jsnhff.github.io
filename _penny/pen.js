@@ -267,6 +267,29 @@ export function makePen() {
       const seed = Math.random() * 9;
       await move(ms, (k) => [x0 + (x1 - x0) * k + Math.sin(k * 40 + seed) * 2, y0 + Math.sin(k * 23 + seed) * 3 + Math.sin(k * 95) * 1, 0]);
     },
+    // Hover: glide to a point and stay a little above the page there, as a
+    // hand does over a word it is weighing.
+    async hover(x, y, ms = 500, z = 22) {
+      s.want = 0.2;
+      const x0 = s.x, y0 = s.y, z1 = s.z;
+      await move(ms, (k) => { const e = ease.inOut(k); return [x0 + (x - x0) * e, y0 + (y - y0) * e, z1 + (z - z1) * e]; });
+    },
+    // Stay where it is for a while, the hand still breathing.
+    async hold(ms) {
+      s.want = 0.1;
+      const x = s.x, y = s.y, z = s.z, seed = Math.random() * 9;
+      await move(ms, (k) => [x + Math.sin(k * 3 + seed) * 1.5, y + Math.sin(k * 2.3 + seed) * 1.2, z + Math.sin(k * 4 + seed) * 2]);
+    },
+    // Read along a line, held just off the page: from stop to stop (a word
+    // at a time, as eyes go), with a short rest on each.
+    async scan(stops, step = 150, rest = 200) {
+      s.want = 0.25;
+      for (const [x, y] of stops) {
+        const x0 = s.x, y0 = s.y, z0 = s.z;
+        await move(step, (k) => { const e = ease.inOut(k); return [x0 + (x - x0) * e, y0 + (y - y0) * e, z0 + (18 - z0) * e]; });
+        await move(rest * (0.6 + Math.random() * 0.8), (k) => [x, y, 18 + Math.sin(k * 3) * 1.5]);
+      }
+    },
     // Hold the tip up a little, off the page.
     async lift(ms = 200) { const z0 = s.z, x = s.x, y = s.y; await move(ms, (k) => [x, y, z0 + 16 * ease.inOut(k)]); },
     async leave(ms = 800) {

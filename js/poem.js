@@ -171,7 +171,9 @@ export function run({ wrap, after, penUrl }) {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const speed = reduce ? 0.15 : 1;
   const t0 = performance.now();
-  const budget = 30000;
+  // The critic takes its time: it reads before it marks, and stops to think
+  // before each mark. A poem needs room to breathe.
+  const budget = 90000;
   const left = () => budget - (performance.now() - t0);
   let dead = false;
   const nap = (ms) => sleep(ms * speed).then(() => { if (dead) throw 0; });
@@ -244,8 +246,8 @@ export function run({ wrap, after, penUrl }) {
     box.classList.add('on');
     await nap(700);
     for (let li = 0; li < p.lines.length; li++) {
-      for (const w of lineEls[li].querySelectorAll('.pw')) { w.classList.remove('hid'); await nap(95); }
-      await nap(180);
+      for (const w of lineEls[li].querySelectorAll('.pw')) { w.classList.remove('hid'); await nap(between(130, 210)); }
+      await nap(between(420, 700));
     }
   }
 
@@ -351,7 +353,7 @@ export function run({ wrap, after, penUrl }) {
       const y = nr.top + nr.height * 0.78;
       const gaps = cs.map((c) => hand(c.textContent));
       const total = gaps.reduce((a, g) => a + g, 0);
-      await pen.glide(nr.left, y, 300 * speed + 1);
+      await pen.glide(nr.left, y, 380 * speed + 1);
       if (dead) throw 0;
       const typing = (async () => { for (let i = 0; i < cs.length; i++) { cs[i].classList.remove('hid'); await nap(gaps[i]); } })();
       await Promise.all([typing, pen.write(nr.left, y, nr.left + nr.width, total * speed + 1)]);
@@ -392,7 +394,7 @@ export function run({ wrap, after, penUrl }) {
     const m = ink_(pts);
     m.path.dataset.how = how;
     if (pen) {
-      await pen.glide(m.pts[0][0], m.pts[0][1], (quick ? 220 : 300) * speed + 1);
+      await pen.glide(m.pts[0][0], m.pts[0][1], (quick ? 240 : 360) * speed + 1);
       if (dead) throw 0;
       m.play();
       await pen.stroke(m.pts, m.ms * speed + 1);
@@ -402,15 +404,61 @@ export function run({ wrap, after, penUrl }) {
     }
     return m;
   }
+  // Reading: the pen held just off the page, moving under a line a word at a
+  // time, the way a finger keeps the place. Without a pen, the same time
+  // passes.
+  function stopsFor(li) {
+    // eyes go a word or two at a time, not every word
+    const ws = [...lineEls[li].querySelectorAll('.pw')], out = [];
+    for (let i = 0; i < ws.length; i += 1 + (Math.random() < 0.6)) {
+      const r = ws[i].getBoundingClientRect();
+      out.push([r.left + r.width * 0.5, r.bottom - r.height * 0.05]);
+    }
+    return out;
+  }
+  async function read(lis) {
+    for (const li of lis) {
+      const stops = stopsFor(li);
+      if (!stops.length) continue;
+      if (pen) {
+        await pen.hover(stops[0][0] - 12, stops[0][1], 420 * speed + 1, 20);
+        if (dead) throw 0;
+        await pen.scan(stops.map((q) => [q[0], q[1]]), 115 * speed + 1, 150 * speed + 1);
+        if (dead) throw 0;
+      } else await nap(stops.length * 300);
+      await nap(between(100, 240));
+    }
+  }
+  // Considering: over the word, still, then a small lift away while it
+  // makes up its mind.
+  async function consider(sp, quick) {
+    const b = box.getBoundingClientRect();
+    const x = b.left + (sp.l + sp.r) / 2, y = b.top + sp.b;
+    const ms = quick ? between(250, 500) : between(700, 1500);
+    if (pen) {
+      await pen.hover(x, y, 380 * speed + 1, 24);
+      if (dead) throw 0;
+      await pen.hold(ms * 0.65 * speed + 1);
+      if (dead) throw 0;
+      if (!quick && Math.random() < 0.5) {
+        await pen.hover(x + between(14, 40), y - between(10, 30), 300 * speed + 1, 40);
+        if (dead) throw 0;
+        await pen.hold(ms * 0.35 * speed + 1);
+      }
+    } else await nap(ms);
+  }
   async function critique(round) {
     let gs = marks();
     if (!gs.length) return [];
     // a critic does not catch everything at once; short of time, it stops
     // explaining and just marks
-    const quick = left() < 12000;
+    const quick = left() < 15000;
     gs = shuffle(gs).slice(0, quick ? 6 : 4).sort((a, b) => a.li - b.li || a.fs[0].wi - b.fs[0].wi);
     status.textContent = round === 1 ? 'the critic' : 'the critic, again';
     status.classList.add('on');
+    // the whole poem the first time; after that a line or two, now and then
+    if (round === 1) await read(p.lines.map((_, i) => i));
+    else if (!quick && Math.random() < 0.6) await read(shuffle(p.lines.map((_, i) => i)).slice(0, 1 + (Math.random() < 0.4)).sort());
     const done = [];
     for (const g of gs) {
       if (left() < 4000) break;
@@ -419,6 +467,8 @@ export function run({ wrap, after, penUrl }) {
       g.fs.forEach((f) => { f.rep = revise(p, f); });
       const els = g.fs.map((f) => wordEl[key(f.li, f.wi)]);
       const sp = spanOf(els), word = els.map((e) => e.textContent).join(' ');
+      // over the word first, and a while there before deciding
+      await consider(sp, quick);
       const h = sp.b - sp.t, mv = move(g);
       lastHows.unshift(mv.how); lastHows.length = 2;
       const inks = [];
@@ -490,6 +540,7 @@ export function run({ wrap, after, penUrl }) {
     Object.keys(rows).forEach((k) => delete rows[k]);
     marginLow = -Infinity;
     status.classList.remove('on');
+    return Object.keys(byLine).map(Number);
   }
 
   function log(rounds) {
@@ -506,6 +557,8 @@ export function run({ wrap, after, penUrl }) {
     await write();
     // the critic's handwriting must be in before anything is measured
     try { await document.fonts.load('1em "Critic Hand"'); } catch (e) {}
+    // a breath with the poem whole before the critic comes
+    await nap(2200);
     // the critic's pen shows up
     const mod = await penReady;
     if (dead) return;
@@ -516,13 +569,17 @@ export function run({ wrap, after, penUrl }) {
         await pen.enter(b.left + b.width * 0.7, b.top - 30, 900 * speed + 1);
       }
     }
+    // the poem left alone a moment before anyone touches it
+    await nap(1600);
     let round = 0;
-    while (left() > 6000) {
-      await nap(600);
+    while (left() > 8000) {
+      await nap(between(900, 1500));
       round++;
       const done = await critique(round);
       if (!done.length) break;
-      await rewrite(done);
+      const changed = await rewrite(done);
+      // checks what was changed, if there is time to
+      if (left() > 20000) await read(changed.sort((a, b) => a - b).slice(0, 2));
       if (!flaws(p).length) break;
     }
     // finished, or out of time: the critic's last word, under the poem
