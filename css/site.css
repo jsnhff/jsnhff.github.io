@@ -840,9 +840,9 @@
     font-size: 0.95rem;
     line-height: 1.2;
     white-space: nowrap;
-    /* lit from the upper left, as the coin is: it floats, so its shadow
-       falls soft and a little away, down and to the right */
-    filter: drop-shadow(5px 5px 7px rgba(0, 0, 0, 0.18));
+    /* lit from above, as the coin is: it floats, so its shadow falls soft
+       and a little away, straight down */
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.18));
     transform-origin: 0.7rem 100%;
     animation: bubble-in 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
   }

@@ -107,13 +107,13 @@ export async function run({ plate, from }) {
   const FOV = 16;
   const camera = new PerspectiveCamera(FOV, 1, 10, 20000);
 
-  // The site's light: a lamp in the top left corner, fairly low, over a
-  // dim room, so things are lit on one side and shaded on the other and
-  // their shadows fall long and plain down and to the right.
+  // The site's light: a lamp above the top of the screen, about 50 degrees
+  // up, over a dim room, so things are lit from above and shaded below and
+  // their shadows fall plainly down the page.
   scene.add(new HemisphereLight(0xffffff, 0xe9e6e2, 0.32));
   const key = new DirectionalLight(0xffffff, 2.5);
   key.castShadow = true;
-  key.shadow.mapSize.set(1024, 1024);
+  key.shadow.mapSize.set(2048, 2048);
   key.shadow.bias = -0.0004;
   key.shadow.normalBias = 0.6;
   key.shadow.radius = 6;
@@ -147,9 +147,9 @@ export async function run({ plate, from }) {
   // patch where the coin's shadow can fall, and travel with it. Spread over
   // the whole screen, the shadow was being worked out for every pixel of the
   // display on every frame, to draw one coin's worth of it. The light comes
-  // from the top left corner, so a point at height z throws its shadow
-  // (0.85z, -0.85z) away, down and to the right on the screen.
-  const LIGHT = { x: -560, y: 560, z: 660 };
+  // from above the top of the screen, so a point at height z throws its
+  // shadow 0.83z straight down the screen. pen.js has the same light.
+  const LIGHT = { x: 0, y: 580, z: 700 };
   let shadowSpan = 0;
   function followShadow(cx, cy) {
     const top = s.z + R * s.scale;
@@ -848,8 +848,8 @@ export async function run({ plate, from }) {
     }
   }
   function paint(g, f, o) {
-    // shadow: the lamp is in the top left corner, as it is for the coin
-    const sx = 0.7 + f.z * 0.85, sy = 0.7 + f.z * 0.85;
+    // shadow: the lamp is above the top of the screen, as it is for the coin
+    const sx = 0.3, sy = 0.7 + f.z * 0.83;
     g.save();
     g.translate(f.x + sx, f.y + sy); g.rotate(f.rot);
     g.fillStyle = `rgba(0,0,0,${(f.ink ? 0.28 : 0.2) * o * Math.max(0.35, 1 - f.z / 14)})`;

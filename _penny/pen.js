@@ -46,8 +46,11 @@ function fadeShadow(mat) {
 }
 
 const FOV = 16;
-// the site's lamp, in the top left corner (penny.js has the same)
-const LIGHT = { x: -560, y: 560, z: 660 };
+// The site's lamp (penny.js has the same): straight above the top of the
+// screen, about 50 degrees up, so every shadow falls down the page. Off to
+// one side it hid the shadow of whichever pen leaned toward it; from the
+// top, the Bic's falls to the right and the Flair's to the left, alike.
+const LIGHT = { x: 0, y: 580, z: 700 };
 const ease = { inOut: (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2) };
 const frame = () => new Promise((r) => requestAnimationFrame(r));
 
@@ -83,7 +86,7 @@ function getStage() {
   scene.add(new HemisphereLight(0xffffff, 0xe9e6e2, 0.32));
   const key = new DirectionalLight(0xffffff, 2.5);
   key.castShadow = true;
-  key.shadow.mapSize.set(1024, 1024);
+  key.shadow.mapSize.set(2048, 2048);
   key.shadow.bias = -0.0004;
   key.shadow.normalBias = 0.6;
   key.shadow.radius = 5;
@@ -129,8 +132,8 @@ function getStage() {
       c.left = -span; c.right = span; c.top = span; c.bottom = -span; c.near = 10; c.far = 3000;
       c.updateProjectionMatrix();
     }
-    key.target.position.set(cx + 70, -cy - 70, 0);
-    key.position.set(cx + 70 + LIGHT.x, -cy - 70 + LIGHT.y, LIGHT.z);
+    key.target.position.set(cx, -cy - 80, 0);
+    key.position.set(cx + LIGHT.x, -cy - 80 + LIGHT.y, LIGHT.z);
     const slot = (i) => pens[i];
     for (let i = 0; i < 2; i++) {
       const p = slot(i), C = fade['uC' + i], R = fade['uR' + i];
