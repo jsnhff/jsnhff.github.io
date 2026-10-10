@@ -567,13 +567,11 @@ export function run({ wrap, after, penUrl, script, extend }) {
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
   addBtn.className = 'poem-add';
-  addBtn.innerHTML = '<span class="poem-add-dot" aria-hidden="true"></span>add critic';
+  addBtn.setAttribute('aria-label', 'add a critic');
   addBtn.addEventListener('click', () => { if (wantB) return; wantB = true; addBtn.classList.remove('on'); addBtn.disabled = true; });
-  wrap.appendChild(addBtn);
+  document.body.appendChild(addBtn);
   function offerB() {
     if (wantB || dead || !pen) return;
-    const w = wrap.getBoundingClientRect(), b = box.getBoundingClientRect();
-    addBtn.style.top = (b.bottom - w.top + 10) + 'px';
     addBtn.classList.add('on');
   }
   const HELLO = [
