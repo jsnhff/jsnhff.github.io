@@ -15,7 +15,7 @@
 
 import {
   WebGLRenderer, Scene, PerspectiveCamera, Group, Mesh, CylinderGeometry, BoxGeometry,
-  PlaneGeometry, SphereGeometry, LatheGeometry, Vector2, CanvasTexture, DoubleSide, MeshStandardMaterial, MeshPhysicalMaterial, ShadowMaterial, DirectionalLight, HemisphereLight,
+  PlaneGeometry, SphereGeometry, LatheGeometry, Vector2, CanvasTexture, DoubleSide, MeshStandardMaterial, ShadowMaterial, DirectionalLight, HemisphereLight,
   SRGBColorSpace, PMREMGenerator, PCFSoftShadowMap, ACESFilmicToneMapping, MathUtils,
   Quaternion, Vector3
 } from 'three';
@@ -65,7 +65,9 @@ function getStage() {
   cvs.setAttribute('aria-hidden', 'true');
   cvs.style.cssText = 'right:0;bottom:0;width:100%;height:100%';
   document.body.appendChild(cvs);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+  // full resolution: at less, a phone scales the canvas up and the pens'
+  // edges against the page go jagged
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
   renderer.setClearColor(0x000000, 0);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = PCFSoftShadowMap;
@@ -265,15 +267,29 @@ function flair() {
   // 18, nose to 44.5, barrel to 89, cap to 160, clip 105-157. Radii in the
   // same units: cone 1.9-2.45, collar 3.4, nose 3.3-4.2, barrel 4.9, cap
   // 5.7 tapering to 4.7.
-  // a saturated, matte plastic: little sheen, and kept out of the tone
-  // curve, which would wash it toward mint
-  const green = new MeshPhysicalMaterial({ color: '#007d40', metalness: 0, roughness: 0.65, specularIntensity: 0.35, toneMapped: false });
-  const felt = new MeshPhysicalMaterial({ color: '#03401c', metalness: 0, roughness: 0.95, specularIntensity: 0.2, toneMapped: false });
+  // a saturated green plastic with a soft sheen, lit like the Bic
+  const green = mat({ color: '#008a48', metalness: 0, roughness: 0.38 });
+  const felt = mat({ color: '#063d1d', metalness: 0, roughness: 0.9 });
   const silver = mat({ color: '#e3e6ea', metalness: 0.95, roughness: 0.16 });
   const pen = new Group();
-  const lathe = (prof, m, y = 0) => {
-    const e = new Mesh(new LatheGeometry(prof.map((p) => new Vector2(p[0], p[1])), 32), m);
-    e.position.y = y; e.castShadow = true; pen.add(e); return e;
+  // Turned from a profile. Split at every corner (a step, a shoulder) so
+  // each face keeps its own normals: smoothed across a step, the barrel's
+  // normals would tilt along the pen and it would light flat.
+  const lathe = (prof, m) => {
+    const runs = [[prof[0]]];
+    for (let i = 1; i < prof.length; i++) {
+      const run = runs[runs.length - 1];
+      run.push(prof[i]);
+      const a = prof[i - 1], b = prof[i], c = prof[i + 1];
+      if (!c) break;
+      const t1 = Math.atan2(b[1] - a[1], b[0] - a[0]), t2 = Math.atan2(c[1] - b[1], c[0] - b[0]);
+      let d = Math.abs(t2 - t1); if (d > Math.PI) d = 2 * Math.PI - d;
+      if (d > 0.5) runs.push([b]);
+    }
+    for (const run of runs) {
+      const e = new Mesh(new LatheGeometry(run.map((q) => new Vector2(q[0], q[1])), 40), m);
+      e.castShadow = true; pen.add(e);
+    }
   };
   lathe([[0, 0], [0.55, 0.2], [0.9, 1.2], [1.5, 6]], felt);
   lathe([[1.5, 6], [1.9, 6], [2.45, 13.4], [2.6, 13.6], [3.4, 13.6], [3.4, 17.9],
