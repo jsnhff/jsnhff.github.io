@@ -296,8 +296,14 @@ export function run({ wrap, after, penUrl }) {
     path.style.strokeDashoffset = len;
     const b = box.getBoundingClientRect();
     const ms = Math.min(700, 180 + len * 2.4);
-    const play = () => path.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }],
-      { duration: ms * speed + 1, easing: 'linear', fill: 'forwards' });
+    // Hidden until the pen starts it: a dash of no length still draws its
+    // round cap, a red dot waiting where the mark will begin.
+    path.style.visibility = 'hidden';
+    const play = () => {
+      path.style.visibility = '';
+      return path.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }],
+        { duration: ms * speed + 1, easing: 'linear', fill: 'forwards' });
+    };
     return { path, pts: pts.map((q) => [b.left + q[0], b.top + q[1]]), ms, play };
   }
 
