@@ -360,17 +360,20 @@
   .pw.hid { opacity: 0; transform: scale(0.6) translateY(0.25em); transition: none; }
   .pw.swap { opacity: 0; transform: translateY(-0.2em); transition: opacity 300ms ease, transform 300ms ease; }
   .poem-ink { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-  .poem-ink .pen { fill: none; stroke: #d2352b; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; transition: opacity 500ms ease; }
+  .poem-ink .pen { fill: none; stroke: #d2352b; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: opacity 500ms ease; }
   .poem-ink .pen.thin { stroke-width: 1.1; opacity: 0.8; }
   .poem-ink .gone { opacity: 0; }
-  /* the critic's hand, in a ballpoint's red, each letter a little off the line */
+  /* the critic's hand, in a ballpoint's red, each letter a little off the line.
+     The same pen as the marks: the same red, and the font's thin line
+     thickened with a stroke of its own colour to the marks' 1.6px. */
   .poem-note {
     position: absolute;
     white-space: pre;
     font-family: "Critic Hand", "Bradley Hand", "Segoe Print", cursive;
     font-size: 1.02em;
     line-height: 1.2;
-    color: #e03a30;
+    color: #d2352b;
+    -webkit-text-stroke: 0.6px currentColor;
     letter-spacing: 0.01em;
     transform: rotate(var(--rot, 0deg));
     transform-origin: left center;
@@ -381,8 +384,8 @@
   .poem-note.gone { opacity: 0; }
   .poem-note.final { right: 0; bottom: -1.9em; font-size: 1.2em; }
   /* The second critic's ink: a green felt-tip. */
-  .poem-ink .pen.green { stroke: #1f8a4c; stroke-width: 2.3; }
-  .poem-note.green { color: #1f8a4c; }
+  .poem-ink .pen.green { stroke: #1f8a4c; stroke-width: 2.2; }
+  .poem-note.green { color: #1f8a4c; -webkit-text-stroke-width: 1.2px; }
   .penny-bubble.green { background: #E2F0E6; }
   .penny-bubble.green::before { background: #E2F0E6; }
   /* While the poem is up the plate takes no touches, so what sits over it
