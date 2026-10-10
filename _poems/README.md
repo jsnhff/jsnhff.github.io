@@ -59,7 +59,10 @@ What made the corpus work, and what a prompt for a model should ask for:
   "show me one face"), names the problem ("cliché", "op-ed. cut."), or
   says nothing and strikes.
 - Each round makes the poem more particular, not just cleaner: the
-  revision finds the detail the draft was hiding, and the last line turns.
+  revision finds the detail the draft was hiding.
+- The ending stays open. It stops on an image, not a punchline: no
+  two-beat zinger ("i make a snowball. i miss."), no line that sums the
+  poem up or clicks it shut. Leave something unresolved.
 - The verdict points at what saved it ("the boots stay.").
 
 A starting prompt:
@@ -70,5 +73,5 @@ A starting prompt:
 > beginner writes (abstraction, cliché, filler words, adverbs, explaining
 > the feeling), with the real poem hidden inside it. Then three rounds of a
 > sharp editor's marks, each with the revised poem, that make it more
-> specific each time and end on a line that turns. Notes are terse and
+> specific each time. End on an image, not a punchline; leave it open. Notes are terse and
 > concrete. Follow the limits exactly.
