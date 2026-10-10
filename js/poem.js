@@ -622,6 +622,7 @@ export function run({ wrap, after, penUrl, script, extend }) {
     // the way of the words
     await penB.enter(b.left + 14, b.bottom - 8, 900 * speed + 1);
     if (dead) throw 0;
+    status.textContent = status.textContent.replace(/^the critic /, 'the critics ');
     await talk(rnd(HELLO));
   }
   // The second critic's stet: a dotted line under the words the first
@@ -631,7 +632,9 @@ export function run({ wrap, after, penUrl, script, extend }) {
     if (!at || !penB) return [];
     const els = []; for (let k = 0; k < at[1]; k++) els.push(wordEl[key(li, at[0] + k)]);
     const sp = spanOf(els), h = sp.b - sp.t;
-    const m = await draw(underline(sp.l, sp.r, sp.b - h * 0.04), false, 'stet', penB, 'green', true);
+    // one row of dots, just under the words
+    const y = sp.b - h * 0.04;
+    const m = await draw([[sp.l - 2, y], [(sp.l + sp.r) / 2, y + between(-0.6, 0.6)], [sp.r + 2, y + between(-1, 1)]], false, 'stet', penB, 'green', true);
     const n = await note(li, sp, 'filler', 'stet', penB, 'green');
     return [m, n && n.n].filter(Boolean);
   }
@@ -657,8 +660,10 @@ export function run({ wrap, after, penUrl, script, extend }) {
     let quick = left() < 15000;
     if (!script) gs = shuffle(gs).slice(0, quick ? 6 : 4);
     gs.sort((a, b) => a.li - b.li || a.fs[0].wi - b.fs[0].wi);
-    status.textContent = round === 1 ? 'the critic' : 'the critic, again';
-    if (joined && penB) status.textContent = round === 1 ? 'the critics' : 'the critics, again';
+    // where the performance is: which round, of how many
+    const WORDS = ['one', 'two', 'three', 'four', 'five'];
+    const of = script ? ' of ' + (WORDS[script.rounds.length - 1] || script.rounds.length) : '';
+    status.textContent = (joined && penB ? 'the critics' : 'the critic') + ' \u00b7 round ' + (WORDS[round - 1] || round) + of;
     status.classList.add('on');
     offerB();
     await maybeJoin();
