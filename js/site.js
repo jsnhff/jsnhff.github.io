@@ -161,8 +161,11 @@
     // Stamped with the build, as site.js itself is, so a new deploy is never
     // answered from a cached copy of the old penny.
     var pennyUrl = '/js/penny.js?v=' + buildStamp;
-    // ?penny: the last four seconds only, for trying it out.
-    var quick = /[?&]penny\b/.test(location.search);
+    // For trying the acts out: ?penny skips to the last four seconds of the
+    // timer, just before the penny comes out; ?poem skips straight to the
+    // poem. Either case works, ?Penny as well as ?penny.
+    var quick = /[?&]penny\b/i.test(location.search);
+    var toPoem = /[?&]poem\b/i.test(location.search);
     if (quick) timerPie.getAnimations().forEach(function (a) { a.currentTime = 26000; });
     timerPie.addEventListener('animationstart', function () {
       setTimeout(function () {
@@ -213,6 +216,7 @@
       rewind();
     });
     function rewind() {
+      timer.style.visibility = '';
       timerPie.getAnimations().forEach(function (a) {
         a.cancel();
         a.currentTime = 0;
@@ -242,6 +246,14 @@
       }
       sendPenny();
     });
+    if (toPoem && !reduce && egg) {
+      timerPie.getAnimations().forEach(function (a) { a.cancel(); });
+      timer.style.visibility = 'hidden';
+      egg.parentNode.classList.add('is-poem');
+      setTimeout(function () {
+        poem(offerAgain);
+      }, 500);
+    }
   }
 
   // ---- nav ----------------------------------------------------------------

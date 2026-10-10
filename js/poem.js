@@ -36,13 +36,15 @@ const WEAK = {
   things: ['things', ['stones', 'husks', 'feathers']]
 };
 const NOTES = {
-  vague: ['vague. what kind?', 'says nothing', 'every poem says this', "show me, don't tell"],
-  abstract: ['give me a leaf, not this', 'abstract. what can i touch?', 'too big', 'can you hold it?'],
-  filler: ['cut', 'filler', "why 'very'?"],
+  // the full remarks, and the shorthand editors use in the margin:
+  // wc word choice, awk awkward, wdy wordy, rep repetition, del delete
+  vague: ['vague. what kind?', 'says nothing', 'every poem says this', "show me, don't tell", 'wc', 'wc?'],
+  abstract: ['give me a leaf, not this', 'abstract. what can i touch?', 'too big', 'can you hold it?', 'show it'],
+  filler: ['cut', 'filler', "why 'very'?", 'del'],
   adverb: ['let the verb do this', 'cut -ly', 'lazy'],
   things: ['which things?', 'name one'],
-  repeat: ['again?', 'you said this already', 'used it'],
-  phrase: ['all of this', 'too much', 'say it plainer', 'overwritten'],
+  repeat: ['again?', 'you said this already', 'rep'],
+  phrase: ['all of this', 'too much', 'say it plainer', 'overwritten', 'awk', 'wdy'],
   // when there is no room left on the line for the note it meant to write
   short: ['this too', 'same', 'and this']
 };
@@ -148,10 +150,20 @@ function strike(l, r, mid) {
   const x0 = l - between(2, 5), x1 = r + between(2, 6), slope = between(-1.5, 1.5);
   const pts = [];
   for (let i = 0; i <= 16; i++) { const x = x0 + (x1 - x0) * i / 16; pts.push([x, mid + slope * i / 16 + between(-0.4, 0.4)]); }
-  if (Math.random() < 0.4) {
-    const ex = x1, ey = mid + slope;
-    for (let i = 1; i <= 12; i++) { const a = -Math.PI / 2 + i / 12 * Math.PI * 1.6; pts.push([ex + 3 + Math.cos(a) * 3.5, ey - 4 + Math.sin(a) * 3.5]); }
+  return pts;
+}
+// The proofreader's delete: struck through, and the line carried on up into
+// the deleatur, a small loop with a tail, the old "d" for "take it out".
+function deleatur(l, r, mid) {
+  const pts = strike(l, r, mid), [ex, ey] = pts[pts.length - 1];
+  // up and clear of the letters, into the space above the line
+  const s = between(0.85, 1.15), cx = ex + 5 * s, cy = ey - 17 * s, rr = between(3.4, 4.4) * s;
+  pts.push([ex + 2 * s, ey - 7 * s], [ex + 3 * s, ey - 12 * s]);
+  for (let i = 0; i <= 16; i++) {
+    const a = Math.PI * 0.75 + i / 16 * Math.PI * 2.1;
+    pts.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]);
   }
+  pts.push([cx + rr * 0.9, cy + rr * 1.6], [cx + rr * 1.6, cy + rr * 2.3]);
   return pts;
 }
 
@@ -214,9 +226,9 @@ export function run({ wrap, after, penUrl }) {
   // Every line is laid out (unseen) to find the longest; the type comes down
   // until that one fits with room to spare for a longer revision, and the
   // poem keeps that size and width to the end, so nothing is ever rewrapped
-  // or recentred. Where there is no margin for the critic, the poem is set
-  // double-spaced, as a manuscript is for an editor, and each note goes in
-  // the space under its line.
+  // or recentred. It is set double-spaced, as a manuscript is for an editor:
+  // a word struck out gets its replacement written in the space above it,
+  // and where there is no margin the notes go in the space under the line.
   p.lines.forEach((_, li) => render(li).forEach((w) => w.classList.add('hid')));
   const vw = window.innerWidth;
   const room = Math.min(624, vw - 32);
@@ -225,8 +237,8 @@ export function run({ wrap, after, penUrl }) {
   const need = widest() * 1.06;
   if (need > room) { fs = Math.max(14, fs * room / need); box.style.fontSize = fs + 'px'; }
   box.style.width = Math.min(room, Math.ceil(widest() * 1.06)) + 'px';
+  box.classList.add('ms');
   const margin = (vw - box.offsetWidth) / 2 - 28 >= 190;
-  if (!margin) box.classList.add('ms');
 
   async function write() {
     box.classList.add('on');
@@ -282,12 +294,22 @@ export function run({ wrap, after, penUrl }) {
       return true;
     }
     // under the line, starting under the marked words
-    const y = sp.b + fs * 0.08;
+    return inRow(n, li, sp.b + fs * 0.08, sp.l - 2);
+  }
+  // Above the line, centred over the marked words: where a replacement goes.
+  function above(n, li, sp) {
+    const b = box.getBoundingClientRect(), lr = lineEls[li].getBoundingClientRect();
+    return inRow(n, li - 1, lr.top - b.top - n.offsetHeight + fs * 0.14, (sp.l + sp.r) / 2 - n.offsetWidth / 2);
+  }
+  // The space under line `gap` (-1 is under the title): put n at height y,
+  // as near x as it fits without touching what is there, on the screen.
+  function inRow(n, gap, y, x0) {
+    const b = box.getBoundingClientRect(), nw = n.offsetWidth;
     const lo = 10 - b.left, hi = vw - 10 - b.left - nw;
     if (hi < lo) return false;
-    const taken = rows[li] || (rows[li] = []);
+    const taken = rows[gap] || (rows[gap] = []);
     const free = (x) => taken.every((t) => x + nw + 10 <= t[0] || x >= t[1] + 10);
-    const want = Math.max(lo, Math.min(hi, sp.l - 2));
+    const want = Math.max(lo, Math.min(hi, x0));
     const tries = [want];
     taken.forEach((t) => { tries.push(t[1] + 10, t[0] - 10 - nw); });
     let x = null;
@@ -313,8 +335,14 @@ export function run({ wrap, after, penUrl }) {
       if (place(n, li, sp)) { text = w; break; }
     }
     if (text == null) { n.remove(); return null; }
-    // a hand tilts a short note more than a long one, and a long one tilted
-    // as far would run its far end into the next line
+    await handwrite(n, text);
+    return { n, text };
+  }
+
+  // Writes `text` into n, letter by letter, the pen's tip running along
+  // under it. A hand tilts a short note more than a long one; a long one
+  // tilted as far would run its far end into the next line.
+  async function handwrite(n, text) {
     n.style.setProperty('--rot', (between(-1, 1) * Math.min(2, 160 / n.offsetWidth)).toFixed(2) + 'deg');
     const cs = letters(n, text);
     n.style.visibility = '';
@@ -330,13 +358,11 @@ export function run({ wrap, after, penUrl }) {
     } else {
       for (const c of cs) { c.classList.remove('hid'); await nap(hand(c.textContent) * 0.8); }
     }
-    return { n, text };
   }
 
   // ---- the critic ----------------------------------------------------------------
-  // What is wrong, gathered into marks: next-door words that are both weak are
-  // one phrase, underlined with one note; a word to cut is struck out or
-  // circled; a long word now and then underlined; the rest circled.
+  // What is wrong, gathered into marks: next-door words that are both weak
+  // are one phrase.
   function marks() {
     const out = [];
     flaws(p).forEach((f) => {
@@ -346,11 +372,41 @@ export function run({ wrap, after, penUrl }) {
     });
     return out;
   }
+  // What the pen does about it, in the editor's grammar:
+  //   delete   struck through with the deleatur's curl; that is the whole
+  //            message, so it mostly goes without a note
+  //   replace  struck through, the better word written in above it
+  //   circle / underline   look at this; a remark or shorthand in the
+  //            margin, or nothing, for the poet to work out
+  function move(g) {
+    const one = g.fs.length === 1, k = g.fs[0].kind;
+    if (one && (k === 'filler' || k === 'adverb')) return { how: 'delete', say: Math.random() < 0.2 };
+    if (one && g.fs[0].rep && (k === 'vague' || k === 'abstract' || k === 'things') && Math.random() < 0.35) return { how: 'replace', say: false };
+    let how = Math.random() < (one ? 0.5 : 0.35) ? 'circle' : 'underline';
+    // never the same shape three times running
+    if (lastHows[0] === how && lastHows[1] === how) how = how === 'circle' ? 'underline' : 'circle';
+    return { how, say: Math.random() < (one ? 0.65 : 0.8) };
+  }
+  const lastHows = [];
+  async function draw(pts, quick, how) {
+    const m = ink_(pts);
+    m.path.dataset.how = how;
+    if (pen) {
+      await pen.glide(m.pts[0][0], m.pts[0][1], (quick ? 220 : 300) * speed + 1);
+      if (dead) throw 0;
+      m.play();
+      await pen.stroke(m.pts, m.ms * speed + 1);
+    } else {
+      m.play();
+      await nap(m.ms);
+    }
+    return m;
+  }
   async function critique(round) {
     let gs = marks();
     if (!gs.length) return [];
-    // a critic does not catch everything at once; short of time, it skips
-    // the notes and just marks
+    // a critic does not catch everything at once; short of time, it stops
+    // explaining and just marks
     const quick = left() < 12000;
     gs = shuffle(gs).slice(0, quick ? 6 : 4).sort((a, b) => a.li - b.li || a.fs[0].wi - b.fs[0].wi);
     status.textContent = round === 1 ? 'the critic' : 'the critic, again';
@@ -358,31 +414,37 @@ export function run({ wrap, after, penUrl }) {
     const done = [];
     for (const g of gs) {
       if (left() < 4000) break;
+      // what each word becomes is settled now, so a word the critic writes
+      // in is the word the poem takes
+      g.fs.forEach((f) => { f.rep = revise(p, f); });
       const els = g.fs.map((f) => wordEl[key(f.li, f.wi)]);
       const sp = spanOf(els), word = els.map((e) => e.textContent).join(' ');
-      const cut = g.fs.length === 1 && (g.fs[0].kind === 'filler' || g.fs[0].kind === 'adverb');
-      const h = sp.b - sp.t;
-      const pts = g.fs.length > 1 || (word.length >= 8 && Math.random() < 0.35) ? underline(sp.l, sp.r, sp.b - h * 0.12)
-        : cut && Math.random() < 0.6 ? strike(sp.l, sp.r, sp.t + h * 0.56)
-        : loop(sp.l, sp.t, sp.r, sp.b);
-      const m = ink_(pts);
-      if (pen) {
-        await pen.glide(m.pts[0][0], m.pts[0][1], (quick ? 220 : 300) * speed + 1);
-        if (dead) throw 0;
-        m.play();
-        await pen.stroke(m.pts, m.ms * speed + 1);
-      } else {
-        m.play();
-        await nap(m.ms);
-      }
-      let n = null;
-      if (!quick) {
+      const h = sp.b - sp.t, mv = move(g);
+      lastHows.unshift(mv.how); lastHows.length = 2;
+      const inks = [];
+      if (mv.how === 'delete') inks.push(await draw(deleatur(sp.l, sp.r, sp.t + h * 0.56), quick, 'delete'));
+      else if (mv.how === 'replace') inks.push(await draw(strike(sp.l, sp.r, sp.t + h * 0.56), quick, 'replace'));
+      else if (mv.how === 'circle') inks.push(await draw(loop(sp.l, sp.t, sp.r, sp.b), quick, 'circle'));
+      else inks.push(await draw(underline(sp.l, sp.r, sp.b - h * 0.12), quick, 'underline'));
+      const extra = [];
+      if (mv.how === 'replace' && !quick) {
+        const ins = document.createElement('span');
+        ins.className = 'poem-note';
+        ins.style.visibility = 'hidden';
+        ins.textContent = bare(g.fs[0].rep);
+        box.appendChild(ins);
+        if (above(ins, g.li, sp)) {
+          await nap(80);
+          await handwrite(ins, ins.textContent);
+          extra.push(ins);
+          notesMade.push({ w: word.replace(/,/g, ''), n: '→ ' + ins.textContent });
+        } else ins.remove();
+      } else if (mv.say && !quick) {
         await nap(100);
-        const kind = g.fs.length > 1 ? 'phrase' : g.fs[0].kind;
-        n = await note(g.li, sp, kind);
-        if (n) notesMade.push({ w: word.replace(/,/g, ''), n: n.text });
+        const n = await note(g.li, sp, g.fs.length > 1 ? 'phrase' : g.fs[0].kind);
+        if (n) { extra.push(n.n); notesMade.push({ w: word.replace(/,/g, ''), n: n.text }); }
       }
-      done.push({ g, m, n: n && n.n });
+      done.push({ g, inks, extra });
       await nap(quick ? 80 : 160);
     }
     return done;
@@ -395,7 +457,7 @@ export function run({ wrap, after, penUrl }) {
     await nap(450);
     const byLine = {};
     done.forEach((d) => d.g.fs.forEach((f) => { (byLine[f.li] = byLine[f.li] || []).push(f); }));
-    done.forEach((d) => { d.m.path.classList.add('gone'); if (d.n) d.n.classList.add('gone'); });
+    done.forEach((d) => { d.inks.forEach((m) => m.path.classList.add('gone')); d.extra.forEach((e) => e.classList.add('gone')); });
     Object.values(byLine).flat().forEach((f) => wordEl[key(f.li, f.wi)].classList.add('swap'));
     await nap(320);
     for (const li of Object.keys(byLine).map(Number)) {
@@ -404,7 +466,7 @@ export function run({ wrap, after, penUrl }) {
       const marked = new Set(fsx.map((f) => f.wi));
       const keepOld = olds.filter((_, i) => !marked.has(i)).map((e) => e.getBoundingClientRect().left);
       const reps = new Map(), cuts = [];
-      fsx.forEach((f) => { const r = revise(p, f); if (r == null) cuts.push(f.wi); else reps.set(f.wi, r); });
+      fsx.forEach((f) => { const r = f.rep === undefined ? revise(p, f) : f.rep; if (r == null) cuts.push(f.wi); else reps.set(f.wi, r); });
       reps.forEach((r, wi) => { line[wi] = r + comma(line[wi]); });
       const fresh = new Set();
       reps.forEach((_, wi) => fresh.add(wi - cuts.filter((c) => c < wi).length));
@@ -424,7 +486,7 @@ export function run({ wrap, after, penUrl }) {
       (async () => { for (const [i, e] of now.entries()) if (fresh.has(i)) { await nap(60); e.classList.remove('hid'); } })().catch(() => {});
     }
     await nap(600);
-    done.forEach((d) => { d.m.path.remove(); if (d.n) d.n.remove(); });
+    done.forEach((d) => { d.inks.forEach((m) => m.path.remove()); d.extra.forEach((e) => e.remove()); });
     Object.keys(rows).forEach((k) => delete rows[k]);
     marginLow = -Infinity;
     status.classList.remove('on');

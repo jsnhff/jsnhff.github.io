@@ -351,6 +351,7 @@
      manuscript is, so the notes have a row of their own under each line. */
   .poem-line { margin: 0; line-height: 1.5; min-height: 1.5em; white-space: nowrap; }
   .poem.ms .poem-line { padding-bottom: 1.3em; }
+  .poem.ms .poem-title { margin-bottom: 1.4em; }
   .poem.ms .poem-note { font-size: 0.88em; }
   .pw {
     display: inline-block;

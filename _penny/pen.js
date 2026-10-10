@@ -179,10 +179,33 @@ export function makePen() {
     }
   }
   const SCALE = 0.95;
-  const s = { x: -200, y: -200, z: 90, roll: 0, a: 0 };
+  const s = { x: -200, y: -200, z: 90, roll: 0, a: 0, busy: 0, want: 0, px: -200, py: -200, vx: 0, vy: 0 };
+
+  // A hand is never still. The pen sways a little at rest and more while it
+  // writes, the wrist turning as the letters form, and it leans into the way
+  // the tip is going. Small: a few degrees of lean, a little more of turn.
+  const tilt = new Vector3(), qNow = new Quaternion(), UP = new Vector3(0, 1, 0);
+  let last = performance.now();
+  function wrist() {
+    const now = performance.now(), dt = Math.min(0.05, (now - last) / 1000), t = now / 1000;
+    last = now;
+    s.busy += (s.want - s.busy) * Math.min(1, dt * 5);
+    // the tip's velocity, smoothed, in px/s
+    const k = Math.min(1, dt * 8);
+    s.vx += ((s.x - s.px) / Math.max(dt, 1e-3) - s.vx) * k;
+    s.vy += ((s.y - s.py) / Math.max(dt, 1e-3) - s.vy) * k;
+    s.px = s.x; s.py = s.y;
+    const b = s.busy, deg = MathUtils.degToRad;
+    const into = Math.max(-1, Math.min(1, s.vx / 400));
+    const dl = deg((1.2 + 2.6 * b) * Math.sin(t * 1.7) + 1.6 * b * Math.sin(t * 8.3) - 3 * into);
+    const da = deg((2.5 + 5 * b) * Math.sin(t * 1.1 + 1) + 3 * b * Math.sin(t * 6.1) + 4 * Math.max(-1, Math.min(1, s.vy / 400)));
+    const l = lean + dl, z = az + da;
+    tilt.set(Math.sin(l) * Math.cos(z), Math.sin(l) * Math.sin(z), Math.cos(l));
+    return qNow.setFromUnitVectors(UP, tilt);
+  }
 
   function place() {
-    holder.quaternion.copy(q0);
+    holder.quaternion.copy(wrist());
     pen.rotation.y = facing + s.roll;
     holder.scale.setScalar(SCALE);
     holder.position.set(s.x, -s.y, s.z);
@@ -217,6 +240,7 @@ export function makePen() {
   const api = {
     // Lift off and glide to a point, arcing over the page.
     async glide(x, y, ms = 600) {
+      s.want = 0.35;
       const x0 = s.x, y0 = s.y, z0 = s.z, hop = Math.min(46, 10 + Math.hypot(x - x0, y - y0) * 0.1);
       await move(ms, (k) => { const e = ease.inOut(k); return [x0 + (x - x0) * e, y0 + (y - y0) * e, z0 * (1 - e) + Math.sin(Math.PI * k) * hop]; });
     },
@@ -229,6 +253,7 @@ export function makePen() {
     },
     // The tip on the page, following a polyline over `ms`, a little noise in the wrist.
     async stroke(pts, ms) {
+      s.want = 1;
       const n = pts.length - 1, seed = Math.random() * 9;
       await move(ms, (k) => {
         const f = k * n, i = Math.min(n - 1, Math.floor(f)), r = f - i;
@@ -238,12 +263,14 @@ export function makePen() {
     },
     // The tip scribbling along a baseline while the margin note is written.
     async write(x0, y0, x1, ms) {
+      s.want = 1;
       const seed = Math.random() * 9;
       await move(ms, (k) => [x0 + (x1 - x0) * k + Math.sin(k * 40 + seed) * 2, y0 + Math.sin(k * 23 + seed) * 3 + Math.sin(k * 95) * 1, 0]);
     },
     // Hold the tip up a little, off the page.
     async lift(ms = 200) { const z0 = s.z, x = s.x, y = s.y; await move(ms, (k) => [x, y, z0 + 16 * ease.inOut(k)]); },
     async leave(ms = 800) {
+      s.want = 0;
       const x0 = s.x, y0 = s.y, z0 = s.z, a = OFF();
       await move(ms, (k) => { const e = ease.inOut(k); return [x0 + (a[0] - x0) * e, y0 + (a[1] - y0) * e, z0 + (a[2] - z0) * e]; }, (k) => 1 - Math.max(0, (k - 0.4) / 0.6));
     },
