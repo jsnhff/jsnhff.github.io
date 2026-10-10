@@ -757,11 +757,13 @@ export function run({ wrap, after, penUrl, script }) {
     await nap(400);
     const end = document.createElement('span');
     end.className = 'poem-note final';
-    end.style.setProperty('--rot', '-3deg');
+    end.style.visibility = 'hidden';
+    const verdict = script ? script.verdict : 'better.';
+    end.textContent = verdict;
     box.appendChild(end);
-    if (pen) pen.leave(700 * speed + 1);
-    const verdict = script ? script.verdict : flaws(p).length ? 'out of time. print it.' : round > 1 ? 'better. print it.' : 'fine.';
-    for (const c of letters(end, verdict)) { const g = hand(c.textContent); inkIn(c, g * speed); await nap(g); }
+    // the pen signs off, then goes
+    await handwrite(end, verdict);
+    if (pen) await pen.leave(700 * speed + 1);
     const count = log(round);
     status.textContent = '';
     const a = document.createElement('a');
