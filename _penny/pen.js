@@ -46,7 +46,8 @@ function fadeShadow(mat) {
 }
 
 const FOV = 16;
-const LIGHT = { x: -260, y: 420, z: 900 };
+// the site's lamp, in the top left corner (penny.js has the same)
+const LIGHT = { x: -560, y: 560, z: 660 };
 const ease = { inOut: (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2) };
 const frame = () => new Promise((r) => requestAnimationFrame(r));
 
@@ -77,17 +78,17 @@ function getStage() {
 
   const scene = new Scene();
   scene.environment = new PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
-  scene.environmentIntensity = 0.9;
+  scene.environmentIntensity = 0.6;
   const camera = new PerspectiveCamera(FOV, 1, 10, 20000);
-  scene.add(new HemisphereLight(0xffffff, 0xe9e6e2, 0.55));
-  const key = new DirectionalLight(0xffffff, 1.9);
+  scene.add(new HemisphereLight(0xffffff, 0xe9e6e2, 0.32));
+  const key = new DirectionalLight(0xffffff, 2.5);
   key.castShadow = true;
   key.shadow.mapSize.set(1024, 1024);
   key.shadow.bias = -0.0004;
   key.shadow.normalBias = 0.6;
   key.shadow.radius = 5;
   scene.add(key, key.target);
-  const floorMat = new ShadowMaterial({ opacity: 0.2 });
+  const floorMat = new ShadowMaterial({ opacity: 0.3 });
   const fade = fadeShadow(floorMat);
   const floor = new Mesh(new PlaneGeometry(1, 1), floorMat);
   floor.receiveShadow = true;
@@ -136,7 +137,7 @@ function getStage() {
       if (!p) { fade.uW.value.setComponent(i, 0); continue; }
       p.place();
       C.value.set(p.s.x, -p.s.y);
-      R.value.set(14 + p.s.z * 0.2, 150 + p.s.z * 0.6);
+      R.value.set(20 + p.s.z * 0.3, 230 + p.s.z * 0.8);
       // the shadow thins as the pen lifts, and goes with it when it leaves
       fade.uW.value.setComponent(i, p.s.a * (1 - 0.6 * Math.min(1, p.s.z / 120)));
     }
