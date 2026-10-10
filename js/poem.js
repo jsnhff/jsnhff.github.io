@@ -172,13 +172,17 @@ function deleatur(l, r, mid) {
   return pts;
 }
 
+// How long the act runs, start to finish, so the home timer can count it
+// down: the poem ends as the timer runs out, never before or after.
+export const DURATION = 95000;
+
 export function run({ wrap, after, penUrl }) {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const speed = reduce ? 0.15 : 1;
   const t0 = performance.now();
   // The critic takes its time: it reads before it marks, and stops to think
   // before each mark. A poem needs room to breathe.
-  const budget = 90000;
+  const budget = DURATION;
   const left = () => budget - (performance.now() - t0);
   let dead = false;
   const nap = (ms) => sleep(ms * speed).then(() => { if (dead) throw 0; });
@@ -474,7 +478,7 @@ export function run({ wrap, after, penUrl }) {
     else if (!quick && Math.random() < 0.6) await read(shuffle(p.lines.map((_, i) => i)).slice(0, 1 + (Math.random() < 0.4)).sort());
     const done = [];
     for (const g of gs) {
-      if (left() < 4000) break;
+      if (left() < 11000) break;
       // what each word becomes is settled now, so a word the critic writes
       // in is the word the poem takes
       g.fs.forEach((f) => { f.rep = revise(p, f); });
@@ -585,7 +589,7 @@ export function run({ wrap, after, penUrl }) {
     // the poem left alone a moment before anyone touches it
     await nap(1600);
     let round = 0;
-    while (left() > 8000) {
+    while (left() > 15000) {
       await nap(between(900, 1500));
       round++;
       const done = await critique(round);
@@ -610,7 +614,8 @@ export function run({ wrap, after, penUrl }) {
     a.href = '/poems/'; a.textContent = count ? 'added to the log (' + count + ')' : 'could not save to the log';
     status.appendChild(a);
     status.classList.add('on');
-    await nap(5000);
+    // the verdict stands until the time is up
+    await nap(reduce ? 4000 : Math.max(4000, left() - 900));
     finish(false);
   }
 

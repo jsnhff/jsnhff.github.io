@@ -193,6 +193,9 @@
     // be, the loop is offered at once.
     function poem(after) {
       import('/js/poem.js?v=' + buildStamp).then(function (m) {
+        // the timer counts the poem down, so folks know what they are in for
+        acting = 'poem';
+        rewind(m.DURATION);
         m.run({ wrap: egg.parentNode, after: after, penUrl: '/js/pen.js?v=' + buildStamp });
       }).catch(function () { egg.parentNode.classList.remove('is-poem'); after(); });
     }
@@ -213,18 +216,29 @@
       // the timer comes back, full, as the loop goes
       again.classList.remove('on');
       setTimeout(function () { again.hidden = true; }, 500);
+      // the poem's countdown is over; this one is the run up to the penny
+      acting = null;
       rewind();
     });
-    function rewind() {
+    // What the timer is counting down, when it is not the run up to the
+    // penny or the time in the gallery: the poem, which ends itself. It stays
+    // the poem's until the loop is tapped, so its running out sets off nothing.
+    var acting = null;
+    // The stylesheet runs the first countdown; every one after is the
+    // script's own, so it can be any length and restarted at will.
+    var run = null;
+    function rewind(ms) {
       timer.style.visibility = '';
-      timerPie.getAnimations().forEach(function (a) {
-        a.cancel();
-        a.currentTime = 0;
-        a.play();
-      });
+      timerPie.style.animation = 'none';
+      if (run) { run.onfinish = null; run.cancel(); }
+      run = timerPie.animate([{ strokeDashoffset: 0 }, { strokeDashoffset: 100 }],
+        { duration: ms || 30000, easing: 'linear', fill: 'forwards' });
+      run.onfinish = timerDone;
       timer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, easing: 'ease' });
     }
     document.addEventListener('egg-revealed', function () {
+      // a poem cut short by scratching the plate open no longer owns the timer
+      acting = null;
       if (again && !again.hidden) {
         again.disabled = true;
         again.classList.remove('on');
@@ -232,7 +246,9 @@
       }
       if (!reduce) setTimeout(rewind, 600);
     });
-    timerPie.addEventListener('animationend', function () {
+    timerPie.addEventListener('animationend', timerDone);
+    function timerDone() {
+      if (acting === 'poem') return;
       document.dispatchEvent(new CustomEvent('home-timer-done'));
       if (reduce || !egg || !egg.scratch) return;
       if (egg.scratch.isDone()) {
@@ -245,10 +261,9 @@
         return;
       }
       sendPenny();
-    });
+    }
     if (toPoem && !reduce && egg) {
-      timerPie.getAnimations().forEach(function (a) { a.cancel(); });
-      timer.style.visibility = 'hidden';
+      timerPie.style.animation = 'none';
       egg.parentNode.classList.add('is-poem');
       setTimeout(function () {
         poem(offerAgain);
