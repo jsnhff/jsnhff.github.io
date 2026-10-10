@@ -100,17 +100,18 @@ export async function run({ plate, from }) {
   const scene = new Scene();
   const pmrem = new PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  scene.environmentIntensity = 0.9;
+  scene.environmentIntensity = 0.6;
 
   // A camera whose z = 0 plane maps one unit to one CSS pixel, with a long
   // lens so the coin has real perspective without the page plane distorting.
   const FOV = 16;
   const camera = new PerspectiveCamera(FOV, 1, 10, 20000);
 
-  // The site's light: a soft white room, the key high and to the upper left,
-  // so the shadow falls down and to the right, short and pale.
-  scene.add(new HemisphereLight(0xffffff, 0xe9e6e2, 0.55));
-  const key = new DirectionalLight(0xffffff, 1.9);
+  // The site's light: a lamp in the top left corner, fairly low, over a
+  // dim room, so things are lit on one side and shaded on the other and
+  // their shadows fall long and plain down and to the right.
+  scene.add(new HemisphereLight(0xffffff, 0xe9e6e2, 0.32));
+  const key = new DirectionalLight(0xffffff, 2.5);
   key.castShadow = true;
   key.shadow.mapSize.set(1024, 1024);
   key.shadow.bias = -0.0004;
@@ -118,7 +119,7 @@ export async function run({ plate, from }) {
   key.shadow.radius = 6;
   scene.add(key, key.target);
 
-  const floorMat = new ShadowMaterial({ opacity: 0.2 });
+  const floorMat = new ShadowMaterial({ opacity: 0.3 });
   const shadowFade = fadeShadow(floorMat);
   const floor = new Mesh(new PlaneGeometry(1, 1), floorMat);
   floor.receiveShadow = true;
@@ -146,9 +147,9 @@ export async function run({ plate, from }) {
   // patch where the coin's shadow can fall, and travel with it. Spread over
   // the whole screen, the shadow was being worked out for every pixel of the
   // display on every frame, to draw one coin's worth of it. The light comes
-  // from up and to the left, so a point at height z throws its shadow
-  // (0.29z, -0.47z) away, down and to the right on the screen.
-  const LIGHT = { x: -260, y: 420, z: 900 };
+  // from the top left corner, so a point at height z throws its shadow
+  // (0.85z, -0.85z) away, down and to the right on the screen.
+  const LIGHT = { x: -560, y: 560, z: 660 };
   let shadowSpan = 0;
   function followShadow(cx, cy) {
     const top = s.z + R * s.scale;
@@ -232,7 +233,7 @@ export async function run({ plate, from }) {
     // and further the higher it is, since the shadow is then longer
     shadowFade.uC.value.set(holder.position.x, holder.position.y);
     const rr = R * s.scale;
-    shadowFade.uR.value.set(rr * 1.1 + s.z * 0.15, rr * 3.2 + s.z * 0.55);
+    shadowFade.uR.value.set(rr * 1.3 + s.z * 0.2, rr * 4.2 + s.z * 0.9);
     // Move the window over the coin and its shadow, and render just that.
     const top = s.z + R * s.scale;
     const wx = holder.position.x + 0.29 * top / 2, wy = -holder.position.y + 0.47 * top / 2;
@@ -492,6 +493,7 @@ export async function run({ plate, from }) {
     if (!held || e.pointerId !== held.id) return;
     held = null;
     document.documentElement.style.cursor = '';
+    askTilt();
     scratch.lift();
     if (phase === 'held') { phase = 'rest'; t0 = performance.now(); rest = 1.2; }
   }
@@ -720,6 +722,37 @@ export async function run({ plate, from }) {
 
   const flakes = [];
   let ex0 = null, ey0 = null, owe = [0, 0];
+
+  // The phone's tilt. Held up in a hand, the screen is a slope: grit that
+  // has landed slides down it and off the bottom edge, the loose white
+  // first and the ink after, as it would off a tilted card. Flat on a table
+  // it stays where it fell. `slope` is gravity's pull along the screen, in
+  // screen axes, 0 flat to 1 upright.
+  const slope = { x: 0, y: 0, m: 0 };
+  function onTilt(e) {
+    if (e.beta == null || e.gamma == null) return;
+    const b = e.beta * Math.PI / 180, g = e.gamma * Math.PI / 180;
+    // toward the phone's right edge, and toward its bottom edge
+    const x = Math.cos(b) * Math.sin(g), y = Math.sin(b);
+    const turn = ((screen.orientation && screen.orientation.angle) || window.orientation || 0) * Math.PI / 180;
+    slope.x = x * Math.cos(turn) + y * Math.sin(turn);
+    slope.y = -x * Math.sin(turn) + y * Math.cos(turn);
+    slope.m = Math.hypot(slope.x, slope.y);
+  }
+  // iPhones ask first, and only from a tap: the first time the coin is let
+  // go. Elsewhere it is simply there.
+  const Orient = window.DeviceOrientationEvent;
+  const mustAsk = Orient && typeof Orient.requestPermission === 'function';
+  let asked = false;
+  if (Orient && !mustAsk) window.addEventListener('deviceorientation', onTilt);
+  function askTilt() {
+    if (!mustAsk || asked) return;
+    asked = true;
+    Orient.requestPermission().then((r) => { if (r === 'granted') window.addEventListener('deviceorientation', onTilt); }, () => {});
+  }
+  // Landed flakes are painted into the bed and kept here, so a tilt can lift
+  // them out again.
+  const settled = [];
   function crumbs(x, y, ang) {
     if (ex0 === null) { ex0 = x; ey0 = y; return; }
     const mx = x - ex0, my = y - ey0, d = Math.hypot(mx, my);
@@ -733,7 +766,7 @@ export async function run({ plate, from }) {
         const sgn = e ? 1 : -1, along = sgn * band * (0.6 + Math.random() * 0.45);
         const px = x + nx * along, py = y + ny * along;
         if (!scratch.coveredAt(px, py)) continue;
-        if (flakes.length > 140) flakes.shift();
+        if (flakes.length > 400) flakes.shift();
         const ink = inInk(px, py) && Math.random() < 0.38;
         // white grit is finer and sparser than the ink that comes off letters
         if (!ink && Math.random() < 0.3) continue;
@@ -752,7 +785,9 @@ export async function run({ plate, from }) {
           vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, vz: 20 + Math.random() * 60,
           rot: Math.random() * TAU, spin: (Math.random() - 0.5) * 14, pts,
           shade: ink ? 18 + Math.floor(Math.random() * 30) : 242 + Math.floor(Math.random() * 13),
-          ink, life: 0, still: 0, gone: 1
+          ink, life: 0, still: 0, gone: 1,
+          // how steep the screen must be before it slides: ink sticks more
+          grip: (ink ? 0.42 : 0.3) + Math.random() * 0.18
         });
       }
     }
@@ -767,26 +802,45 @@ export async function run({ plate, from }) {
     dg.clearRect(0, 0, W(), H());
     if (!(dt > 0)) dt = 0.016;
     dt = Math.min(dt, 0.05);
+    // tipped past what holds some of the settled grit: lift those back out
+    // of the bed and repaint the rest
+    if (settled.length && settled.some((f) => slope.m > f.grip)) {
+      bg.setTransform(dpr, 0, 0, dpr, 0, 0);
+      bg.clearRect(0, 0, W(), H());
+      for (let i = settled.length - 1; i >= 0; i--) {
+        const f = settled[i];
+        if (slope.m > f.grip) { f.still = 0; flakes.push(f); settled.splice(i, 1); } else paint(bg, f, 1);
+      }
+      dustDrawn = true;
+    }
+    const ux = slope.m ? slope.x / slope.m : 0, uy = slope.m ? slope.y / slope.m : 0;
     for (let i = flakes.length - 1; i >= 0; i--) {
       const f = flakes[i];
       f.life += dt;
       if (f.z > 0) {
-        f.vz -= 900 * dt; f.z += f.vz * dt;
+        f.vz -= 900 * dt * Math.max(0.2, 1 - slope.m * 0.5); f.z += f.vz * dt;
+        f.vx += ux * slope.m * 900 * dt; f.vy += uy * slope.m * 900 * dt;
         f.x += f.vx * dt; f.y += f.vy * dt; f.rot += f.spin * dt;
         const drag = Math.exp(-dt * 3);
         f.vx *= drag; f.vy *= drag;
         if (f.z <= 0) { f.z = 0; f.vx *= 0.25; f.vy *= 0.25; f.spin = 0; }
       } else {
+        // sliding once the slope beats its grip, faster the steeper
+        const pull = slope.m - f.grip;
+        if (pull > 0) { f.vx += ux * pull * 7000 * dt; f.vy += uy * pull * 7000 * dt; f.rot += (f.ink ? 0.4 : 1.2) * pull * dt * 10; }
         const drag = Math.exp(-dt * 14);
         f.vx *= drag; f.vy *= drag;
         f.x += f.vx * dt; f.y += f.vy * dt;
-        if (Math.hypot(f.vx, f.vy) < 4) f.still += dt;
+        f.still = pull > 0 ? 0 : (Math.hypot(f.vx, f.vy) < 4 ? f.still + dt : f.still);
       }
+      // off the edge of the screen: gone
+      if (f.y > H() + 12 || f.y < -12 || f.x < -12 || f.x > W() + 12) { flakes.splice(i, 1); continue; }
       if (fading) f.gone = Math.min(f.gone, fading);
       if (f.gone <= 0) { flakes.splice(i, 1); continue; }
       if (f.still > 0.15 && !fading) {
         bg.setTransform(dpr, 0, 0, dpr, 0, 0);
         paint(bg, f, 1);
+        settled.push(f);
         flakes.splice(i, 1);
         continue;
       }
@@ -794,11 +848,11 @@ export async function run({ plate, from }) {
     }
   }
   function paint(g, f, o) {
-    // shadow: the light is up and to the left, as it is for the coin
-    const sx = 0.5 + f.z * 0.45, sy = 0.7 + f.z * 0.6;
+    // shadow: the lamp is in the top left corner, as it is for the coin
+    const sx = 0.7 + f.z * 0.85, sy = 0.7 + f.z * 0.85;
     g.save();
     g.translate(f.x + sx, f.y + sy); g.rotate(f.rot);
-    g.fillStyle = `rgba(0,0,0,${(f.ink ? 0.22 : 0.16) * o * Math.max(0.35, 1 - f.z / 14)})`;
+    g.fillStyle = `rgba(0,0,0,${(f.ink ? 0.28 : 0.2) * o * Math.max(0.35, 1 - f.z / 14)})`;
     shape(g, f.pts, 1.08);
     g.restore();
     g.save();
@@ -893,7 +947,7 @@ export async function run({ plate, from }) {
       fading = Math.max(0, fading - dt / 0.9);
       drawCrumbs(dt);
       if (fading > 0) requestAnimationFrame(settleDust);
-      else { window.removeEventListener('resize', sizeDust); dust.remove(); }
+      else { window.removeEventListener('resize', sizeDust); window.removeEventListener('deviceorientation', onTilt); dust.remove(); }
     })(last);
   }
 
