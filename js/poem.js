@@ -90,7 +90,12 @@ function revise(p, f) {
     return rnd(NOUNS.filter((x) => !used.includes(x)));
   }
   const alts = WEAK[w][1];
-  return alts ? rnd(alts) : null;
+  if (!alts) return null;
+  // not a word the poem already has, or that has already been proposed
+  const used = p.lines.flat().map(bare).concat(p.proposed || []);
+  const pick = rnd(alts.filter((x) => !used.includes(x)).length ? alts.filter((x) => !used.includes(x)) : alts);
+  (p.proposed = p.proposed || []).push(pick);
+  return pick;
 }
 
 // ---- the stage ------------------------------------------------------------
@@ -186,6 +191,9 @@ export function run({ wrap, after, penUrl }) {
   const p = draft();
   const first = p.lines.map((l) => l.join(' '));
   const notesMade = [];
+  // A critic does not repeat itself: no note twice in a pass, and none it
+  // has already written on this poem while it still has something new.
+  const saidAll = new Set(), saidPass = new Set();
 
   const box = document.createElement('div');
   box.className = 'poem';
@@ -330,13 +338,17 @@ export function run({ wrap, after, penUrl }) {
     n.style.visibility = 'hidden';
     box.appendChild(n);
     // what it means to say, and failing room for that, something shorter
-    const wants = [rnd(NOTES[kind]), ...shuffle(NOTES[kind]).sort((a, b) => a.length - b.length), ...NOTES.short];
+    const fresh = (w) => !saidPass.has(w) && !saidAll.has(w), again = (w) => !saidPass.has(w);
+    const pool = shuffle(NOTES[kind]);
+    const wants = [...pool.filter(fresh), ...pool.filter(fresh).sort((a, b) => a.length - b.length),
+      ...shuffle(NOTES.short).filter(fresh), ...pool.filter(again), ...NOTES.short.filter(again)];
     let text = null;
     for (const w of wants) {
       n.textContent = w;
       if (place(n, li, sp)) { text = w; break; }
     }
     if (text == null) { n.remove(); return null; }
+    saidAll.add(text); saidPass.add(text);
     await handwrite(n, text);
     return { n, text };
   }
@@ -448,6 +460,7 @@ export function run({ wrap, after, penUrl }) {
     } else await nap(ms);
   }
   async function critique(round) {
+    saidPass.clear();
     let gs = marks();
     if (!gs.length) return [];
     // a critic does not catch everything at once; short of time, it stops
