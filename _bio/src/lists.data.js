@@ -162,6 +162,10 @@ export const EDITIONS = [
     note:"2023. Designed by Adam Swift Lucas; foreword by ChatGPT, barcode by DALL\u00b7E; edition of 100. Launched at Printed Matter\u2019s Los Angeles Art Book Fair",
     href:"https://specificideas.com/autosummarize",
     works:["autosummarize"] },
+  { name:"Traumawien, Vienna",
+    note:"2012",
+    href:"https://en.wikipedia.org/wiki/Traumawien",
+    works:["american-psycho"] },
 ];
 
 /* Who photographed the work as it appears on these pages. */

@@ -4,6 +4,11 @@ american-psycho:
     items:
       - name: "Mimi Cabell"
         href: "https://www.mimicabell.com/#/american-psycho/"
+  - head: "Editions"
+    items:
+      - name: "Traumawien, Vienna"
+        note: "2012"
+        href: "https://en.wikipedia.org/wiki/Traumawien"
   - head: "Held in"
     items:
       - name: "MoMA Library, Museum of Modern Art"
