@@ -357,15 +357,25 @@ export async function run({ plate, from }) {
 
   // Where the edge is at time u in a burst, and the angle it is held at.
   // Strokes run long by uneven amounts, their direction wanders a little, and
-  // they ease in and out at the ends of the burst rather than starting and
-  // stopping mid-swing.
+  // the burst builds and dies away the way an arm does: it gathers over a
+  // quarter second and winds down over a third, each stroke shorter than the
+  // last, rather than starting and stopping mid-swing.
   const EDGE = band * 0.35;   // how far past the plate's edge the coin's contact may go
+  // A hand slows into a wall rather than hitting it: past `m` short of the
+  // limit the travel is squeezed smoothly, so the edge of the plate is
+  // approached, not struck.
+  function soft(v, lo, hi, m) {
+    if (v > hi - m) return hi - m + m * Math.tanh((v - (hi - m)) / m);
+    if (v < lo + m) return lo + m - m * Math.tanh((lo + m - v) / m);
+    return v;
+  }
   function pose(P, u) {
-    const q = rawPose(P, u);
-    q.x = Math.max(pb.left - EDGE, Math.min(pb.right + EDGE, q.x));
-    q.y = Math.max(pb.top - EDGE, Math.min(pb.bottom + EDGE, q.y));
+    const q = rawPose(P, u), m = band * 0.8;
+    q.x = soft(q.x, pb.left - EDGE, pb.right + EDGE, m);
+    q.y = soft(q.y, pb.top - EDGE, pb.bottom + EDGE, m);
     return q;
   }
+  const glide = (x) => { x = Math.max(0, Math.min(1, x)); return x * x * x * (x * (x * 6 - 15) + 10); };
   function rawPose(P, u) {
     const sd = P.seed;
     const k = Math.max(0, Math.min(1, u / P.dur)) * (P.pts.length - 1);
@@ -378,8 +388,12 @@ export async function run({ plate, from }) {
     // drift was sized for, so nothing between them is missed.
     const a = P.amp * (1 + 0.3 * Math.max(0, Math.sin(u * 3.1 + sd))
                          + 0.15 * Math.max(0, Math.sin(u * 8.3 + sd * 2.3)));
-    const w = Math.sin(TAU * P.f * u + 0.3 * Math.sin(u * 1.9 + sd));
-    const env = Math.max(0, Math.min(1, u / 0.1, (P.dur - u) / 0.1));
+    // The swing slows a little as it gathers and as it winds down, so the
+    // strokes at the ends are longer in time as well as shorter in reach.
+    const rin = Math.min(0.28, P.dur * 0.3), rout = Math.min(0.38, P.dur * 0.4);
+    const env = glide(u / rin) * glide((P.dur - u) / rout);
+    const ph = TAU * P.f * (u + 0.12 * (rin * (1 - glide(u / rin)) - rout * (1 - glide((P.dur - u) / rout))));
+    const w = Math.sin(ph + 0.3 * Math.sin(u * 1.9 + sd));
     return { x: cx + Math.cos(th) * a * w * env, y: cy + Math.sin(th) * a * w * env, ang: th + Math.PI / 2 };
   }
 
