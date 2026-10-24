@@ -94,7 +94,7 @@
     <button class="island-pill" id="island-pill" type="button"
             aria-expanded="false" aria-controls="island-panel">
       <span class="island-dot" aria-hidden="true"></span>
-      <span class="island-label">{% if here > 0 %}{% if here == ahead.size %}{{ here }} event{% if here > 1 %}s{% endif %} today{% else %}{{ here }} today &middot; {{ ahead.size }} upcoming{% endif %}{% else %}{{ ahead.size }} upcoming event{% if ahead.size > 1 %}s{% endif %}{% endif %}</span>
+      <span class="island-label">{% if here > 0 %}{% if here == ahead.size %}{{ here }} event{% if here > 1 %}s{% endif %} today{% else %}{{ here }} today &middot; {{ ahead.size | minus: here }} upcoming{% endif %}{% else %}{{ ahead.size }} upcoming event{% if ahead.size > 1 %}s{% endif %}{% endif %}</span>
     </button>
     <div class="island-panel" id="island-panel" inert>
       {%- for u in ahead %}
