@@ -4,14 +4,17 @@ title:  "Regender: Pride & Prejudice"
 date:   2026-10-24
 category: book
 image_path: "/images/regender/jhuff-regender-"
-shots: 4
+shots: 5
 description: |
-  Jane Austen's *Pride & Prejudice* in four editions, each with every
-  character's gender rewritten: Swapped, All Female, All Male and Non-Binary.
-  Names, pronouns and titles change, and the grammar follows.
+  Jane Austen's *Pride & Prejudice* in four editions: Swapped, All Female,
+  All Male and Non-Binary. Each is a complete, unabridged novel, rewritten by
+  [regender.xyz](https://regender.xyz). Names, honorifics, pronouns, gendered
+  words, and the grammar that follows them are transformed throughout;
+  Austen's sentences are otherwise untouched.
 
-  The editions, and the tool that makes them, are at
-  [regender.xyz](https://regender.xyz).
+  Cover illustrations by Raman Djafari.
+
+  Credit to Adam Lucas at Specific Ideas for the Gutenberg attribution format.
 plate: "/images/plates/regender-pride-and-prejudice.webp"
 plate_w: 1400
 plate_h: 1050
