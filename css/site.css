@@ -487,7 +487,10 @@
     position: fixed;
     top: max(var(--edge), env(safe-area-inset-top, 0px));
     left: 50%;
-    z-index: 5;
+    /* Above the penny's stage (40), its shavings and its bubble: opened, the
+       capsule is glass over the page, and the coin and its grit pass behind
+       it, blurred, rather than across the entries. */
+    z-index: 45;
     /* The open size is CSS's, because CSS can know it: it is the column the
        page gives the capsule. Only the shut size needs measuring — the header
        is as wide as its own label — and it carries a fallback near enough to
