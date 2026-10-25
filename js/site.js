@@ -1049,7 +1049,36 @@
   // and retaken whenever anything that feeds them moves: the viewport, and the
   // fonts, which settle after first paint and shift the label's width with them.
 
+  // The page is built once and read for days, so which entries are upcoming is
+  // settled here, against the reader's own calendar day, not the build's.
+  // Anything dated before today is dropped; if that empties the list, so does
+  // the capsule.
+  function pruneIsland(island) {
+    var d = new Date();
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    var today = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    var events = island.querySelectorAll('.island-event');
+    var live = 0, here = 0;
+    Array.prototype.forEach.call(events, function (el) {
+      var day = el.getAttribute('data-day');
+      var label = el.querySelector('.island-day');
+      if (day < today) { el.remove(); return; }
+      el.hidden = false;
+      live++;
+      if (day === today) { here++; label.textContent = 'Today'; }
+      else label.textContent = label.getAttribute('data-later');
+    });
+    if (!live) { island.remove(); return false; }
+    island.querySelector('.island-label').textContent = here
+      ? (here === live
+          ? here + ' event' + (here > 1 ? 's' : '') + ' today'
+          : here + ' today \u00b7 ' + (live - here) + ' upcoming')
+      : live + ' upcoming event' + (live > 1 ? 's' : '');
+    return true;
+  }
+
   function initIsland(island) {
+    if (!pruneIsland(island)) return;
     var pill = island.querySelector('.island-pill');
     var frame = island.querySelector('.island-frame');
     var panel = island.querySelector('.island-panel');

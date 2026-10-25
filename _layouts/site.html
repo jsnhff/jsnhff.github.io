@@ -70,19 +70,24 @@
   dated today or ahead of the build is upcoming, and when nothing is, nothing
   is drawn. Compared by calendar day, since an update's date is midnight and
   would otherwise count as past the moment its day began.
+  The build's clock goes stale the day after it runs, so the markup carries a
+  couple of days of slack and each entry its date; site.js re-sorts them
+  against the visitor's own calendar day and rewrites the label to match.
   It sits out here with the back button rather than inside .shell, because the
   shell is its own stacking context and the top fade band paints over it.
 {%- endcomment -%}
 {% if page.home %}
   {% assign today = site.time | date: "%Y-%m-%d" %}
+  {% assign cutoff = site.time | date: "%s" | minus: 172800 | date: "%Y-%m-%d" %}
   {% assign ahead = "" | split: "" %}
   {% for u in site.updates %}
     {% assign day = u.date | date: "%Y-%m-%d" %}
-    {% if day >= today %}{% assign ahead = ahead | push: u %}{% endif %}
+    {% if day >= cutoff %}{% assign ahead = ahead | push: u %}{% endif %}
   {% endfor %}
   {% assign ahead = ahead | sort: "date" %}
+  {% assign live = "" | split: "" %}
   {% assign here = 0 %}
-  {% for u in ahead %}{% assign day = u.date | date: "%Y-%m-%d" %}{% if day == today %}{% assign here = here | plus: 1 %}{% endif %}{% endfor %}
+  {% for u in ahead %}{% assign day = u.date | date: "%Y-%m-%d" %}{% if day >= today %}{% assign live = live | push: u %}{% endif %}{% if day == today %}{% assign here = here | plus: 1 %}{% endif %}{% endfor %}
   {% if ahead.size > 0 %}
 <div class="island" id="island">
   {%- comment -%}
@@ -94,13 +99,13 @@
     <button class="island-pill" id="island-pill" type="button"
             aria-expanded="false" aria-controls="island-panel">
       <span class="island-dot" aria-hidden="true"></span>
-      <span class="island-label">{% if here > 0 %}{% if here == ahead.size %}{{ here }} event{% if here > 1 %}s{% endif %} today{% else %}{{ here }} today &middot; {{ ahead.size | minus: here }} upcoming{% endif %}{% else %}{{ ahead.size }} upcoming event{% if ahead.size > 1 %}s{% endif %}{% endif %}</span>
+      <span class="island-label">{% if here > 0 %}{% if here == live.size %}{{ here }} event{% if here > 1 %}s{% endif %} today{% else %}{{ here }} today &middot; {{ live.size | minus: here }} upcoming{% endif %}{% else %}{{ live.size }} upcoming event{% if live.size > 1 %}s{% endif %}{% endif %}</span>
     </button>
     <div class="island-panel" id="island-panel" inert>
       {%- for u in ahead %}
       {%- assign day = u.date | date: "%Y-%m-%d" %}
-      <article class="island-event">
-        <p class="island-when">{{ u.update-type | default: "Update" }} &middot; {% if day == today %}Today{% elsif u.when %}{{ u.when }}{% else %}{{ u.date | date: "%B %-d, %Y" }}{% endif %}</p>
+      <article class="island-event" data-day="{{ day }}"{% if day < today %} hidden{% endif %}>
+        <p class="island-when">{{ u.update-type | default: "Update" }} &middot; <span class="island-day" data-later="{% if u.when %}{{ u.when }}{% else %}{{ u.date | date: "%B %-d, %Y" }}{% endif %}">{% if day == today %}Today{% elsif u.when %}{{ u.when }}{% else %}{{ u.date | date: "%B %-d, %Y" }}{% endif %}</span></p>
         <p class="island-what">{{ u.short | default: u.content | strip_html | strip_newlines | truncate: 160 }}</p>
       </article>
       {%- endfor %}
