@@ -22,8 +22,6 @@ description: |
   text: Transformed by claude-opus-4-5-20251101, September 13, 2026  
   format: 4.25 × 6.875 in · perfect bound, printed on demand
 
-  Credit to Adam Lucas at Specific Ideas for the Gutenberg attribution format.
-
   © Jason Huff, Los Angeles, 2026
 plate: "/images/plates/regender-pride-and-prejudice.webp"
 plate_w: 1100
