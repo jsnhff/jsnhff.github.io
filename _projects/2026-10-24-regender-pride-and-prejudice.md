@@ -4,7 +4,7 @@ title:  "Regender: Pride & Prejudice"
 date:   2026-10-24
 category: book
 image_path: "/images/regender/jhuff-regender-"
-shots: 5
+shots: 8
 description: |
   Jane Austen's 1813 novel in four editions: Swapped, All Female, All Male and
   Non-Binary. In Swapped, shown here, every character's gender is reversed. The
