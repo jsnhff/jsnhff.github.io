@@ -1151,6 +1151,28 @@
     });
 
     window.addEventListener('resize', remeasure);
+
+    // A home-screen page is resumed, not reloaded, so the day can turn over
+    // under it. Re-prune whenever it comes back to the front or restores from
+    // the back/forward cache, and at the next local midnight if it stays open.
+    function refresh() {
+      if (!island.isConnected) return;
+      if (!pruneIsland(island)) return;
+      set(false);
+      remeasure();
+    }
+    function untilMidnight() {
+      var n = new Date();
+      var next = new Date(n.getFullYear(), n.getMonth(), n.getDate() + 1, 0, 0, 1);
+      setTimeout(function () { refresh(); untilMidnight(); }, next - n);
+    }
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) refresh();
+    });
+    window.addEventListener('pageshow', function (e) {
+      if (e.persisted) refresh();
+    });
+    untilMidnight();
   }
 
   // ---- go -----------------------------------------------------------------
