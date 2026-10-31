@@ -783,7 +783,7 @@
     stroke-width: 16;
     stroke-dasharray: 100 100;
     stroke-dashoffset: 0;
-    animation: timer-run 30s linear forwards;
+    animation: timer-run 15s linear forwards;
     animation-delay: var(--island-delay, 300ms);
   }
   @keyframes timer-in  { to { opacity: 1; } }
