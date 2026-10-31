@@ -166,7 +166,7 @@
     // poem. Either case works, ?Penny as well as ?penny.
     var quick = /[?&]penny\b/i.test(location.search);
     var toPoem = /[?&]poem\b/i.test(location.search);
-    if (quick) timerPie.getAnimations().forEach(function (a) { a.currentTime = 26000; });
+    if (quick) timerPie.getAnimations().forEach(function (a) { a.currentTime = 11000; });
     timerPie.addEventListener('animationstart', function () {
       setTimeout(function () {
         var l = document.createElement('link');
@@ -178,7 +178,7 @@
             new Image().src = '/images/penny/' + side + '-' + kind + '.webp';
           });
         });
-      }, quick ? 0 : 20000);
+      }, quick ? 0 : 10000);
     });
     // Once the picture is open the timer runs again, for a while in the
     // gallery. When that runs out the plate covers itself back over, and the
@@ -241,7 +241,7 @@
       timerPie.style.animation = 'none';
       if (run) { run.onfinish = null; run.cancel(); }
       run = timerPie.animate([{ strokeDashoffset: 0 }, { strokeDashoffset: 100 }],
-        { duration: ms || 30000, easing: 'linear', fill: 'forwards' });
+        { duration: ms || 15000, easing: 'linear', fill: 'forwards' });
       run.onfinish = timerDone;
       timer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, easing: 'ease' });
     }
