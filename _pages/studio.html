@@ -24,9 +24,9 @@ redirect_from:
     {%- for p in works %}
       <article class="row gal-cell">
         {%- if p.live_url -%}
-        <a class="gal-link{% if p.book %} has-book{% endif %}" href="{{ p.live_url }}" target="_blank" rel="noopener">
+        <a class="gal-link{% if p.book %} has-book{% endif %}"{% if p.book %} draggable="false"{% endif %} href="{{ p.live_url }}" target="_blank" rel="noopener">
         {%- else -%}
-        <a class="gal-link{% if p.book %} has-book{% endif %}" href="{{ p.url }}">
+        <a class="gal-link{% if p.book %} has-book{% endif %}"{% if p.book %} draggable="false"{% endif %} href="{{ p.url }}">
         {%- endif -%}
           {%- if p.book -%}
           {%- comment -%}
@@ -55,7 +55,7 @@ redirect_from:
                  data-wrap="{{ bk.wrap }}"{% if bk.foil %} data-foil="{{ bk.foil }}"{% endif %}
                  data-h="{{ bk.h }}" data-d="{{ bk.d }}"{% if bk.staples %} data-staples="{{ bk.staples }}"{% endif %}
                  style="--still-w: {{ still_w | round: 2 }}%; --gap: -{{ gap | round: 2 }}%">
-              <img class="gal-still" src="{{ bk.front }}" width="{{ bk.front_w }}" height="{{ bk.front_h }}"
+              <img class="gal-still" draggable="false" src="{{ bk.front }}" width="{{ bk.front_w }}" height="{{ bk.front_h }}"
                    alt="{{ p.title }}" decoding="async">
               <div class="gal-stage" aria-hidden="true"></div>
             </div>

@@ -240,6 +240,7 @@ export function build(opts) {
     }
 
     let moved = 0;
+    function noDrag(e) { e.preventDefault(); }
     function down(e) {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
       dragging = true; moved = 0; sx = e.clientX; sy = e.clientY; by = ry; bx = rx; vy = 0; vx = 0;
@@ -281,6 +282,9 @@ export function build(opts) {
       pe.addEventListener('pointermove', move);
       pe.addEventListener('pointerup', up);
       pe.addEventListener('pointercancel', up);
+      // a link, and the picture inside it, would otherwise be picked up and
+      // dragged away by the browser, which takes the pointer with it
+      pe.addEventListener('dragstart', noDrag);
     }
     el.addEventListener('webglcontextlost', lost);
     el.addEventListener('webglcontextrestored', restored);
@@ -330,6 +334,7 @@ export function build(opts) {
         pe.removeEventListener('pointermove', move);
         pe.removeEventListener('pointerup', up);
         pe.removeEventListener('pointercancel', up);
+        pe.removeEventListener('dragstart', noDrag);
         pe.classList.remove('is-grabbed');
         if (drag) { pe.style.touchAction = ''; pe.style.userSelect = pe.style.webkitUserSelect = ''; }
         if (io) io.disconnect();
