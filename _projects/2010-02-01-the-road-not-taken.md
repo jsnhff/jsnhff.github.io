@@ -10,16 +10,16 @@ plate: "/images/plates/the-road-not-taken.webp"
 plate_w: 800
 plate_h: 1078
 # The 3D model: the press cover, one mirrored picture with a cover in each half
-# (5.87 x 8.99 in). It has no spine in the artwork. The depth is an estimate, a
-# thin book of about 0.1 in; the page count is not on record. Rebuilt by
-# _penny/wraps.py.
+# (5.87 x 8.99 in). It has no spine in the artwork. Saddle-stitched and about as
+# long as Bad Poetry One, so about 0.05 in deep; the page count is not on record.
+# Rebuilt by _penny/wraps.py.
 book:
   wrap: "/images/book3d/the-road-not-taken-wrap.webp"
   front: "/images/book3d/the-road-not-taken-front.webp"
   front_w: 600
   front_h: 920
   h: 1.5325    # 8.99 / 5.87
-  d: 0.0171    # ~0.1 / 5.87
+  d: 0.0086    # ~0.05 / 5.87
   staples: 2      # saddle-stitched: two staples through the spine fold
 section: studio
 dark: true

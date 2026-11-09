@@ -23,6 +23,7 @@ from scipy import ndimage
 
 SRC_AS = os.environ.get("SRC_AS", "adam/img")
 SRC_BP = os.environ.get("SRC_BP", "bp-press-3500.png")
+SRC_CABLE = os.environ.get("SRC_CABLE", "cable3600.png")
 SRC_AS10 = os.environ.get("SRC_AS10", "as10_3600.png")
 SRC_AP = os.environ.get("SRC_AP", "ap3600.png")
 SRC_EO = os.environ.get("SRC_EO", "eo3600.png")
@@ -150,7 +151,8 @@ def bad_poetry_one():
 def road_not_taken():
     """The press cover: one mirrored picture, each half a cover, with no spine in
     the artwork and the printer's marks around it. The book is thin; its page
-    count is not on record, so ~0.1 in is an estimate (32 pages, saddle-stitched)."""
+    count is not on record; it is about as long as Bad Poetry One (20 pages), so
+    ~0.05 in, the same."""
     page = Image.open(SRC_RNT).convert("RGBA")
     white = Image.new("RGBA", page.size, (255, 255, 255, 255))
     white.alpha_composite(page)
@@ -161,7 +163,7 @@ def road_not_taken():
     rows = np.where(ink.sum(1) > 0.5 * rgb.width)[0]
     art = rgb.crop((cols.min(), rows.min(), cols.max() + 1, rows.max() + 1))
     W, H = art.size[0] // 2, art.size[1]
-    spine_w = round(0.1 / 5.865 * W)
+    spine_w = round(0.05 / 5.865 * W)
     left, right = art.crop((0, 0, W, H)), art.crop((W, 0, 2 * W, H))
     l = np.asarray(left.crop((W - 1, 0, W, H))).astype(float)
     r = np.asarray(right.crop((0, 0, 1, H))).astype(float)
@@ -192,6 +194,28 @@ def _finish(slug, wrap, front, W, H, spine_px):
     save(wrap, slug + "-wrap.webp", quality=90, method=6)
     save(fr, slug + "-front.webp", quality=88, method=6)
     print("ratio h/w %.4f  d/w %.4f" % (H / W, spine_px / W))
+
+
+def cable():
+    """Lulu Comic Book, 6.625 x 10.25 in, 40 pages, saddle-stitched (the interior
+    is 40 pages at 6.875 x 10.5 in with bleed). The cover is one spread, 13.25 x
+    10.25 in trimmed from 13.5 x 10.5: two covers and no spine, the title running
+    across the fold. At the rate of Bad Poetry One's 20 pages, 40 are about 0.1
+    in. The strip for the spine is blended from the two edges that meet."""
+    page = _flat(SRC_CABLE)
+    ppi = page.width / 13.5
+    b = round(0.125 * ppi)
+    art = page.crop((b, b, page.width - b, page.height - b))
+    W, H = art.width // 2, art.height
+    spine_w = round(0.1 / 6.625 * W)
+    left, right = art.crop((0, 0, W, H)), art.crop((W, 0, 2 * W, H))
+    l = np.asarray(left.crop((W - 1, 0, W, H))).astype(float)
+    r = np.asarray(right.crop((0, 0, 1, H))).astype(float)
+    t = np.linspace(0, 1, spine_w)[None, :, None]
+    strip = Image.fromarray((l * (1 - t) + r * t).astype(np.uint8))
+    wrap = Image.new("RGB", (2 * W + spine_w, H))
+    wrap.paste(left, (0, 0)); wrap.paste(strip, (W, 0)); wrap.paste(right, (W + spine_w, 0))
+    _finish("cable", wrap, wrap.crop((W + spine_w, 0, 2 * W + spine_w, H)), W, H, spine_w)
 
 
 def autosummarize_2010():
@@ -334,7 +358,7 @@ def regender_pride_and_prejudice():
 
 
 if __name__ == "__main__":
-    which = sys.argv[1:] or ["autosummarize-second-edition", "bad-poetry-one", "regender-pride-and-prejudice", "the-road-not-taken", "the-story-of-art", "best-fight-ever", "endless-opportunities-book", "autosummarize", "american-psycho"]
+    which = sys.argv[1:] or ["autosummarize-second-edition", "bad-poetry-one", "regender-pride-and-prejudice", "the-road-not-taken", "the-story-of-art", "best-fight-ever", "endless-opportunities-book", "autosummarize", "american-psycho", "cable"]
     if "autosummarize-second-edition" in which:
         autosummarize_second_edition()
     if "bad-poetry-one" in which:
@@ -353,3 +377,5 @@ if __name__ == "__main__":
         autosummarize_2010()
     if "american-psycho" in which:
         american_psycho()
+    if "cable" in which:
+        cable()
