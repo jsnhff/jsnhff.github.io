@@ -53,7 +53,7 @@ redirect_from:
           <div class="plate is-book">
             <div class="gal-book" data-book
                  data-wrap="{{ bk.wrap }}"{% if bk.foil %} data-foil="{{ bk.foil }}"{% endif %}
-                 data-h="{{ bk.h }}" data-d="{{ bk.d }}"
+                 data-h="{{ bk.h }}" data-d="{{ bk.d }}"{% if bk.staples %} data-staples="{{ bk.staples }}"{% endif %}
                  style="--still-w: {{ still_w | round: 2 }}%; --gap: -{{ gap | round: 2 }}%">
               <img class="gal-still" src="{{ bk.front }}" width="{{ bk.front_w }}" height="{{ bk.front_h }}"
                    alt="{{ p.title }}" decoding="async">

@@ -13,7 +13,7 @@
 // Bundled with the parts of three.js it uses into /js/book.js:
 //   cd _penny && npm install && node build.mjs
 import {
-  AmbientLight, BoxGeometry, BufferGeometry, CanvasTexture, Color, DirectionalLight,
+  AmbientLight, BoxGeometry, BufferGeometry, CanvasTexture, Color, CylinderGeometry, DirectionalLight,
   DoubleSide, Float32BufferAttribute, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial,
   NoColorSpace, PerspectiveCamera, PMREMGenerator, PlaneGeometry, RepeatWrapping, Scene,
   SRGBColorSpace, TextureLoader, WebGLRenderer
@@ -114,7 +114,7 @@ function load(loader, url, space) {
 }
 
 // opts: el (the stage), wrap, foil (optional), w/h/d (the book's proportions,
-// width = 1), pointerEl (what is dragged to turn the book, if not the canvas: on
+// width = 1), staples (how many, on the spine, for a saddle-stitched book), pointerEl (what is dragged to turn the book, if not the canvas: on
 // the wall, the whole tile), drag (default true), drift (rad/s), onLost. Resolves once the first frame is on the canvas; rejects
 // if there is no WebGL or a texture will not load, so the caller can keep the
 // still it is showing.
@@ -153,15 +153,34 @@ export function build(opts) {
     const mat = new MeshStandardMaterial({ map: wrap, roughness: 0.74, metalness: 0, side: DoubleSide });
     const geo = coverGeometry(W, H, D, R);
     book.add(new Mesh(geo, mat));
+    // Metal, foil or staples, is lit by a studio of its own, not the paper's.
+    const env = (foil || opts.staples) ? studio(renderer) : null;
     let foilMat = null;
     if (foil) {
       foilMat = new MeshStandardMaterial({
         color: 0xd2d5da, metalness: 1, roughness: 0.3, side: DoubleSide,
         alphaMap: foil, transparent: true, depthWrite: false,
         polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2,
-        envMap: studio(renderer), envMapIntensity: 1
+        envMap: env, envMapIntensity: 1
       });
       book.add(new Mesh(geo, foilMat));
+    }
+    // A saddle-stitched book is held by wire through the fold: on the outside of
+    // the spine, a crown, a little over half an inch long, at a quarter and
+    // three quarters of the way up. Drawn a touch heavier than the wire is, or
+    // it would be under a pixel at the size a book shows on the wall.
+    let stapleMat = null, stapleGeo = null;
+    if (opts.staples) {
+      stapleMat = new MeshStandardMaterial({
+        color: 0xdfe2e6, metalness: 1, roughness: 0.24, envMap: env, envMapIntensity: 1.15
+      });
+      stapleGeo = new CylinderGeometry(0.0032, 0.0032, 0.12, 10);
+      const n = opts.staples, spine = -W / 2 - 0.0016;
+      for (let i = 0; i < n; i++) {
+        const m = new Mesh(stapleGeo, stapleMat);
+        m.position.set(spine, H * (n === 1 ? 0 : (i / (n - 1) - 0.5) * 0.5), 0);
+        book.add(m);
+      }
     }
 
     // the leaves, just inside the card
@@ -316,7 +335,9 @@ export function build(opts) {
         if (io) io.disconnect();
         tex.forEach((t) => t.dispose());
         if (edge) { edge.dispose(); face.dispose(); }
-        if (foilMat) { foilMat.envMap.dispose(); foilMat.dispose(); }
+        if (env) env.dispose();
+        if (foilMat) foilMat.dispose();
+        if (stapleMat) { stapleMat.dispose(); stapleGeo.dispose(); }
         mat.dispose();
         renderer.dispose();
         if (renderer.forceContextLoss) renderer.forceContextLoss();

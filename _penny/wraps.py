@@ -23,6 +23,8 @@ from scipy import ndimage
 
 SRC_AS = os.environ.get("SRC_AS", "adam/img")
 SRC_BP = os.environ.get("SRC_BP", "bp-press-3500.png")
+SRC_BFE = os.environ.get("SRC_BFE", "bfe3000.png")
+SRC_SOA = os.environ.get("SRC_SOA", "soa6000.png")
 SRC_RNT = os.environ.get("SRC_RNT", "rnt3600.png")
 SRC_RG = os.environ.get("SRC_RG", os.path.expanduser("~/regender-xyz-theme/assets-src/pp-swapped-wrap.jpg"))
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "images", "book3d")
@@ -173,6 +175,65 @@ def road_not_taken():
     print("ratio h/w %.4f  d/w %.4f  (%.3f x %.3f in a cover)" % (H / W, spine_w / W, W / 3600 * 1302 / 72 * (3600 / rgb.width), H / 3600 * 1302 / 72 * (3600 / rgb.width)))
 
 
+def best_fight_ever():
+    """Lulu pocketbook, 4.25 x 6.875 in, 116 pages. The press cover is 9.011 x
+    7.125 in: trim plus a 0.125 in bleed all round, and what is left between the
+    two covers is the spine, 9.011 - 8.5 - 0.25 = 0.261 in. A front on each side:
+    the book has two, and flips."""
+    page = Image.open(SRC_BFE).convert("RGBA")
+    white = Image.new("RGBA", page.size, (255, 255, 255, 255))
+    white.alpha_composite(page)
+    art = white.convert("RGB")
+    ppi = art.width / 9.011
+    b = round(0.125 * ppi)
+    art = art.crop((b, b, art.width - b, art.height - b))
+    H = art.height
+    W = round(4.25 * ppi)
+    wrap = art
+    fr = wrap.crop((wrap.width - W, 0, wrap.width, H)).resize((600, round(600 * H / W)), Image.LANCZOS)
+    if wrap.width > 2400:
+        wrap = wrap.resize((2400, round(2400 * wrap.height / wrap.width)), Image.LANCZOS)
+    slug = "best-fight-ever"
+    save(wrap, slug + "-wrap.webp", quality=90, method=6)
+    save(fr, slug + "-front.webp", quality=88, method=6)
+    print("ratio h/w %.4f  d/w %.4f" % (H / W, (art.width - 2 * W) / W))
+
+
+def story_of_art():
+    """The jacket PDF is the whole flat: flaps of text either side, margins above
+    and below. The boards are blank but for a few marks, and those find the
+    edges: GOMBRICH and PHAIDON x2 sit tight to the spine; the broken-image icon
+    sits near the front's top right. Anchors are in the PDF's 2000px-wide view,
+    scaled to the render. The model is given the original hardcover's own
+    proportions, 179 x 252 x 45 mm, so the cut art is stretched a few percent
+    to match; on boards this plain it cannot be seen."""
+    page = Image.open(SRC_SOA).convert("RGBA")
+    white = Image.new("RGBA", page.size, (255, 255, 255, 255))
+    white.alpha_composite(page)
+    rgb = white.convert("RGB")
+    k = rgb.width / 2000.0
+    back_x0, back_x1 = 443, 942
+    spine_x1, front_x1 = 1058, 1557
+    top, bottom = 150, 876
+    box = lambda a, b: (round(a * k), round(top * k), round(b * k), round(bottom * k))
+    back, spine, front = rgb.crop(box(back_x0, back_x1)), rgb.crop(box(back_x1, spine_x1)), rgb.crop(box(spine_x1, front_x1))
+    H_RATIO, D_RATIO = 252 / 179, 45 / 179
+    W = back.width
+    H = round(W * H_RATIO)
+    D = round(W * D_RATIO)
+    wrap = Image.new("RGB", (2 * W + D, H))
+    wrap.paste(back.resize((W, H), Image.LANCZOS), (0, 0))
+    wrap.paste(spine.resize((D, H), Image.LANCZOS), (W, 0))
+    wrap.paste(front.resize((W, H), Image.LANCZOS), (W + D, 0))
+    fr = wrap.crop((W + D, 0, 2 * W + D, H)).resize((600, round(600 * H / W)), Image.LANCZOS)
+    if wrap.width > 2400:
+        wrap = wrap.resize((2400, round(2400 * wrap.height / wrap.width)), Image.LANCZOS)
+    slug = "the-story-of-art"
+    save(wrap, slug + "-wrap.webp", quality=92, method=6)
+    save(fr, slug + "-front.webp", quality=90, method=6)
+    print("ratio h/w %.4f  d/w %.4f" % (H / W, D / W))
+
+
 def regender_pride_and_prejudice():
     """The product page's own wrap, measured off the press files: 4.25 x 6.875 in,
     586 pages, so 0.324 of a width deep."""
@@ -187,7 +248,7 @@ def regender_pride_and_prejudice():
 
 
 if __name__ == "__main__":
-    which = sys.argv[1:] or ["autosummarize-second-edition", "bad-poetry-one", "regender-pride-and-prejudice", "the-road-not-taken"]
+    which = sys.argv[1:] or ["autosummarize-second-edition", "bad-poetry-one", "regender-pride-and-prejudice", "the-road-not-taken", "the-story-of-art", "best-fight-ever"]
     if "autosummarize-second-edition" in which:
         autosummarize_second_edition()
     if "bad-poetry-one" in which:
@@ -196,3 +257,7 @@ if __name__ == "__main__":
         regender_pride_and_prejudice()
     if "the-road-not-taken" in which:
         road_not_taken()
+    if "the-story-of-art" in which:
+        story_of_art()
+    if "best-fight-ever" in which:
+        best_fight_ever()

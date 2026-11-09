@@ -21,6 +21,7 @@ book:
   front_h: 971
   h: 1.6176    # 6.875 / 4.25
   d: 0.0118    # 0.05 / 4.25
+  staples: 2      # saddle-stitched: two staples through the spine fold
 section: studio
 dark: true
 ---

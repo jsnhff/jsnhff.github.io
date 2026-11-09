@@ -305,6 +305,7 @@
         foil: box.getAttribute('data-foil') || null,
         h: parseFloat(box.getAttribute('data-h')),
         d: parseFloat(box.getAttribute('data-d')),
+        staples: parseInt(box.getAttribute('data-staples') || '0', 10),
         // the whole tile turns the book. The tile is a link: a drag turns it,
         // a tap opens it (the click after a drag is stopped, below)
         pointerEl: box.closest('a') || undefined,
