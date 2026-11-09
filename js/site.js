@@ -305,8 +305,9 @@
         foil: box.getAttribute('data-foil') || null,
         h: parseFloat(box.getAttribute('data-h')),
         d: parseFloat(box.getAttribute('data-d')),
-        // the tile is a link, and a drag that ends on it would follow it
-        drag: false,
+        // the whole tile turns the book. The tile is a link: a drag turns it,
+        // a tap opens it (the click after a drag is stopped, below)
+        pointerEl: box.closest('a') || undefined,
         // a lost context leaves a dead canvas: put the still back
         onLost: function () { sleepBook(box); }
       });
@@ -341,6 +342,16 @@
     if (!books.length) return;
     var save = navigator.connection && navigator.connection.saveData;
     if (save || !window.IntersectionObserver) return;
+    // Capture phase, so it runs before the wall's own click handler and before
+    // the link itself: a click that ends a drag is not a tap.
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a.gal-link');
+      if (a && a.dataset.dragged === '1') {
+        e.preventDefault();
+        e.stopPropagation();
+        a.dataset.dragged = '';
+      }
+    }, true);
     bookIO = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         // a sheet over the wall hides it, so nothing wakes behind one

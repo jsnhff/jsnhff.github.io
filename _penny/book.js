@@ -114,7 +114,8 @@ function load(loader, url, space) {
 }
 
 // opts: el (the stage), wrap, foil (optional), w/h/d (the book's proportions,
-// width = 1), drag (default true; off where the book sits inside a link), onLost. Resolves once the first frame is on the canvas; rejects
+// width = 1), pointerEl (what is dragged to turn the book, if not the canvas: on
+// the wall, the whole tile), drag (default true), drift (rad/s), onLost. Resolves once the first frame is on the canvas; rejects
 // if there is no WebGL or a texture will not load, so the caller can keep the
 // still it is showing.
 export function build(opts) {
@@ -185,7 +186,7 @@ export function build(opts) {
     scene.add(rim);
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const drift = reduce ? 0 : (opts.drift === undefined ? 0.12 : opts.drift);
+    const drift = reduce ? 0 : (opts.drift === undefined ? 0.055 : opts.drift);
     // It starts face-on, exactly where the still it replaces is, then settles
     // into a slight tilt and begins to turn.
     const RX = -0.1;
@@ -194,8 +195,17 @@ export function build(opts) {
     let lastT = 0, sx = 0, sy = 0, by = 0, bx = 0;
 
     const el = renderer.domElement;
-    el.style.cssText = 'width:100%;height:100%;display:block;' +
-      (opts.drag !== false ? 'touch-action:pan-y;cursor:grab' : 'pointer-events:none');
+    // What is dragged: the canvas, or something bigger that holds it (on the
+    // wall, the tile, which is a link: a drag turns the book, a tap opens it).
+    const pe = opts.pointerEl || el;
+    const drag = opts.drag !== false;
+    el.style.cssText = 'width:100%;height:100%;display:block;pointer-events:none';
+    if (drag) {
+      pe.style.touchAction = 'pan-y';
+      // a link would otherwise start dragging itself, or select its caption
+      pe.style.userSelect = pe.style.webkitUserSelect = 'none';
+      pe.draggable = false;
+    }
     host.appendChild(el);
 
     function size() {
@@ -210,15 +220,22 @@ export function build(opts) {
       dirty = false;
     }
 
+    let moved = 0;
     function down(e) {
-      dragging = true; sx = e.clientX; sy = e.clientY; by = ry; bx = rx; vy = 0; vx = 0;
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      dragging = true; moved = 0; sx = e.clientX; sy = e.clientY; by = ry; bx = rx; vy = 0; vx = 0;
       lastT = e.timeStamp || performance.now();
-      el.style.cursor = 'grabbing';
-      try { el.setPointerCapture(e.pointerId); } catch (err) { /* not capturable */ }
+      pe.dataset.dragged = '';
+      pe.classList.add('is-grabbed');
+      try { pe.setPointerCapture(e.pointerId); } catch (err) { /* not capturable */ }
     }
     function move(e) {
       if (!dragging) return;
-      const nry = by + (e.clientX - sx) * 0.009, nrx = bx + (e.clientY - sy) * 0.006;
+      const dx = e.clientX - sx, dy = e.clientY - sy;
+      moved = Math.max(moved, Math.abs(dx) + Math.abs(dy));
+      // a tap wobbles; it only becomes a drag once it has gone a little way
+      if (moved < 6) return;
+      const nry = by + dx * 0.009, nrx = bx + dy * 0.006;
       const now = e.timeStamp || performance.now(), dt = (now - lastT) / 1000;
       if (dt > 0.001 && dt < 0.2) {
         vy = vy * 0.6 + ((nry - ry) / dt) * 0.4;
@@ -228,17 +245,23 @@ export function build(opts) {
     }
     function up(e) {
       if (!dragging) return;
-      dragging = false; el.style.cursor = 'grab';
-      try { el.releasePointerCapture(e.pointerId); } catch (err) { /* already released */ }
+      dragging = false;
+      pe.classList.remove('is-grabbed');
+      // the click that follows a drag is not a tap: whoever listens for clicks
+      // on the tile reads this and lets it go
+      if (moved >= 6) {
+        pe.dataset.dragged = '1';
+        setTimeout(() => { pe.dataset.dragged = ''; }, 400);
+      }
+      try { pe.releasePointerCapture(e.pointerId); } catch (err) { /* already released */ }
     }
     function lost(e) { e.preventDefault(); if (opts.onLost) opts.onLost(); }
     function restored() { dirty = true; }
-    const drag = opts.drag !== false;
     if (drag) {
-      el.addEventListener('pointerdown', down);
-      el.addEventListener('pointermove', move);
-      el.addEventListener('pointerup', up);
-      el.addEventListener('pointercancel', up);
+      pe.addEventListener('pointerdown', down);
+      pe.addEventListener('pointermove', move);
+      pe.addEventListener('pointerup', up);
+      pe.addEventListener('pointercancel', up);
     }
     el.addEventListener('webglcontextlost', lost);
     el.addEventListener('webglcontextrestored', restored);
@@ -284,6 +307,12 @@ export function build(opts) {
         dead = true;
         cancelAnimationFrame(raf);
         window.removeEventListener('resize', onResize);
+        pe.removeEventListener('pointerdown', down);
+        pe.removeEventListener('pointermove', move);
+        pe.removeEventListener('pointerup', up);
+        pe.removeEventListener('pointercancel', up);
+        pe.classList.remove('is-grabbed');
+        if (drag) { pe.style.touchAction = ''; pe.style.userSelect = pe.style.webkitUserSelect = ''; }
         if (io) io.disconnect();
         tex.forEach((t) => t.dispose());
         if (edge) { edge.dispose(); face.dispose(); }

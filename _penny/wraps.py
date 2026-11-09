@@ -23,6 +23,7 @@ from scipy import ndimage
 
 SRC_AS = os.environ.get("SRC_AS", "adam/img")
 SRC_BP = os.environ.get("SRC_BP", "bp-press-3500.png")
+SRC_RG = os.environ.get("SRC_RG", os.path.expanduser("~/regender-xyz-theme/assets-src/pp-swapped-wrap.jpg"))
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "images", "book3d")
 
 SILVER = np.array([196, 199, 205], dtype=float)
@@ -140,9 +141,24 @@ def bad_poetry_one():
     print("ratio h/w %.4f  d/w %.4f" % (H / W, spine_w / W))
 
 
+def regender_pride_and_prejudice():
+    """The product page's own wrap, measured off the press files: 4.25 x 6.875 in,
+    586 pages, so 0.324 of a width deep."""
+    wrap = Image.open(SRC_RG).convert("RGB")
+    w, h = wrap.size
+    W = round(w / 2.324)                  # back | spine | front = 1 : .324 : 1
+    slug = "regender-pride-and-prejudice"
+    save(wrap, slug + "-wrap.webp", quality=90, method=6)
+    save(wrap.crop((w - W, 0, w, h)).resize((600, round(600 * h / W)), Image.LANCZOS),
+         slug + "-front.webp", quality=88, method=6)
+    print("ratio h/w %.4f  d/w %.4f" % (h / W, (w - 2 * W) / W))
+
+
 if __name__ == "__main__":
-    which = sys.argv[1:] or ["autosummarize-second-edition", "bad-poetry-one"]
+    which = sys.argv[1:] or ["autosummarize-second-edition", "bad-poetry-one", "regender-pride-and-prejudice"]
     if "autosummarize-second-edition" in which:
         autosummarize_second_edition()
     if "bad-poetry-one" in which:
         bad_poetry_one()
+    if "regender-pride-and-prejudice" in which:
+        regender_pride_and_prejudice()
