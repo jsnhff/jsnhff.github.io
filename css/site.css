@@ -1214,8 +1214,14 @@
   .plate.is-book { width: 100%; }
   .gal-book { position: relative; width: 100%; aspect-ratio: 1; margin-bottom: var(--gap); cursor: grab; }
   .gal-link.is-grabbed .gal-book { cursor: grabbing; }
-  /* a book that is being turned does not dim like a plate under a pointer */
-  .gal-link.is-grabbed { opacity: 1; }
+  /* A plate dims under a pointer; a book, an object, does not. It comes up a
+     little instead, about its own baseline so it stays on the row. */
+  .gal-link.has-book:hover { opacity: 1; }
+  .gal-book { transform-origin: 50% calc(100% + var(--gap)); transition: transform 320ms var(--rise); }
+  @media (hover: hover) {
+    .gal-link.has-book:hover .gal-book, .gal-link.has-book.is-grabbed .gal-book { transform: scale(1.045); }
+  }
+  @media (prefers-reduced-motion: reduce) { .gal-book { transition: none; } }
   /* The stage is transparent, so on the wall it may run wider than its column:
      a book fills two thirds of its stage, and this brings it up to the height
      of the photographs beside it. */
