@@ -23,6 +23,7 @@ from scipy import ndimage
 
 SRC_AS = os.environ.get("SRC_AS", "adam/img")
 SRC_BP = os.environ.get("SRC_BP", "bp-press-3500.png")
+SRC_RNT = os.environ.get("SRC_RNT", "rnt3600.png")
 SRC_RG = os.environ.get("SRC_RG", os.path.expanduser("~/regender-xyz-theme/assets-src/pp-swapped-wrap.jpg"))
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "images", "book3d")
 
@@ -141,6 +142,37 @@ def bad_poetry_one():
     print("ratio h/w %.4f  d/w %.4f" % (H / W, spine_w / W))
 
 
+def road_not_taken():
+    """The press cover: one mirrored picture, each half a cover, with no spine in
+    the artwork and the printer's marks around it. The book is thin; its page
+    count is not on record, so ~0.1 in is an estimate (32 pages, saddle-stitched)."""
+    page = Image.open(SRC_RNT).convert("RGBA")
+    white = Image.new("RGBA", page.size, (255, 255, 255, 255))
+    white.alpha_composite(page)
+    rgb = white.convert("RGB")
+    a = np.asarray(rgb).astype(int)
+    ink = a.sum(2) < 720
+    cols = np.where(ink.sum(0) > 0.33 * rgb.height)[0]        # the marks are slivers
+    rows = np.where(ink.sum(1) > 0.5 * rgb.width)[0]
+    art = rgb.crop((cols.min(), rows.min(), cols.max() + 1, rows.max() + 1))
+    W, H = art.size[0] // 2, art.size[1]
+    spine_w = round(0.1 / 5.865 * W)
+    left, right = art.crop((0, 0, W, H)), art.crop((W, 0, 2 * W, H))
+    l = np.asarray(left.crop((W - 1, 0, W, H))).astype(float)
+    r = np.asarray(right.crop((0, 0, 1, H))).astype(float)
+    t = np.linspace(0, 1, spine_w)[None, :, None]
+    strip = Image.fromarray((l * (1 - t) + r * t).astype(np.uint8))
+    wrap = Image.new("RGB", (2 * W + spine_w, H))
+    wrap.paste(left, (0, 0)); wrap.paste(strip, (W, 0)); wrap.paste(right, (W + spine_w, 0))
+    front = wrap.crop((W + spine_w, 0, 2 * W + spine_w, H)).resize((600, round(600 * H / W)), Image.LANCZOS)
+    if wrap.size[0] > 2400:
+        wrap = wrap.resize((2400, round(2400 * wrap.size[1] / wrap.size[0])), Image.LANCZOS)
+    slug = "the-road-not-taken"
+    save(wrap, slug + "-wrap.webp", quality=90, method=6)
+    save(front, slug + "-front.webp", quality=88, method=6)
+    print("ratio h/w %.4f  d/w %.4f  (%.3f x %.3f in a cover)" % (H / W, spine_w / W, W / 3600 * 1302 / 72 * (3600 / rgb.width), H / 3600 * 1302 / 72 * (3600 / rgb.width)))
+
+
 def regender_pride_and_prejudice():
     """The product page's own wrap, measured off the press files: 4.25 x 6.875 in,
     586 pages, so 0.324 of a width deep."""
@@ -155,10 +187,12 @@ def regender_pride_and_prejudice():
 
 
 if __name__ == "__main__":
-    which = sys.argv[1:] or ["autosummarize-second-edition", "bad-poetry-one", "regender-pride-and-prejudice"]
+    which = sys.argv[1:] or ["autosummarize-second-edition", "bad-poetry-one", "regender-pride-and-prejudice", "the-road-not-taken"]
     if "autosummarize-second-edition" in which:
         autosummarize_second_edition()
     if "bad-poetry-one" in which:
         bad_poetry_one()
     if "regender-pride-and-prejudice" in which:
         regender_pride_and_prejudice()
+    if "the-road-not-taken" in which:
+        road_not_taken()
