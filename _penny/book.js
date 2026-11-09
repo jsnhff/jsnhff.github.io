@@ -16,7 +16,7 @@ import {
   AmbientLight, BoxGeometry, BufferGeometry, CanvasTexture, Color, CylinderGeometry, DirectionalLight,
   DoubleSide, Float32BufferAttribute, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial,
   NoColorSpace, PerspectiveCamera, PMREMGenerator, PlaneGeometry, RepeatWrapping, Scene,
-  SRGBColorSpace, TextureLoader, WebGLRenderer
+  SRGBColorSpace, TextureLoader, Vector3, WebGLRenderer
 } from 'three';
 
 // The product page's lights were set for three r152, which scaled them by pi.
@@ -262,8 +262,24 @@ export function build(opts) {
       renderer.setSize(w, h, false);
       dirty = true;
     }
+    // A book with thickness turns about its middle, so what is drawn slides
+    // sideways as it turns: the spine side swings out and the silhouette's
+    // centre leaves the stage's. Each frame the book is put back so the middle
+    // of what is drawn, not of its pivot, is the middle of the stage, which is
+    // where its label sits. At the front, where the still is, it is a no-op.
+    const corner = new Vector3();
+    const halfView = Math.tan((12 * PI) / 180);
     function render() {
+      book.position.x = 0;
       book.rotation.y = ry; book.rotation.x = rx;
+      book.updateMatrixWorld(true);
+      let lo = Infinity, hi = -Infinity;
+      for (const x of [-W / 2, W / 2]) for (const y of [-H / 2, H / 2]) for (const z of [-D / 2, D / 2]) {
+        corner.set(x, y, z).applyMatrix4(book.matrixWorld).project(camera);
+        if (corner.x < lo) lo = corner.x;
+        if (corner.x > hi) hi = corner.x;
+      }
+      book.position.x = -((lo + hi) / 2) * halfView * camera.position.z * camera.aspect;
       renderer.render(scene, camera);
       dirty = false;
     }

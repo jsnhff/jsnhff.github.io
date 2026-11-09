@@ -1206,7 +1206,8 @@
     object-fit: contain;
     border-radius: 2px;
     transform-origin: 50% 100%;
-    transition: transform 320ms var(--rise);
+    transition: transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    will-change: transform;
   }
   /* A book that turns, in place of a plate. The box is square and holds its
      space from the first paint. The still is the front cover at the size the
@@ -1226,10 +1227,10 @@
     cursor: grab;
   }
   .gal-link.is-grabbed .gal-hit { cursor: grabbing; }
-  .gal-stage { transform-origin: 50% calc(100% + var(--gap)); transition: opacity 700ms ease, transform 320ms var(--rise); }
+  .gal-stage { transform-origin: 50% calc(100% + var(--gap)); transition: opacity 700ms ease, transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1); will-change: transform; }
   @media (hover: hover) {
-    .gal-hit:hover ~ .gal-stage, .gal-link.is-grabbed .gal-stage { transform: scale(1.045); }
-    .gal-hit:hover ~ .gal-still, .gal-link.is-grabbed .gal-still { transform: translate(-50%, -50%) scale(1.045); }
+    .gal-hit:hover ~ .gal-stage, .gal-link.is-grabbed .gal-stage { transform: scale(1.035); }
+    .gal-hit:hover ~ .gal-still, .gal-link.is-grabbed .gal-still { transform: translate(-50%, -50%) scale(1.035); }
   }
   /* The stage is transparent, so on the wall it may run wider than its column:
      a book fills two thirds of its stage, and this brings it up to the height
@@ -1243,7 +1244,7 @@
     transform: translate(-50%, -50%);
     transform-origin: 50% 100%;
     border-radius: 0;
-    transition: opacity 700ms ease 150ms, transform 320ms var(--rise);
+    transition: opacity 700ms ease 150ms, transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1);
   }
   .gal-link.has-book { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; }
   .plate .gal-still { pointer-events: none; -webkit-user-drag: none; user-select: none; }
@@ -1285,7 +1286,7 @@
   /* Nothing on the wall dims under a pointer: a tile comes up a little, from the
      row's baseline, so it stays on the row. */
   @media (hover: hover) {
-    .plate:not(.is-book) img:hover { transform: scale(1.045); }
+    .plate:not(.is-book) img:hover { transform: scale(1.035); }
   }
   /* And only the object answers the pointer: the tile around it, the empty
      part of the plate, is not a target, so nothing moves and nothing opens
