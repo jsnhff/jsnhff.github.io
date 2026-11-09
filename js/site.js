@@ -280,6 +280,73 @@
     }
   }
 
+  // ---- books that turn ----------------------------------------------------
+  // A project with a `book:` in its front matter shows the book itself, the
+  // model from the Regender product page, in the cover's own proportions. The
+  // still of the front cover is what is there first, drawn where the model's
+  // first frame will put the cover; the code (three.js with it) is fetched
+  // only when the book is about to be seen, and the still gives way to the
+  // model once its first frame is drawn. If anything goes wrong, or there is no
+  // WebGL, or the visitor has asked to save data, the still simply stays.
+  var bookUrl = '/js/book.js?v=' + buildStamp;
+  var bookIO = null;
+
+  function wakeBook(box) {
+    if (box._book || box._waking) return;
+    box._waking = true;
+    var stage = box.querySelector('.pj-book-stage');
+    import(bookUrl).then(function (m) {
+      if (!box.isConnected) return null;
+      return m.build({
+        el: stage,
+        wrap: box.getAttribute('data-wrap'),
+        foil: box.getAttribute('data-foil') || null,
+        h: parseFloat(box.getAttribute('data-h')),
+        d: parseFloat(box.getAttribute('data-d')),
+        // a lost context leaves a dead canvas: put the still back
+        onLost: function () { box.classList.remove('is-live'); box.classList.add('is-still'); }
+      });
+    }).then(function (inst) {
+      if (!inst) return;
+      if (!box.isConnected) { inst.destroy(); return; }
+      box._book = inst;
+      box.classList.remove('is-still');
+      box.classList.add('is-live');
+    }).catch(function () {
+      box._waking = false;
+      box.classList.add('is-still');
+    });
+  }
+
+  function initBooks(scope) {
+    var boxes = scope.querySelectorAll('[data-book]');
+    if (!boxes.length) return;
+    var save = navigator.connection && navigator.connection.saveData;
+    [].forEach.call(boxes, function (box) {
+      if (box._watched) return;
+      box._watched = true;
+      if (save || !window.IntersectionObserver) { box.classList.add('is-still'); return; }
+      if (!bookIO) {
+        bookIO = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            bookIO.unobserve(e.target);
+            wakeBook(e.target);
+          });
+        }, { rootMargin: '400px 0px' });
+      }
+      bookIO.observe(box);
+    });
+  }
+
+  // Frees the WebGL context of every book in a piece of page about to go.
+  function dropBooks(scope) {
+    [].forEach.call(scope.querySelectorAll('[data-book]'), function (box) {
+      if (bookIO) bookIO.unobserve(box);
+      if (box._book) { box._book.destroy(); box._book = null; }
+    });
+  }
+
   // ---- nav ----------------------------------------------------------------
   // The selected chip is one element that travels, placed from the live
   // geometry of the current link so it survives resizes and the
@@ -332,9 +399,11 @@
     var doc = new DOMParser().parseFromString(html, 'text/html');
     var article = doc.querySelector('.project');
     if (!article) { location.href = href; return; }
+    dropBooks(sheetBody);
     sheetBody.innerHTML = '';
     sheetBody.appendChild(article);
     noOrphans(sheetBody);
+    initBooks(sheetBody);
     sheetPanel.scrollTop = 0;
     sheet.classList.add('open');
     holdVideo(sheetBody);
@@ -364,7 +433,11 @@
     openHref = null;
     sheet.classList.remove('open');
     sheetPanel.style.transform = '';
-    setTimeout(function () { if (!openHref) sheetBody.innerHTML = ''; }, reduce ? 0 : 480);
+    setTimeout(function () {
+      if (openHref) return;
+      dropBooks(sheetBody);
+      sheetBody.innerHTML = '';
+    }, reduce ? 0 : 480);
     if (restoreFocus && restoreFocus.focus) restoreFocus.focus({ preventScroll: true });
     restoreFocus = null;
   }
@@ -1183,6 +1256,7 @@
 
   noOrphans(document.body);
   holdVideo(document);
+  initBooks(document);
   collect(document.body);
   placeThumb(false);
 

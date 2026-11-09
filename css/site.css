@@ -1137,6 +1137,24 @@
   .pj-shot:last-child { margin-bottom: 0; }
   .pj-shot img { max-width: 100%; height: auto; border-radius: 2px; }
 
+  /* A book that turns. The box is square and holds its space from the first
+     paint. The still is the front cover at the size the model's first frame
+     will draw it; when the model is ready it fades in over the still, which
+     then goes. If it never is, the still is the picture. */
+  .pj-book { position: relative; width: min(100%, 40rem); aspect-ratio: 1; margin: 0 auto clamp(var(--s5), 4vh, 2.5rem); }
+  .pj-book-still {
+    position: absolute; left: 50%; top: 50%;
+    width: var(--still-w); height: auto;
+    transform: translate(-50%, -50%);
+    transition: opacity 700ms ease 150ms;
+  }
+  .pj-book-stage { position: absolute; inset: 0; opacity: 0; transition: opacity 700ms ease; }
+  .pj-book.is-live .pj-book-stage { opacity: 1; }
+  .pj-book.is-live .pj-book-still { opacity: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    .pj-book-still, .pj-book-stage { transition: none; }
+  }
+
   /* A piece that turns gets to turn. Same measure and same rhythm as a plate,
      since on this sheet it is one more view of the object. */
   .pj-video { margin: 0 0 clamp(1.5rem, 4vh, 2.5rem); text-align: center; }

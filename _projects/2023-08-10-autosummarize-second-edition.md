@@ -13,6 +13,17 @@ description: |
 plate: "/images/plates/autosummarize-second-edition.webp"
 plate_w: 800
 plate_h: 533
+# The 3D model: the cover, spine and back cut from Adam Lucas's flat photographs
+# (specificideas.com/autosummarize). The proportions are measured off them, and
+# the title is the silver foil stamp. Rebuilt by _penny/wraps.py.
+book:
+  wrap: "/images/book3d/autosummarize-second-edition-wrap.webp"
+  foil: "/images/book3d/autosummarize-second-edition-foil.webp"
+  front: "/images/book3d/autosummarize-second-edition-front.webp"
+  front_w: 600
+  front_h: 913
+  h: 1.5211    # height / width of the trim
+  d: 0.0878    # spine / width
 section: studio
 dark: true
 ---

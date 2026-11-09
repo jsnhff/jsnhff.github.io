@@ -12,6 +12,15 @@ description: |
 plate: "/images/plates/bad-poetry-one.webp"
 plate_w: 800
 plate_h: 1304
+# The 3D model: the press cover. 4.25 x 6.875 in, saddle-stitched, 20 pages, so
+# about 0.05 in deep. Rebuilt by _penny/wraps.py.
+book:
+  wrap: "/images/book3d/bad-poetry-one-wrap.webp"
+  front: "/images/book3d/bad-poetry-one-front.webp"
+  front_w: 600
+  front_h: 971
+  h: 1.6176    # 6.875 / 4.25
+  d: 0.0118    # 0.05 / 4.25
 section: studio
 dark: true
 ---
