@@ -1214,15 +1214,23 @@
      the still, which then goes. If it never is, the still is the picture. The
      book fills about two thirds of its stage. */
   .plate.is-book { width: 100%; }
-  .gal-book { position: relative; width: 100%; aspect-ratio: 1; margin-bottom: var(--gap); cursor: grab; }
-  .gal-link.is-grabbed .gal-book { cursor: grabbing; }
+  .gal-book { position: relative; width: 100%; aspect-ratio: 1; margin-bottom: var(--gap); }
   /* A book comes up a little under a pointer, about its own baseline so it
-     stays on the row. */
-  .gal-book { transform-origin: 50% calc(100% + var(--gap)); transition: transform 320ms var(--rise); }
-  @media (hover: hover) {
-    .gal-link.has-book:hover .gal-book, .gal-link.has-book.is-grabbed .gal-book { transform: scale(1.045); }
+     stays on the row. Only over the book: the hit area is the cover as it
+     stands face-on, not the box the model is drawn in, which runs wider. It is
+     first in the box so what it hovers can be reached by sibling selectors. */
+  .gal-hit {
+    position: absolute; left: 50%; top: 50%;
+    width: var(--still-w); aspect-ratio: 1 / var(--bh);
+    transform: translate(-50%, -50%);
+    cursor: grab;
   }
-  @media (prefers-reduced-motion: reduce) { .gal-book { transition: none; } }
+  .gal-link.is-grabbed .gal-hit { cursor: grabbing; }
+  .gal-stage { transform-origin: 50% calc(100% + var(--gap)); transition: opacity 700ms ease, transform 320ms var(--rise); }
+  @media (hover: hover) {
+    .gal-hit:hover ~ .gal-stage, .gal-link.is-grabbed .gal-stage { transform: scale(1.045); }
+    .gal-hit:hover ~ .gal-still, .gal-link.is-grabbed .gal-still { transform: translate(-50%, -50%) scale(1.045); }
+  }
   /* The stage is transparent, so on the wall it may run wider than its column:
      a book fills two thirds of its stage, and this brings it up to the height
      of the photographs beside it. */
@@ -1233,12 +1241,13 @@
     position: absolute; left: 50%; top: 50%;
     width: var(--still-w); height: auto; max-width: none; max-height: none;
     transform: translate(-50%, -50%);
+    transform-origin: 50% 100%;
     border-radius: 0;
-    transition: opacity 700ms ease 150ms;
+    transition: opacity 700ms ease 150ms, transform 320ms var(--rise);
   }
   .gal-link.has-book { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; }
   .plate .gal-still { pointer-events: none; -webkit-user-drag: none; user-select: none; }
-  .gal-stage { position: absolute; inset: 0; opacity: 0; transition: opacity 700ms ease; pointer-events: none; }
+  .gal-stage { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
   .gal-book.is-live .gal-stage { opacity: 1; }
   .gal-book.is-live .gal-still { opacity: 0; }
   @media (prefers-reduced-motion: reduce) {
@@ -1276,8 +1285,17 @@
   /* Nothing on the wall dims under a pointer: a tile comes up a little, from the
      row's baseline, so it stays on the row. */
   @media (hover: hover) {
-    .gal-link:hover .plate:not(.is-book) img { transform: scale(1.045); }
+    .plate:not(.is-book) img:hover { transform: scale(1.045); }
   }
+  /* And only the object answers the pointer: the tile around it, the empty
+     part of the plate, is not a target, so nothing moves and nothing opens
+     until the pointer is on the picture, the book or the label. */
+  .gal-link { pointer-events: none; }
+  .gal-link .plate img, .gal-link .plate.is-empty, .gal-link .gal-hit, .gal-link .gal-tag { pointer-events: auto; }
+  .gal-link .plate img.gal-still { pointer-events: none; }
+  .gal-link .plate img:not(.gal-still) { cursor: pointer; }
+  .gal-link .gal-tag { cursor: pointer; }
+  .plate .gal-still { pointer-events: none; }
   @media (prefers-reduced-motion: reduce) { .plate img { transition: none; } }
   .gal-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 6px; border-radius: 4px; }
 

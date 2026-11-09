@@ -109,13 +109,27 @@ function studio(renderer) {
   return tex;
 }
 
+// A small seeded generator, so a book always sways the same way and no two
+// books sway alike.
+function rng(seed) {
+  let h = 2166136261;
+  for (const c of String(seed || '')) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
+  return function () {
+    h += 0x6D2B79F5;
+    let t = h;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 function load(loader, url, space) {
   return loader.loadAsync(url).then((t) => { t.colorSpace = space; return t; });
 }
 
 // opts: el (the stage), wrap, foil (optional), w/h/d (the book's proportions,
 // width = 1), staples (how many, on the spine, for a saddle-stitched book), pointerEl (what is dragged to turn the book, if not the canvas: on
-// the wall, the whole tile), drag (default true), drift (rad/s), onLost. Resolves once the first frame is on the canvas; rejects
+// the wall, the whole tile), drag (default true), seed (a string: each book sways in its own way), sway (radians) and period (seconds) to override, onLost. Resolves once the first frame is on the canvas; rejects
 // if there is no WebGL or a texture will not load, so the caller can keep the
 // still it is showing.
 export function build(opts) {
@@ -205,11 +219,26 @@ export function build(opts) {
     scene.add(rim);
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const drift = reduce ? 0 : (opts.drift === undefined ? 0.055 : opts.drift);
-    // It starts face-on, exactly where the still it replaces is, then settles
-    // into a slight tilt and begins to turn.
+    // A book does not go round: it sways a little either side of its front, very
+    // slowly, so it never swings through the edge-on views that flatten it to a
+    // sliver. Every book has its own period, reach and phase, and a second slower
+    // wobble across the first, so a wall of them does not wave in unison. Each
+    // eases in from the front over a few seconds, so it begins exactly where the
+    // still it replaces is. Let go of one that has been turned and it comes back
+    // to its sway on its own, easing, by the short way round: `off` is how far
+    // it is from where the sway would have it.
+    const rnd = rng(opts.seed);
+    const period = opts.period || 44 + rnd() * 48;
+    const reach = reduce ? 0 : (opts.sway === undefined ? 0.22 + rnd() * 0.26 : opts.sway);
+    const omega = (2 * PI) / period;
+    const phi = rnd() * 2 * PI, phi2 = rnd() * 2 * PI, phiX = rnd() * 2 * PI;
     const RX = -0.1;
-    let ry = opts.ry || 0, rx = 0, vy = 0, vx = 0, settle = 0;
+    let t = 0, off = opts.ry || 0, offx = 0, ry = off, rx = 0, vy = 0, vx = 0, settle = 0;
+    const shortWay = (a) => a - Math.round(a / (2 * PI)) * 2 * PI;
+    const arrive = () => { const x = Math.min(1, t / 6); return x * x * (3 - 2 * x); };
+    const swayY = () => reach * arrive() * (0.82 * Math.sin(omega * t + phi) + 0.18 * Math.sin(omega * 1.9 * t + phi2));
+    const swayX = () => (reduce ? 0 : 0.03 * arrive() * Math.sin(omega * 0.7 * t + phiX));
+    const baseX = () => RX * (1 - Math.pow(1 - settle, 3)) + swayX();
     let dragging = false, last = 0, visible = true, dirty = true, dead = false, raf = 0;
     let lastT = 0, sx = 0, sy = 0, by = 0, bx = 0;
 
@@ -304,20 +333,26 @@ export function build(opts) {
       if (!last) { last = now; return; }
       const dt = Math.min((now - last) / 1000, 0.1); last = now;
       if (!visible) return;
-      if (!dragging) {
-        if (!reduce && settle < 1) {
-          settle = Math.min(1, settle + dt / 1.4);
-          rx = RX * (1 - Math.pow(1 - settle, 3)); dirty = true;
-        }
+      t += dt;
+      if (!reduce && settle < 1) settle = Math.min(1, settle + dt / 1.4);
+      if (dragging) {
+        // the pointer has it: remember how far that is from the sway
+        off = shortWay(ry - swayY()); offx = rx - baseX();
+      } else {
+        // a throw carries on and dies away...
+        off += vy * dt; offx += vx * dt;
         const k = Math.pow(0.22, dt);
-        if (drift || vy || vx) {
-          ry += (drift + vy) * dt; rx += vx * dt;
-          vy *= k; vx *= k;
-          if (Math.abs(vy) < 0.001) vy = 0;
-          if (Math.abs(vx) < 0.001) vx = 0;
-          dirty = true;
-        }
+        vy *= k; vx *= k;
+        if (Math.abs(vy) < 0.001) vy = 0;
+        if (Math.abs(vx) < 0.001) vx = 0;
+        // ...and what is left of the turn is given back, softly
+        const back = Math.exp(-dt * 0.75);
+        off = shortWay(off) * back; offx *= back;
+        if (Math.abs(off) < 0.0005) off = 0;
+        if (Math.abs(offx) < 0.0005) offx = 0;
+        ry = swayY() + off; rx = baseX() + offx;
       }
+      if (reach || settle < 1 || off || offx || vy || vx || dragging) dirty = true;
       if (dirty) render();
     }
 
