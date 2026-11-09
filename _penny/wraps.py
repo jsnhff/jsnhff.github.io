@@ -130,8 +130,12 @@ def bad_poetry_one():
     wrap = Image.new("RGB", (2 * W + spine_w, H))
     wrap.paste(left, (0, 0)); wrap.paste(strip, (W, 0)); wrap.paste(right, (W + spine_w, 0))
     slug = "bad-poetry-one"
+    # a tile on the wall shows it at most ~600px across: 1200 a cover is plenty
+    if wrap.size[0] > 2400:
+        wrap = wrap.resize((2400, round(2400 * wrap.size[1] / wrap.size[0])), Image.LANCZOS)
     save(wrap, slug + "-wrap.webp", quality=90, method=6)
-    save(wrap.crop((W + spine_w, 0, 2 * W + spine_w, H)).resize((600, round(600 * H / W)), Image.LANCZOS),
+    fw = wrap.size[0] * W // (2 * W + spine_w)
+    save(wrap.crop((wrap.size[0] - fw, 0, wrap.size[0], wrap.size[1])).resize((600, round(600 * H / W)), Image.LANCZOS),
          slug + "-front.webp", quality=88, method=6)
     print("ratio h/w %.4f  d/w %.4f" % (H / W, spine_w / W))
 

@@ -114,7 +114,7 @@ function load(loader, url, space) {
 }
 
 // opts: el (the stage), wrap, foil (optional), w/h/d (the book's proportions,
-// width = 1), onLost. Resolves once the first frame is on the canvas; rejects
+// width = 1), drag (default true; off where the book sits inside a link), onLost. Resolves once the first frame is on the canvas; rejects
 // if there is no WebGL or a texture will not load, so the caller can keep the
 // still it is showing.
 export function build(opts) {
@@ -164,10 +164,14 @@ export function build(opts) {
     }
 
     // the leaves, just inside the card
+    // A thick book shows its leaves as fine lines. A saddle-stitched one is
+    // too thin for them to be anything but moire, so it gets plain paper.
+    const thin = D < 0.04;
     const rep = Math.max(3, Math.round(26 * D / 0.324));
-    const edge = stripe(true, rep), face = stripe(false, rep);
+    const edge = thin ? null : stripe(true, rep), face = thin ? null : stripe(false, rep);
     const paper = new MeshStandardMaterial({ color: 0xffffff, roughness: 0.95 });
-    const rough = (map) => new MeshStandardMaterial({ map, roughness: 0.95 });
+    const rough = (map) => new MeshStandardMaterial(
+      thin ? { color: 0xece4d2, roughness: 0.95 } : { map, roughness: 0.95 });
     const block = new Mesh(new BoxGeometry(W * 0.998, H * 0.998, D * 0.985),
       [rough(edge), paper, rough(face), rough(face), paper, paper]);
     book.add(block);
@@ -190,7 +194,8 @@ export function build(opts) {
     let lastT = 0, sx = 0, sy = 0, by = 0, bx = 0;
 
     const el = renderer.domElement;
-    el.style.cssText = 'width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab';
+    el.style.cssText = 'width:100%;height:100%;display:block;' +
+      (opts.drag !== false ? 'touch-action:pan-y;cursor:grab' : 'pointer-events:none');
     host.appendChild(el);
 
     function size() {
@@ -228,10 +233,13 @@ export function build(opts) {
     }
     function lost(e) { e.preventDefault(); if (opts.onLost) opts.onLost(); }
     function restored() { dirty = true; }
-    el.addEventListener('pointerdown', down);
-    el.addEventListener('pointermove', move);
-    el.addEventListener('pointerup', up);
-    el.addEventListener('pointercancel', up);
+    const drag = opts.drag !== false;
+    if (drag) {
+      el.addEventListener('pointerdown', down);
+      el.addEventListener('pointermove', move);
+      el.addEventListener('pointerup', up);
+      el.addEventListener('pointercancel', up);
+    }
     el.addEventListener('webglcontextlost', lost);
     el.addEventListener('webglcontextrestored', restored);
 
@@ -278,7 +286,7 @@ export function build(opts) {
         window.removeEventListener('resize', onResize);
         if (io) io.disconnect();
         tex.forEach((t) => t.dispose());
-        edge.dispose(); face.dispose();
+        if (edge) { edge.dispose(); face.dispose(); }
         if (foilMat) { foilMat.envMap.dispose(); foilMat.dispose(); }
         mat.dispose();
         renderer.dispose();

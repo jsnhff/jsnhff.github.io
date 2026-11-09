@@ -1137,24 +1137,6 @@
   .pj-shot:last-child { margin-bottom: 0; }
   .pj-shot img { max-width: 100%; height: auto; border-radius: 2px; }
 
-  /* A book that turns. The box is square and holds its space from the first
-     paint. The still is the front cover at the size the model's first frame
-     will draw it; when the model is ready it fades in over the still, which
-     then goes. If it never is, the still is the picture. */
-  .pj-book { position: relative; width: min(100%, 40rem); aspect-ratio: 1; margin: 0 auto clamp(var(--s5), 4vh, 2.5rem); }
-  .pj-book-still {
-    position: absolute; left: 50%; top: 50%;
-    width: var(--still-w); height: auto;
-    transform: translate(-50%, -50%);
-    transition: opacity 700ms ease 150ms;
-  }
-  .pj-book-stage { position: absolute; inset: 0; opacity: 0; transition: opacity 700ms ease; }
-  .pj-book.is-live .pj-book-stage { opacity: 1; }
-  .pj-book.is-live .pj-book-still { opacity: 0; }
-  @media (prefers-reduced-motion: reduce) {
-    .pj-book-still, .pj-book-stage { transition: none; }
-  }
-
   /* A piece that turns gets to turn. Same measure and same rhythm as a plate,
      since on this sheet it is one more view of the object. */
   .pj-video { margin: 0 0 clamp(1.5rem, 4vh, 2.5rem); text-align: center; }
@@ -1224,6 +1206,33 @@
     object-fit: contain;
     border-radius: 2px;
   }
+  /* A book that turns, in place of a plate. The box is square and holds its
+     space from the first paint. The still is the front cover at the size the
+     model's first frame will draw it; when the model is ready it fades in over
+     the still, which then goes. If it never is, the still is the picture. The
+     book fills about two thirds of its stage. */
+  .plate.is-book { width: 100%; }
+  .gal-book { position: relative; width: 100%; aspect-ratio: 1; margin-bottom: var(--gap); }
+  /* The stage is transparent, so on the wall it may run wider than its column:
+     a book fills two thirds of its stage, and this brings it up to the height
+     of the photographs beside it. */
+  @media (min-width: 38.01rem) {
+    .gal-book { width: 120%; margin-left: -10%; margin-bottom: calc(var(--gap) * 1.2); }
+  }
+  .plate .gal-still {
+    position: absolute; left: 50%; top: 50%;
+    width: var(--still-w); height: auto; max-width: none; max-height: none;
+    transform: translate(-50%, -50%);
+    border-radius: 0;
+    transition: opacity 700ms ease 150ms;
+  }
+  .gal-stage { position: absolute; inset: 0; opacity: 0; transition: opacity 700ms ease; pointer-events: none; }
+  .gal-book.is-live .gal-stage { opacity: 1; }
+  .gal-book.is-live .gal-still { opacity: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    .gal-still, .gal-stage { transition: none; }
+  }
+
   /* A wall with a hole in it reads as broken, so the one project without a
      picture yet holds its place. */
   .plate.is-empty {

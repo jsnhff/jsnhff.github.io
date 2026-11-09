@@ -281,70 +281,74 @@
   }
 
   // ---- books that turn ----------------------------------------------------
-  // A project with a `book:` in its front matter shows the book itself, the
-  // model from the Regender product page, in the cover's own proportions. The
-  // still of the front cover is what is there first, drawn where the model's
-  // first frame will put the cover; the code (three.js with it) is fetched
-  // only when the book is about to be seen, and the still gives way to the
-  // model once its first frame is drawn. If anything goes wrong, or there is no
-  // WebGL, or the visitor has asked to save data, the still simply stays.
+  // On the studio wall a book is the book itself, the model from the Regender
+  // product page in the cover's own proportions, where a photograph would be.
+  // The still of the front cover is what is there first, drawn where the
+  // model's first frame will put the cover; the code (three.js with it) is
+  // fetched only when a book is about to be seen, and the still gives way to
+  // the model once its first frame is drawn. A book scrolled well out of sight
+  // is put back to its still, so a long wall never holds more than a few
+  // WebGL contexts. If anything goes wrong, or there is no WebGL, or the
+  // visitor has asked to save data, the still simply stays.
   var bookUrl = '/js/book.js?v=' + buildStamp;
   var bookIO = null;
+  var books = [];
 
   function wakeBook(box) {
     if (box._book || box._waking) return;
     box._waking = true;
-    var stage = box.querySelector('.pj-book-stage');
     import(bookUrl).then(function (m) {
-      if (!box.isConnected) return null;
+      if (!box._waking || !box.isConnected) return null;
       return m.build({
-        el: stage,
+        el: box.querySelector('.gal-stage'),
         wrap: box.getAttribute('data-wrap'),
         foil: box.getAttribute('data-foil') || null,
         h: parseFloat(box.getAttribute('data-h')),
         d: parseFloat(box.getAttribute('data-d')),
+        // the tile is a link, and a drag that ends on it would follow it
+        drag: false,
         // a lost context leaves a dead canvas: put the still back
-        onLost: function () { box.classList.remove('is-live'); box.classList.add('is-still'); }
+        onLost: function () { sleepBook(box); }
       });
     }).then(function (inst) {
       if (!inst) return;
-      if (!box.isConnected) { inst.destroy(); return; }
+      // sent back to sleep while it was loading: not wanted any more
+      if (!box._waking) { inst.destroy(); return; }
+      box._waking = false;
       box._book = inst;
-      box.classList.remove('is-still');
       box.classList.add('is-live');
     }).catch(function () {
       box._waking = false;
-      box.classList.add('is-still');
     });
+  }
+
+  function sleepBook(box) {
+    box._waking = false;
+    if (box._book) { box._book.destroy(); box._book = null; }
+    box.classList.remove('is-live');
+  }
+
+  // Watches every book on the page afresh: the ones in view wake, the rest
+  // sleep. Called at load and again when a sheet closes.
+  function watchBooks() {
+    if (!bookIO) return;
+    bookIO.disconnect();
+    books.forEach(function (box) { bookIO.observe(box); });
   }
 
   function initBooks(scope) {
-    var boxes = scope.querySelectorAll('[data-book]');
-    if (!boxes.length) return;
+    books = [].slice.call(scope.querySelectorAll('[data-book]'));
+    if (!books.length) return;
     var save = navigator.connection && navigator.connection.saveData;
-    [].forEach.call(boxes, function (box) {
-      if (box._watched) return;
-      box._watched = true;
-      if (save || !window.IntersectionObserver) { box.classList.add('is-still'); return; }
-      if (!bookIO) {
-        bookIO = new IntersectionObserver(function (entries) {
-          entries.forEach(function (e) {
-            if (!e.isIntersecting) return;
-            bookIO.unobserve(e.target);
-            wakeBook(e.target);
-          });
-        }, { rootMargin: '400px 0px' });
-      }
-      bookIO.observe(box);
-    });
-  }
-
-  // Frees the WebGL context of every book in a piece of page about to go.
-  function dropBooks(scope) {
-    [].forEach.call(scope.querySelectorAll('[data-book]'), function (box) {
-      if (bookIO) bookIO.unobserve(box);
-      if (box._book) { box._book.destroy(); box._book = null; }
-    });
+    if (save || !window.IntersectionObserver) return;
+    bookIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        // a sheet over the wall hides it, so nothing wakes behind one
+        if (e.isIntersecting && !openHref) wakeBook(e.target);
+        else sleepBook(e.target);
+      });
+    }, { rootMargin: '500px 0px' });
+    watchBooks();
   }
 
   // ---- nav ----------------------------------------------------------------
@@ -399,11 +403,10 @@
     var doc = new DOMParser().parseFromString(html, 'text/html');
     var article = doc.querySelector('.project');
     if (!article) { location.href = href; return; }
-    dropBooks(sheetBody);
     sheetBody.innerHTML = '';
     sheetBody.appendChild(article);
     noOrphans(sheetBody);
-    initBooks(sheetBody);
+    books.forEach(sleepBook);
     sheetPanel.scrollTop = 0;
     sheet.classList.add('open');
     holdVideo(sheetBody);
@@ -433,11 +436,8 @@
     openHref = null;
     sheet.classList.remove('open');
     sheetPanel.style.transform = '';
-    setTimeout(function () {
-      if (openHref) return;
-      dropBooks(sheetBody);
-      sheetBody.innerHTML = '';
-    }, reduce ? 0 : 480);
+    setTimeout(function () { if (!openHref) sheetBody.innerHTML = ''; }, reduce ? 0 : 480);
+    watchBooks();
     if (restoreFocus && restoreFocus.focus) restoreFocus.focus({ preventScroll: true });
     restoreFocus = null;
   }

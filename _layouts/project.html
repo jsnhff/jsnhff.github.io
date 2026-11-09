@@ -49,32 +49,5 @@ layout: site
       </div>
     {% endif %}
   </div>
-  {%- comment -%}
-    A book that turns: see "books that turn" in js/site.js. The still of the
-    front cover sits where the model's first frame will draw it, so nothing
-    moves when the model arrives. The sums below repeat book.js's framing: a
-    24 degree lens 5.3 away (backed off for a book taller than the Regender
-    one), a stage as wide as it is tall, the front face a half-depth nearer.
-  {%- endcomment -%}
-  {% if page.book %}
-    {%- assign bk = page.book -%}
-    {%- assign fit = bk.h | divided_by: 1.617 -%}
-    {%- if fit < 1 -%}{%- assign fit = 1.0 -%}{%- endif -%}
-    {%- assign dist = fit | times: 5.3 -%}
-    {%- assign near = bk.d | divided_by: 2.0 -%}
-    {%- assign near = dist | minus: near -%}
-    {%- assign zoom = dist | divided_by: near -%}
-    {%- assign frame = fit | times: 2.2533 -%}
-    {%- assign still_w = zoom | divided_by: frame | times: 100 -%}
-    <div class="row pj-book" data-book
-         data-wrap="{{ bk.wrap }}"{% if bk.foil %} data-foil="{{ bk.foil }}"{% endif %}
-         data-h="{{ bk.h }}" data-d="{{ bk.d }}"
-         style="--still-w: {{ still_w | round: 2 }}%"
-         role="img" aria-label="{{ page.title | escape }}: the book, turning slowly. Drag to turn it.">
-      <img class="pj-book-still" src="{{ bk.front }}" width="{{ bk.front_w }}" height="{{ bk.front_h }}"
-           alt="" decoding="async">
-      <div class="pj-book-stage" aria-hidden="true"></div>
-    </div>
-  {% endif %}
   {{ content }}
 </article>
