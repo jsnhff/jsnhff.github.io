@@ -23,6 +23,8 @@ from scipy import ndimage
 
 SRC_AS = os.environ.get("SRC_AS", "adam/img")
 SRC_BP = os.environ.get("SRC_BP", "bp-press-3500.png")
+SRC_AS10 = os.environ.get("SRC_AS10", "as10_3600.png")
+SRC_AP = os.environ.get("SRC_AP", "ap3600.png")
 SRC_EO = os.environ.get("SRC_EO", "eo3600.png")
 SRC_BFE = os.environ.get("SRC_BFE", "bfe3000.png")
 SRC_SOA = os.environ.get("SRC_SOA", "soa6000.png")
@@ -176,6 +178,65 @@ def road_not_taken():
     print("ratio h/w %.4f  d/w %.4f  (%.3f x %.3f in a cover)" % (H / W, spine_w / W, W / 3600 * 1302 / 72 * (3600 / rgb.width), H / 3600 * 1302 / 72 * (3600 / rgb.width)))
 
 
+def _flat(path):
+    page = Image.open(path).convert("RGBA")
+    white = Image.new("RGBA", page.size, (255, 255, 255, 255))
+    white.alpha_composite(page)
+    return white.convert("RGB")
+
+
+def _finish(slug, wrap, front, W, H, spine_px):
+    fr = front.resize((600, round(600 * H / W)), Image.LANCZOS)
+    if wrap.width > 2400:
+        wrap = wrap.resize((2400, round(2400 * wrap.height / wrap.width)), Image.LANCZOS)
+    save(wrap, slug + "-wrap.webp", quality=90, method=6)
+    save(fr, slug + "-front.webp", quality=88, method=6)
+    print("ratio h/w %.4f  d/w %.4f" % (H / W, spine_px / W))
+
+
+def autosummarize_2010():
+    """Trim 14.5 x 22 cm (5.709 x 8.661 in). The press page, 13.25 x 10.25 in, is
+    a casewrap: the boards with an equal margin all round, (10.25 - 8.661) / 2 =
+    0.795 in. That leaves 13.25 - 2 x 5.709 - 2 x 0.795 = 0.243 in of spine, and
+    the printed frames sit centred in the boards, which it bears out."""
+    art = _flat(SRC_AS10)
+    ppi = art.width / 13.25
+    W, H = round(5.709 * ppi), round(8.661 * ppi)
+    m = round((10.25 - 8.661) / 2 * ppi)
+    spine = art.width - 2 * W - 2 * m
+    wrap = art.crop((m, m, art.width - m, m + H))
+    front = wrap.crop((wrap.width - W, 0, wrap.width, H))
+    _finish("autosummarize", wrap, front, W, H, spine)
+
+
+def american_psycho():
+    """Trim 15.2 x 22.9 cm (5.984 x 9.016 in). The artwork is found on the page as
+    the black rectangle, 13.26 x 9.51 in; 9.51 - 9.016 is a bleed of 0.247 in top
+    and bottom. Across, the grey ELLIS bar on the spine is the width of the spine
+    (set to the guides): its edges are the spine's, and a cover's width of art
+    lies either side. Taken that way the panels fall on the bar to the pixel;
+    the spine comes out about 0.95 in."""
+    page = _flat(SRC_AP)
+    a = np.asarray(page).astype(int)
+    ink = a.sum(2) < 600
+    cols = np.where(ink.sum(0) > 0.3 * page.height * 0.5)[0]
+    rows = np.where(ink.sum(1) > 0.3 * page.width * 0.5)[0]
+    art = page.crop((cols.min(), rows.min(), cols.max() + 1, rows.max() + 1))
+    ppi = art.height / 9.51
+    by = round((art.height / ppi - 9.016) / 2 * ppi)
+    art = art.crop((0, by, art.width, art.height - by))
+    H = art.height
+    W = round(5.984 * ppi)
+    g = np.asarray(art).astype(int)
+    grey = (g[..., 0] > 100) & (g[..., 0] < 175) & (abs(g[..., 0] - g[..., 1]) < 8) & (abs(g[..., 1] - g[..., 2]) < 8)
+    band = grey[round(0.06 * H):round(0.13 * H), round(0.4 * art.width):round(0.6 * art.width)]
+    xs = np.where(band.mean(0) > 0.8)[0] + round(0.4 * art.width)
+    x0, x1 = xs.min(), xs.max() + 1
+    wrap = art.crop((x0 - W, 0, x1 + W, H))
+    _finish("american-psycho", wrap, wrap.crop((wrap.width - W, 0, wrap.width, H)), W, H, x1 - x0)
+    print("  spine %.3f in; bleed at the sides %.3f in" % ((x1 - x0) / ppi, (x0 - W) / ppi))
+
+
 def endless_opportunities():
     """The print cover is one page, 16.196 x 9.931 in. Its height is Lulu's Crown
     Quarto, 9.6875 in, with a 0.125 in bleed top and bottom; across, that leaves
@@ -273,7 +334,7 @@ def regender_pride_and_prejudice():
 
 
 if __name__ == "__main__":
-    which = sys.argv[1:] or ["autosummarize-second-edition", "bad-poetry-one", "regender-pride-and-prejudice", "the-road-not-taken", "the-story-of-art", "best-fight-ever", "endless-opportunities-book"]
+    which = sys.argv[1:] or ["autosummarize-second-edition", "bad-poetry-one", "regender-pride-and-prejudice", "the-road-not-taken", "the-story-of-art", "best-fight-ever", "endless-opportunities-book", "autosummarize", "american-psycho"]
     if "autosummarize-second-edition" in which:
         autosummarize_second_edition()
     if "bad-poetry-one" in which:
@@ -288,3 +349,7 @@ if __name__ == "__main__":
         best_fight_ever()
     if "endless-opportunities-book" in which:
         endless_opportunities()
+    if "autosummarize" in which:
+        autosummarize_2010()
+    if "american-psycho" in which:
+        american_psycho()
