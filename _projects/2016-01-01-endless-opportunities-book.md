@@ -32,6 +32,16 @@ description: |
 plate: "/images/plates/endless-opportunities-book.webp"
 plate_w: 1200
 plate_h: 1561
+# The 3D model: the print cover. Lulu Crown Quarto, 7.4375 x 9.6875 in; the press
+# page is 16.196 x 9.931 in, which leaves a 1.071 in spine. Worked out from the
+# page, not recorded: the page count would confirm it. Rebuilt by _penny/wraps.py.
+book:
+  wrap: "/images/book3d/endless-opportunities-book-wrap.webp"
+  front: "/images/book3d/endless-opportunities-book-front.webp"
+  front_w: 600
+  front_h: 781
+  h: 1.3025    # 9.6875 / 7.4375
+  d: 0.1440    # 1.071 / 7.4375
 section: studio
 dark: true
 ---

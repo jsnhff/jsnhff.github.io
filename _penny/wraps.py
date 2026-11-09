@@ -23,6 +23,7 @@ from scipy import ndimage
 
 SRC_AS = os.environ.get("SRC_AS", "adam/img")
 SRC_BP = os.environ.get("SRC_BP", "bp-press-3500.png")
+SRC_EO = os.environ.get("SRC_EO", "eo3600.png")
 SRC_BFE = os.environ.get("SRC_BFE", "bfe3000.png")
 SRC_SOA = os.environ.get("SRC_SOA", "soa6000.png")
 SRC_RNT = os.environ.get("SRC_RNT", "rnt3600.png")
@@ -175,6 +176,30 @@ def road_not_taken():
     print("ratio h/w %.4f  d/w %.4f  (%.3f x %.3f in a cover)" % (H / W, spine_w / W, W / 3600 * 1302 / 72 * (3600 / rgb.width), H / 3600 * 1302 / 72 * (3600 / rgb.width)))
 
 
+def endless_opportunities():
+    """The print cover is one page, 16.196 x 9.931 in. Its height is Lulu's Crown
+    Quarto, 9.6875 in, with a 0.125 in bleed top and bottom; across, that leaves
+    16.196 - 2 x 7.4375 - 0.25 = 1.071 in of spine. Worked out, not recorded:
+    the page count would confirm it."""
+    page = Image.open(SRC_EO).convert("RGBA")
+    white = Image.new("RGBA", page.size, (255, 255, 255, 255))
+    white.alpha_composite(page)
+    art = white.convert("RGB")
+    ppi = art.width / 16.196
+    b = round(0.125 * ppi)
+    art = art.crop((b, b, art.width - b, art.height - b))
+    H = art.height
+    W = round(7.4375 * ppi)
+    fr = art.crop((art.width - W, 0, art.width, H)).resize((600, round(600 * H / W)), Image.LANCZOS)
+    wrap = art
+    if wrap.width > 2400:
+        wrap = wrap.resize((2400, round(2400 * wrap.height / wrap.width)), Image.LANCZOS)
+    slug = "endless-opportunities-book"
+    save(wrap, slug + "-wrap.webp", quality=90, method=6)
+    save(fr, slug + "-front.webp", quality=88, method=6)
+    print("ratio h/w %.4f  d/w %.4f" % (H / W, (art.width - 2 * W) / W))
+
+
 def best_fight_ever():
     """Lulu pocketbook, 4.25 x 6.875 in, 116 pages. The press cover is 9.011 x
     7.125 in: trim plus a 0.125 in bleed all round, and what is left between the
@@ -248,7 +273,7 @@ def regender_pride_and_prejudice():
 
 
 if __name__ == "__main__":
-    which = sys.argv[1:] or ["autosummarize-second-edition", "bad-poetry-one", "regender-pride-and-prejudice", "the-road-not-taken", "the-story-of-art", "best-fight-ever"]
+    which = sys.argv[1:] or ["autosummarize-second-edition", "bad-poetry-one", "regender-pride-and-prejudice", "the-road-not-taken", "the-story-of-art", "best-fight-ever", "endless-opportunities-book"]
     if "autosummarize-second-edition" in which:
         autosummarize_second_edition()
     if "bad-poetry-one" in which:
@@ -261,3 +286,5 @@ if __name__ == "__main__":
         story_of_art()
     if "best-fight-ever" in which:
         best_fight_ever()
+    if "endless-opportunities-book" in which:
+        endless_opportunities()
