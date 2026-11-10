@@ -1215,7 +1215,7 @@
      the still, which then goes. If it never is, the still is the picture. The
      book fills about two thirds of its stage. */
   .plate.is-book { width: 100%; }
-  .gal-book { position: relative; width: 100%; aspect-ratio: 1; margin-bottom: var(--gap); }
+  .gal-book { position: relative; width: 100%; aspect-ratio: 1; margin-bottom: calc(var(--gap) + 0.8rem); }
   /* A book comes up a little under a pointer, about its own baseline so it
      stays on the row. Only over the book: the hit area is the cover as it
      stands face-on, not the box the model is drawn in, which runs wider. It is
@@ -1234,9 +1234,10 @@
   }
   /* The stage is transparent, so on the wall it may run wider than its column:
      a book fills two thirds of its stage, and this brings it up to the height
-     of the photographs beside it. */
+     of the photographs beside it. The plate centres it, so it overflows evenly
+     both sides; a negative margin on top of that would push it off its label. */
   @media (min-width: 38.01rem) {
-    .gal-book { width: 120%; margin-left: -10%; margin-bottom: calc(var(--gap) * 1.2); }
+    .gal-book { width: 120%; margin-bottom: calc(var(--gap) * 1.2 + 0.8rem); }
   }
   .plate .gal-still {
     position: absolute; left: 50%; top: 50%;

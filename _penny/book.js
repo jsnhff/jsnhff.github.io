@@ -164,7 +164,7 @@ export function build(opts) {
     const book = new Group();
     scene.add(book);
 
-    const mat = new MeshStandardMaterial({ map: wrap, roughness: 0.74, metalness: 0, side: DoubleSide });
+    const mat = new MeshStandardMaterial({ map: wrap, roughness: 0.9, metalness: 0, side: DoubleSide });
     const geo = coverGeometry(W, H, D, R);
     book.add(new Mesh(geo, mat));
     // Metal, foil or staples, is lit by a studio of its own, not the paper's.
@@ -210,9 +210,15 @@ export function build(opts) {
       [rough(edge), paper, rough(face), rough(face), paper, paper]);
     book.add(block);
 
+    // The product page's lights are set for a book that goes right round, and
+    // throw from well off to one side. A book that only sways would be lit
+    // very differently either way it leans (by a third), and dull on the dark
+    // side. The key is brought round nearer the viewer: the front face lands
+    // near 1.0 and moves by about a tenth across the sway, so a cover stays
+    // itself. The ambient is left as it was; more of it flattens colour.
     scene.add(new AmbientLight(0xffffff, 0.42 * PI));
-    const key = new DirectionalLight(0xffffff, 0.80 * PI);
-    key.position.set(-3.2, 5.2, 4.4);
+    const key = new DirectionalLight(0xffffff, 0.74 * PI);
+    key.position.set(-1.4, 4.4, 5.2);
     scene.add(key);
     const rim = new DirectionalLight(0xbfd0e6, 0.18 * PI);
     rim.position.set(3.6, -1.4, -3.0);

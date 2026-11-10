@@ -23,6 +23,7 @@ from scipy import ndimage
 
 SRC_AS = os.environ.get("SRC_AS", "adam/img")
 SRC_BP = os.environ.get("SRC_BP", "bp-press-3500.png")
+SRC_BP_ART = os.environ.get("SRC_BP_ART", os.path.expanduser("~/poetry-zines/assets/vol1_cover.jpg"))
 SRC_CABLE = os.environ.get("SRC_CABLE", "cable3600.png")
 SRC_AS10 = os.environ.get("SRC_AS10", "as10_3600.png")
 SRC_AP = os.environ.get("SRC_AP", "ap3600.png")
@@ -122,6 +123,23 @@ def autosummarize_second_edition():
 def bad_poetry_one():
     spread = Image.open(SRC_BP).convert("RGB")
     sw, sh = spread.size
+    # The press PDF is CMYK and renders flat and a little green (about 12% less
+    # saturated than the RGB sunset it was made from). The sunset is used as the
+    # ground, resized to the spread; the title is the white that the press render
+    # has over it, lifted out and laid back on, so the lettering is the press's.
+    art = Image.open(SRC_BP_ART).convert("RGB").resize((sw, sh), Image.LANCZOS)
+    a_arr = np.asarray(art).astype(float)
+    p_arr = np.asarray(spread).astype(float)
+    lum = lambda x: x @ np.array([0.299, 0.587, 0.114])
+    diff = lum(p_arr) - lum(a_arr)
+    alpha = np.clip((diff - 18) / np.maximum(255 - lum(a_arr), 1), 0, 1)
+    box = np.zeros_like(alpha)                      # only where the title is: the front's top
+    box[int(0.05 * sh):int(0.22 * sh), int(0.60 * sw):int(0.88 * sw)] = 1
+    alpha *= box
+    out = a_arr + alpha[..., None] * (255 - a_arr)
+    print("  ground vs press render, mean abs difference %.1f levels; title coverage %.4f of the spread"
+          % (np.abs(a_arr - p_arr).mean(), (alpha > 0.05).mean()))
+    spread = Image.fromarray(out.clip(0, 255).astype(np.uint8))
     ppi = sw / 8.75                       # 8.75 x 7.125 in, bleed on every side
     b = round(0.125 * ppi)
     spread = spread.crop((b, b, sw - b, sh - b))   # trim: 8.5 x 6.875
