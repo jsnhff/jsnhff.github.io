@@ -340,31 +340,41 @@
     books.forEach(function (box) { bookIO.observe(box); });
   }
 
-  // A cover still is held invisible until its picture has decoded, then fades
-  // up, so it arrives rather than popping in when the file lands.
+  // A tile's picture, a book's cover still or a photograph, is held invisible
+  // until it has decoded, then fades up; its label follows a beat behind (the
+  // tile gets .is-in). Both arrive together, rather than the label standing
+  // there ahead of an empty space, and nothing pops when a file lands.
   function arrive(img) {
+    var tile = img.closest('a.gal-link');
     if (img.classList.contains('is-ready')) return;
-    function go() {
+    var done = false;
+    function show() {
+      if (done) return;
+      done = true;
       img.classList.add('is-arriving');
       // a frame to take the transition's starting point, then up
       requestAnimationFrame(function () {
-        requestAnimationFrame(function () { img.classList.add('is-ready'); });
+        requestAnimationFrame(function () {
+          img.classList.add('is-ready');
+          if (tile) tile.classList.add('is-in');
+        });
       });
       setTimeout(function () { img.classList.remove('is-arriving'); }, reduce ? 0 : 1100);
     }
-    if (img.complete && img.naturalWidth) {
-      (img.decode ? img.decode() : Promise.resolve()).then(go, go);
-    } else {
-      img.addEventListener('load', function () {
-        (img.decode ? img.decode() : Promise.resolve()).then(go, go);
-      }, { once: true });
-      // a still that will not load is not waited for: the tile stays empty
-      // rather than holding up anything else
-    }
+    function decoded() { (img.decode ? img.decode() : Promise.resolve()).then(show, show); }
+    if (img.complete && img.naturalWidth) decoded();
+    else img.addEventListener('load', decoded, { once: true });
+    // a picture that will not come is not waited on for ever
+    img.addEventListener('error', show, { once: true });
+    setTimeout(show, 8000);
   }
 
   function initBooks(scope) {
-    [].forEach.call(scope.querySelectorAll('.gal-still'), arrive);
+    [].forEach.call(scope.querySelectorAll('.plate img'), arrive);
+    // a tile with no picture to wait for has its label straight away
+    [].forEach.call(scope.querySelectorAll('a.gal-link'), function (a) {
+      if (!a.querySelector('.plate img')) a.classList.add('is-in');
+    });
     books = [].slice.call(scope.querySelectorAll('[data-book]'));
     if (!books.length) return;
     var save = navigator.connection && navigator.connection.saveData;
