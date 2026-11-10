@@ -1245,8 +1245,14 @@
     transform: translate(-50%, -50%);
     transform-origin: 50% 100%;
     border-radius: 0;
+    opacity: 0;                       /* until its picture has arrived: see arrive() */
     transition: transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1);
   }
+  /* It fades in as the picture lands, not before and not as a pop. The fade is
+     only for arriving: once settled the opacity is not transitioned, so going
+     back to the still, from a book that has gone to sleep, is instant. */
+  .plate .gal-still.is-arriving { transition: opacity 900ms cubic-bezier(0.4, 0, 0.2, 1), transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1); }
+  .plate .gal-still.is-ready { opacity: 1; }
   .gal-link.has-book { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; }
   .plate .gal-still { pointer-events: none; -webkit-user-drag: none; user-select: none; }
   .gal-stage { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
@@ -1256,9 +1262,9 @@
      there does the still let go (a 1ms switch after the fade's own length), so
      the tile never dips and nothing shows through. Going back to sleep is the
      same the other way: the still is back at once, under the book as it fades. */
-  .gal-book.is-live .gal-still { opacity: 0; transition: opacity 1ms linear 1150ms, transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1); }
+  .gal-book.is-live .gal-still.is-ready { opacity: 0; transition: opacity 1ms linear 1150ms, transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1); }
   @media (prefers-reduced-motion: reduce) {
-    .gal-still, .gal-stage { transition: none; }
+    .gal-still, .gal-stage, .plate .gal-still.is-arriving, .gal-book.is-live .gal-still.is-ready { transition: none; }
   }
 
   /* A wall with a hole in it reads as broken, so the one project without a

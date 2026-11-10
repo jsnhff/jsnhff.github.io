@@ -340,7 +340,31 @@
     books.forEach(function (box) { bookIO.observe(box); });
   }
 
+  // A cover still is held invisible until its picture has decoded, then fades
+  // up, so it arrives rather than popping in when the file lands.
+  function arrive(img) {
+    if (img.classList.contains('is-ready')) return;
+    function go() {
+      img.classList.add('is-arriving');
+      // a frame to take the transition's starting point, then up
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { img.classList.add('is-ready'); });
+      });
+      setTimeout(function () { img.classList.remove('is-arriving'); }, reduce ? 0 : 1100);
+    }
+    if (img.complete && img.naturalWidth) {
+      (img.decode ? img.decode() : Promise.resolve()).then(go, go);
+    } else {
+      img.addEventListener('load', function () {
+        (img.decode ? img.decode() : Promise.resolve()).then(go, go);
+      }, { once: true });
+      // a still that will not load is not waited for: the tile stays empty
+      // rather than holding up anything else
+    }
+  }
+
   function initBooks(scope) {
+    [].forEach.call(scope.querySelectorAll('.gal-still'), arrive);
     books = [].slice.call(scope.querySelectorAll('[data-book]'));
     if (!books.length) return;
     var save = navigator.connection && navigator.connection.saveData;
