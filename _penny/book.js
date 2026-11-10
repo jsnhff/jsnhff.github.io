@@ -128,7 +128,8 @@ function load(loader, url, space) {
 }
 
 // opts: el (the stage), wrap, foil (optional), w/h/d (the book's proportions,
-// width = 1), staples (how many, on the spine, for a saddle-stitched book), pointerEl (what is dragged to turn the book, if not the canvas: on
+// width = 1), hold (stay exactly in the pose of the still it replaces, until start() is
+// called, or the book is grabbed), staples (how many, on the spine, for a saddle-stitched book), pointerEl (what is dragged to turn the book, if not the canvas: on
 // the wall, the whole tile), drag (default true), seed (a string: each book sways in its own way), sway (radians) and period (seconds) to override, onLost. Resolves once the first frame is on the canvas; rejects
 // if there is no WebGL or a texture will not load, so the caller can keep the
 // still it is showing.
@@ -246,6 +247,7 @@ export function build(opts) {
     const swayX = () => (reduce ? 0 : 0.03 * arrive() * Math.sin(omega * 0.7 * t + phiX));
     const baseX = () => RX * (1 - Math.pow(1 - settle, 3)) + swayX();
     let dragging = false, last = 0, visible = true, dirty = true, dead = false, raf = 0;
+    let started = !opts.hold;
     let lastT = 0, sx = 0, sy = 0, by = 0, bx = 0;
 
     const el = renderer.domElement;
@@ -294,6 +296,7 @@ export function build(opts) {
     function noDrag(e) { e.preventDefault(); }
     function down(e) {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
+      started = true;
       dragging = true; moved = 0; sx = e.clientX; sy = e.clientY; by = ry; bx = rx; vy = 0; vx = 0;
       lastT = e.timeStamp || performance.now();
       pe.dataset.dragged = '';
@@ -355,6 +358,11 @@ export function build(opts) {
       if (!last) { last = now; return; }
       const dt = Math.min((now - last) / 1000, 0.1); last = now;
       if (!visible) return;
+      // Held in the still's own pose, flat on to the viewer, until told to go:
+      // the book is crossfaded in over the still, and anything it did meanwhile
+      // (settling into its tilt, the first of the sway) would show as the two
+      // not lining up.
+      if (!started) { if (dirty) render(); return; }
       t += dt;
       if (!reduce && settle < 1) settle = Math.min(1, settle + dt / 1.4);
       if (dragging) {
@@ -383,6 +391,7 @@ export function build(opts) {
     raf = requestAnimationFrame(loop);
 
     return {
+      start() { started = true; },
       destroy() {
         dead = true;
         cancelAnimationFrame(raf);

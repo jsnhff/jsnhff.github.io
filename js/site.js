@@ -307,6 +307,8 @@
         h: parseFloat(box.getAttribute('data-h')),
         d: parseFloat(box.getAttribute('data-d')),
         staples: parseInt(box.getAttribute('data-staples') || '0', 10),
+        // still in the cover's own pose until the fade is over, so the two line up
+        hold: true,
         // each book sways in its own way, the same way every time
         seed: (box.closest('a') || box).getAttribute('href'),
         // the whole tile turns the book. The tile is a link: a drag turns it,
@@ -327,7 +329,14 @@
       // start and does not arrive part-way done.
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
-          if (box._book === inst) box.classList.add('is-live');
+          if (box._book === inst) {
+            box.classList.add('is-live');
+            // The book crossfades in over its still, which it matches exactly
+            // while it holds still. Once the fade is over (1.6s, and a margin)
+            // it is let go: it settles into its tilt and begins to sway. A book
+            // that is grabbed before then starts at once.
+            setTimeout(function () { if (box._book === inst) inst.start(); }, reduce ? 0 : 1900);
+          }
           done();
         });
       });
