@@ -24,6 +24,15 @@ description: |
 plate: "/images/plates/regender-pride-and-prejudice.webp"
 plate_w: 1100
 plate_h: 1779
+# The 3D model: the Swapped edition's wrap, the same one the product page turns.
+# 4.25 x 6.875 in, 586 pages, perfect bound. Rebuilt by _penny/wraps.py.
+book:
+  wrap: "/images/book3d/regender-pride-and-prejudice-wrap.webp"
+  front: "/images/book3d/regender-pride-and-prejudice-front.webp"
+  front_w: 600
+  front_h: 971
+  h: 1.6176    # 6.875 / 4.25
+  d: 0.3235    # spine / width
 section: studio
 dark: true
 ---

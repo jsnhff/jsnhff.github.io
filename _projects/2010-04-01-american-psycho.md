@@ -18,6 +18,16 @@ description: |
 plate: "/images/plates/american-psycho.webp"
 plate_w: 800
 plate_h: 1078
+# The 3D model: the press cover. Trim 15.2 x 22.9 cm (5.984 x 9.016 in). The
+# spine, about 0.97 in, is the width of the grey ELLIS bar, which is set to the
+# spine guides. Rebuilt by _penny/wraps.py.
+book:
+  wrap: "/images/book3d/american-psycho-wrap.webp"
+  front: "/images/book3d/american-psycho-front.webp"
+  front_w: 600
+  front_h: 904
+  h: 1.5067    # 9.016 / 5.984
+  d: 0.1626    # 0.973 / 5.984
 section: studio
 dark: true
 ---

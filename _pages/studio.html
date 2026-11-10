@@ -11,6 +11,7 @@ redirect_from:
 ---
 
 <h1 class="sr-only">Studio</h1>
+<noscript><style>.plate img, .gal-link .gal-tag { opacity: 1; }</style></noscript>
 
 {%- comment -%}
   One wall in date order, newest first. Grouping by category cut the run into
@@ -24,14 +25,49 @@ redirect_from:
     {%- for p in works %}
       <article class="row gal-cell">
         {%- if p.live_url -%}
-        <a class="gal-link" href="{{ p.live_url }}" target="_blank" rel="noopener">
+        <a class="gal-link{% if p.book %} has-book{% endif %}"{% if p.book %} draggable="false"{% endif %} href="{{ p.live_url }}" target="_blank" rel="noopener">
         {%- else -%}
-        <a class="gal-link" href="{{ p.url }}">
+        <a class="gal-link{% if p.book %} has-book{% endif %}"{% if p.book %} draggable="false"{% endif %} href="{{ p.url }}">
         {%- endif -%}
+          {%- if p.book -%}
+          {%- comment -%}
+            A book that turns (see "books that turn" in js/site.js). The still of
+            the front cover holds the tile and sits where the model's first frame
+            will draw it, so nothing moves when the model arrives. The sums repeat
+            book.js's framing: a 24 degree lens 5.3 away (backed off for a book
+            taller than the Regender one), a stage as wide as it is tall, the front
+            face half a depth nearer. The book stands in the middle of its stage,
+            so the empty band under it is pulled down out of the way, leaving the
+            book itself on the row's baseline.
+          {%- endcomment -%}
+          {%- assign bk = p.book -%}
+          {%- assign fit = bk.h | divided_by: 1.617 -%}
+          {%- if fit < 1 -%}{%- assign fit = 1.0 -%}{%- endif -%}
+          {%- assign dist = fit | times: 5.3 -%}
+          {%- assign near = bk.d | divided_by: 2.0 -%}
+          {%- assign near = dist | minus: near -%}
+          {%- assign zoom = dist | divided_by: near -%}
+          {%- assign frame = fit | times: 2.2533 -%}
+          {%- assign still_w = zoom | divided_by: frame | times: 100 -%}
+          {%- assign still_h = still_w | times: bk.h -%}
+          {%- assign gap = 100 | minus: still_h | divided_by: 2.0 -%}
+          <div class="plate is-book">
+            <div class="gal-book" data-book
+                 data-wrap="{{ bk.wrap }}"{% if bk.foil %} data-foil="{{ bk.foil }}"{% endif %}
+                 data-h="{{ bk.h }}" data-d="{{ bk.d }}"{% if bk.staples %} data-staples="{{ bk.staples }}"{% endif %}
+                 style="--still-w: {{ still_w | round: 2 }}%; --gap: -{{ gap | round: 2 }}%; --bh: {{ bk.h }}">
+              <span class="gal-hit" aria-hidden="true"></span>
+              <img class="gal-still" draggable="false" src="{{ bk.front }}" width="{{ bk.front_w }}" height="{{ bk.front_h }}"
+                   alt="{{ p.title }}" decoding="async">
+              <div class="gal-stage" aria-hidden="true"></div>
+            </div>
+          </div>
+          {%- else -%}
           <div class="plate">
             <img src="{{ p.plate }}" width="{{ p.plate_w }}" height="{{ p.plate_h }}"
                  alt="{{ p.title }}" loading="lazy" decoding="async">
           </div>
+          {%- endif -%}
           <p class="gal-tag">
             <span class="gal-kind">{{ p.category }}</span>
             <span class="gal-year">{{ p.date | date: "%Y" }}</span>

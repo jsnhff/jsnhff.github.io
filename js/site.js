@@ -280,6 +280,180 @@
     }
   }
 
+  // ---- books that turn ----------------------------------------------------
+  // On the studio wall a book is the book itself, the model from the Regender
+  // product page in the cover's own proportions, where a photograph would be.
+  // The still of the front cover is what is there first, drawn where the
+  // model's first frame will put the cover; the code (three.js with it) is
+  // fetched only when a book is about to be seen, and the still gives way to
+  // the model once its first frame is drawn. A book scrolled well out of sight
+  // is put back to its still, so a long wall never holds more than a few
+  // WebGL contexts. If anything goes wrong, or there is no WebGL, or the
+  // visitor has asked to save data, the still simply stays.
+  var bookUrl = '/js/book.js?v=' + buildStamp;
+  var bookIO = null;
+  var books = [];
+
+  function wakeBook(box, done) {
+    done = done || function () {};
+    if (box._book || box._waking) { done(); return; }
+    box._waking = true;
+    import(bookUrl).then(function (m) {
+      if (!box._waking || !box.isConnected) return null;
+      return m.build({
+        el: box.querySelector('.gal-stage'),
+        wrap: box.getAttribute('data-wrap'),
+        foil: box.getAttribute('data-foil') || null,
+        h: parseFloat(box.getAttribute('data-h')),
+        d: parseFloat(box.getAttribute('data-d')),
+        staples: parseInt(box.getAttribute('data-staples') || '0', 10),
+        // still in the cover's own pose until the fade is over, so the two line up
+        hold: true,
+        // each book sways in its own way, the same way every time
+        seed: (box.closest('a') || box).getAttribute('href'),
+        // the whole tile turns the book. The tile is a link: a drag turns it,
+        // a tap opens it (the click after a drag is stopped, below)
+        pointerEl: box.closest('a') || undefined,
+        // a lost context leaves a dead canvas: put the still back
+        onLost: function () { sleepBook(box); }
+      });
+    }).then(function (inst) {
+      if (!inst) { done(); return; }
+      // sent back to sleep while it was loading: not wanted any more
+      if (!box._waking) { inst.destroy(); done(); return; }
+      box._waking = false;
+      box._book = inst;
+      // Building it (shaders, textures, the first frame) is a long job on this
+      // thread, and a fade's clock runs through it: begin the fade only once
+      // the page has drawn a couple of frames again, so it is seen from the
+      // start and does not arrive part-way done.
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          if (box._book === inst) {
+            box.classList.add('is-live');
+            // The book crossfades in over its still, which it matches exactly
+            // while it holds still. Once the fade is over (1.6s, and a margin)
+            // it is let go: it settles into its tilt and begins to sway. A book
+            // that is grabbed before then starts at once.
+            setTimeout(function () { if (box._book === inst) inst.start(); }, reduce ? 0 : 1900);
+          }
+          done();
+        });
+      });
+    }).catch(function () {
+      box._waking = false;
+      done();
+    });
+  }
+
+  // Books wake one at a time. All at once, each one's building would stall the
+  // page in turn and the first to be ready would be caught half-faded when the
+  // thread came back. The nearest to the middle of the screen goes first, and
+  // only once its still has arrived, so the book never fades in over a picture
+  // that is itself still fading in.
+  var wakeQueue = [], waking = false;
+  function queueWake(box) {
+    if (box._book || box._waking || box._queued) return;
+    box._queued = true;
+    wakeQueue.push(box);
+    pump();
+  }
+  function pump() {
+    if (waking || !wakeQueue.length) return;
+    var mid = window.innerHeight / 2;
+    var dist = function (b) { var r = b.getBoundingClientRect(); return Math.abs(r.top + r.height / 2 - mid); };
+    wakeQueue.sort(function (a, b) { return dist(a) - dist(b); });
+    var next = null;
+    for (var i = 0; i < wakeQueue.length; i++) {
+      var still = wakeQueue[i].querySelector('.gal-still');
+      if (!still || still.classList.contains('is-ready')) { next = wakeQueue.splice(i, 1)[0]; break; }
+    }
+    if (!next) { setTimeout(pump, 150); return; }
+    next._queued = false;
+    if (!next.isConnected || openHref) { pump(); return; }
+    waking = true;
+    wakeBook(next, function () {
+      waking = false;
+      setTimeout(pump, 250);
+    });
+  }
+
+  function sleepBook(box) {
+    box._waking = false;
+    box._queued = false;
+    var at = wakeQueue.indexOf(box);
+    if (at >= 0) wakeQueue.splice(at, 1);
+    if (box._book) { box._book.destroy(); box._book = null; }
+    box.classList.remove('is-live');
+  }
+
+  // Watches every book on the page afresh: the ones in view wake, the rest
+  // sleep. Called at load and again when a sheet closes.
+  function watchBooks() {
+    if (!bookIO) return;
+    bookIO.disconnect();
+    books.forEach(function (box) { bookIO.observe(box); });
+  }
+
+  // A tile's picture, a book's cover still or a photograph, is held invisible
+  // until it has decoded, then fades up; its label follows a beat behind (the
+  // tile gets .is-in). Both arrive together, rather than the label standing
+  // there ahead of an empty space, and nothing pops when a file lands.
+  function arrive(img) {
+    var tile = img.closest('a.gal-link');
+    if (img.classList.contains('is-ready')) return;
+    var done = false;
+    function show() {
+      if (done) return;
+      done = true;
+      img.classList.add('is-arriving');
+      // a frame to take the transition's starting point, then up
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          img.classList.add('is-ready');
+          if (tile) tile.classList.add('is-in');
+        });
+      });
+      setTimeout(function () { img.classList.remove('is-arriving'); }, reduce ? 0 : 1100);
+    }
+    function decoded() { (img.decode ? img.decode() : Promise.resolve()).then(show, show); }
+    if (img.complete && img.naturalWidth) decoded();
+    else img.addEventListener('load', decoded, { once: true });
+    // a picture that will not come is not waited on for ever
+    img.addEventListener('error', show, { once: true });
+    setTimeout(show, 8000);
+  }
+
+  function initBooks(scope) {
+    [].forEach.call(scope.querySelectorAll('.plate img'), arrive);
+    // a tile with no picture to wait for has its label straight away
+    [].forEach.call(scope.querySelectorAll('a.gal-link'), function (a) {
+      if (!a.querySelector('.plate img')) a.classList.add('is-in');
+    });
+    books = [].slice.call(scope.querySelectorAll('[data-book]'));
+    if (!books.length) return;
+    var save = navigator.connection && navigator.connection.saveData;
+    if (save || !window.IntersectionObserver) return;
+    // Capture phase, so it runs before the wall's own click handler and before
+    // the link itself: a click that ends a drag is not a tap.
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a.gal-link');
+      if (a && a.dataset.dragged === '1') {
+        e.preventDefault();
+        e.stopPropagation();
+        a.dataset.dragged = '';
+      }
+    }, true);
+    bookIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        // a sheet over the wall hides it, so nothing wakes behind one
+        if (e.isIntersecting && !openHref) queueWake(e.target);
+        else sleepBook(e.target);
+      });
+    }, { rootMargin: '500px 0px' });
+    watchBooks();
+  }
+
   // ---- nav ----------------------------------------------------------------
   // The selected chip is one element that travels, placed from the live
   // geometry of the current link so it survives resizes and the
@@ -335,6 +509,7 @@
     sheetBody.innerHTML = '';
     sheetBody.appendChild(article);
     noOrphans(sheetBody);
+    books.forEach(sleepBook);
     sheetPanel.scrollTop = 0;
     sheet.classList.add('open');
     holdVideo(sheetBody);
@@ -365,6 +540,7 @@
     sheet.classList.remove('open');
     sheetPanel.style.transform = '';
     setTimeout(function () { if (!openHref) sheetBody.innerHTML = ''; }, reduce ? 0 : 480);
+    watchBooks();
     if (restoreFocus && restoreFocus.focus) restoreFocus.focus({ preventScroll: true });
     restoreFocus = null;
   }
@@ -1183,6 +1359,7 @@
 
   noOrphans(document.body);
   holdVideo(document);
+  initBooks(document);
   collect(document.body);
   placeThumb(false);
 
