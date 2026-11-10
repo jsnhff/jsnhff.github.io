@@ -294,8 +294,9 @@
   var bookIO = null;
   var books = [];
 
-  function wakeBook(box) {
-    if (box._book || box._waking) return;
+  function wakeBook(box, done) {
+    done = done || function () {};
+    if (box._book || box._waking) { done(); return; }
     box._waking = true;
     import(bookUrl).then(function (m) {
       if (!box._waking || !box.isConnected) return null;
@@ -315,19 +316,64 @@
         onLost: function () { sleepBook(box); }
       });
     }).then(function (inst) {
-      if (!inst) return;
+      if (!inst) { done(); return; }
       // sent back to sleep while it was loading: not wanted any more
-      if (!box._waking) { inst.destroy(); return; }
+      if (!box._waking) { inst.destroy(); done(); return; }
       box._waking = false;
       box._book = inst;
-      box.classList.add('is-live');
+      // Building it (shaders, textures, the first frame) is a long job on this
+      // thread, and a fade's clock runs through it: begin the fade only once
+      // the page has drawn a couple of frames again, so it is seen from the
+      // start and does not arrive part-way done.
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          if (box._book === inst) box.classList.add('is-live');
+          done();
+        });
+      });
     }).catch(function () {
       box._waking = false;
+      done();
+    });
+  }
+
+  // Books wake one at a time. All at once, each one's building would stall the
+  // page in turn and the first to be ready would be caught half-faded when the
+  // thread came back. The nearest to the middle of the screen goes first, and
+  // only once its still has arrived, so the book never fades in over a picture
+  // that is itself still fading in.
+  var wakeQueue = [], waking = false;
+  function queueWake(box) {
+    if (box._book || box._waking || box._queued) return;
+    box._queued = true;
+    wakeQueue.push(box);
+    pump();
+  }
+  function pump() {
+    if (waking || !wakeQueue.length) return;
+    var mid = window.innerHeight / 2;
+    var dist = function (b) { var r = b.getBoundingClientRect(); return Math.abs(r.top + r.height / 2 - mid); };
+    wakeQueue.sort(function (a, b) { return dist(a) - dist(b); });
+    var next = null;
+    for (var i = 0; i < wakeQueue.length; i++) {
+      var still = wakeQueue[i].querySelector('.gal-still');
+      if (!still || still.classList.contains('is-ready')) { next = wakeQueue.splice(i, 1)[0]; break; }
+    }
+    if (!next) { setTimeout(pump, 150); return; }
+    next._queued = false;
+    if (!next.isConnected || openHref) { pump(); return; }
+    waking = true;
+    wakeBook(next, function () {
+      waking = false;
+      setTimeout(pump, 250);
     });
   }
 
   function sleepBook(box) {
     box._waking = false;
+    box._queued = false;
+    var at = wakeQueue.indexOf(box);
+    if (at >= 0) wakeQueue.splice(at, 1);
     if (box._book) { box._book.destroy(); box._book = null; }
     box.classList.remove('is-live');
   }
@@ -392,7 +438,7 @@
     bookIO = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         // a sheet over the wall hides it, so nothing wakes behind one
-        if (e.isIntersecting && !openHref) wakeBook(e.target);
+        if (e.isIntersecting && !openHref) queueWake(e.target);
         else sleepBook(e.target);
       });
     }, { rootMargin: '500px 0px' });
