@@ -1227,7 +1227,7 @@
     cursor: grab;
   }
   .gal-link.is-grabbed .gal-hit { cursor: grabbing; }
-  .gal-stage { transform-origin: 50% calc(100% + var(--gap)); transition: opacity 700ms ease, transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1); will-change: transform; }
+  .gal-stage { transform-origin: 50% calc(100% + var(--gap)); transition: opacity 1100ms cubic-bezier(0.4, 0, 0.2, 1), transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1); will-change: transform; }
   @media (hover: hover) {
     .gal-hit:hover ~ .gal-stage, .gal-link.is-grabbed .gal-stage { transform: scale(1.035); }
     .gal-hit:hover ~ .gal-still, .gal-link.is-grabbed .gal-still { transform: translate(-50%, -50%) scale(1.035); }
@@ -1245,13 +1245,18 @@
     transform: translate(-50%, -50%);
     transform-origin: 50% 100%;
     border-radius: 0;
-    transition: opacity 700ms ease 150ms, transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    transition: transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1);
   }
   .gal-link.has-book { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; }
   .plate .gal-still { pointer-events: none; -webkit-user-drag: none; user-select: none; }
   .gal-stage { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
   .gal-book.is-live .gal-stage { opacity: 1; }
-  .gal-book.is-live .gal-still { opacity: 0; }
+  /* A natural fade, not two layers dimming at once: the still stays solid under
+     the book while the book comes up over it, and only once the book is fully
+     there does the still let go (a 1ms switch after the fade's own length), so
+     the tile never dips and nothing shows through. Going back to sleep is the
+     same the other way: the still is back at once, under the book as it fades. */
+  .gal-book.is-live .gal-still { opacity: 0; transition: opacity 1ms linear 1150ms, transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1); }
   @media (prefers-reduced-motion: reduce) {
     .gal-still, .gal-stage { transition: none; }
   }
