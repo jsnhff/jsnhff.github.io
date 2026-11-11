@@ -1335,6 +1335,21 @@
     /* A tall picture would otherwise run past the screen it is meant to fit. */
     .plate img { max-height: 62vh; }
     .plate.is-empty { height: 9rem; max-width: none; }
+    /* A book comes up as large as its photograph did: the cover gets the
+       column's width, or 62vh of height, whichever runs out first, the same
+       caps as a plate above. The cover is only --still of its stage, so the
+       stage runs wider than the column to get there. It is transparent and
+       the wall clips it at the screen's edge, and the empty bands above and
+       below the book are pulled in so the spacing matches the photographs. */
+    .gal-book {
+      --stage: min(100% / var(--still), 62vh / (var(--still) * var(--bh)));
+      --band: calc(var(--stage) * (1 - var(--still) * var(--bh)) / 2);
+      flex: none;
+      width: var(--stage);
+      margin-top: calc(var(--band) * -1);
+      margin-bottom: calc(var(--band) * -1 + 0.8rem);
+    }
+    .stage.is-flow:has(.gallery) { overflow-x: clip; }
   }
 
   .row-title {

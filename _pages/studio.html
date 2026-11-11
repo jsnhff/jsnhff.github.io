@@ -55,7 +55,7 @@ redirect_from:
             <div class="gal-book" data-book
                  data-wrap="{{ bk.wrap }}"{% if bk.foil %} data-foil="{{ bk.foil }}"{% endif %}
                  data-h="{{ bk.h }}" data-d="{{ bk.d }}"{% if bk.staples %} data-staples="{{ bk.staples }}"{% endif %}
-                 style="--still-w: {{ still_w | round: 2 }}%; --gap: -{{ gap | round: 2 }}%; --bh: {{ bk.h }}">
+                 style="--still-w: {{ still_w | round: 2 }}%; --still: {{ still_w | divided_by: 100.0 | round: 4 }}; --gap: -{{ gap | round: 2 }}%; --bh: {{ bk.h }}">
               <span class="gal-hit" aria-hidden="true"></span>
               <img class="gal-still" draggable="false" src="{{ bk.front }}" width="{{ bk.front_w }}" height="{{ bk.front_h }}"
                    alt="{{ p.title }}" decoding="async">
