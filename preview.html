@@ -1,0 +1,2353 @@
+<!doctype html><html lang="en" class="is-dark scheme-dark">
+<head><base href="https://jasonhuff.info/"><meta name="robots" content="noindex">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Studio — Jason Huff</title><meta name="description" content="Books, websites, drawings, prints and installations by Jason Huff.">
+
+  <link rel="canonical" href="https://jasonhuff.info/studio/">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="alternate" type="application/atom+xml" title="Jason Huff" href="/feed.xml">
+
+  <meta property="og:title" content="Studio — Jason Huff">
+  <meta property="og:description" content="Books, websites, drawings, prints and installations by Jason Huff.">
+  <meta property="og:url" content="https://jasonhuff.info/studio/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@jsnhff"><link rel="preload" href="/fonts/ABCAreal-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <style>/* jason-huff.com
+ *
+ * Ported from the prototype. Two grounds: home is white, every interior page is
+ * black. The ground is decided server-side (`dark: true` in a page's front
+ * matter puts .is-dark on <html>), so a page arrives already the right colour
+ * instead of inverting after paint.
+ *
+ * Sections below, in order: tokens, shell, home, reading pages, upcoming,
+ * studio wall, project, sheet, back/nav, edge blur, motion.
+ */
+
+/* ABC Areal and Areal Mono by Dinamo, self-hosted under their free fonts
+   licence (fonts/Dinamo Licensing Terms.pdf). A face only downloads when
+   something on the page uses it. */
+/* Nothing You Could Do by Kimberly Geswein, SIL Open Font License
+   (fonts/NothingYouCouldDo-OFL.txt). The critic's handwriting in act three;
+   only fetched when the critic writes. */
+@font-face {
+    font-family: "Critic Hand";
+    src: url("/fonts/NothingYouCouldDo.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+  }
+@font-face {
+    font-family: "Areal";
+    src: url("/fonts/ABCAreal-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal";
+    src: url("/fonts/ABCAreal-RegularItalic.woff2") format("woff2");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal";
+    src: url("/fonts/ABCAreal-Medium.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal";
+    src: url("/fonts/ABCAreal-MediumItalic.woff2") format("woff2");
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal";
+    src: url("/fonts/ABCAreal-Bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal";
+    src: url("/fonts/ABCAreal-BoldItalic.woff2") format("woff2");
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal Mono";
+    src: url("/fonts/ABCArealMono-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal Mono";
+    src: url("/fonts/ABCArealMono-RegularItalic.woff2") format("woff2");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal Mono";
+    src: url("/fonts/ABCArealMono-Medium.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal Mono";
+    src: url("/fonts/ABCArealMono-MediumItalic.woff2") format("woff2");
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal Mono";
+    src: url("/fonts/ABCArealMono-Bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+@font-face {
+    font-family: "Areal Mono";
+    src: url("/fonts/ABCArealMono-BoldItalic.woff2") format("woff2");
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+  }
+
+:root {
+    --ground: #FFFFFF;
+    --ink: #0A0A0A;
+    --dim: #6E6E72;
+    --pill: #DCDCDC;
+    --pill-hover: #CECECE;
+    --pill-ink: #111111;
+    --focus: #0082F3;
+
+    /* Glass. A tint rather than a colour: the fill is translucent and the
+       blur behind it samples whatever is passing under the nav, so the pill
+       shifts with the page instead of sitting on it. On the white ground the
+       tint is darker than the page; on black it is lighter. Both read as the
+       same material. */
+    --glass:        rgba(206, 206, 212, 0.40);
+    --glass-hover:  rgba(186, 186, 192, 0.58);
+    --glass-edge:   rgba(0, 0, 0, 0.09);
+    --glass-ink:    #111111;
+    --glass-on:     rgba(12, 12, 12, 0.86);
+    --glass-on-edge: rgba(255, 255, 255, 0.16);
+    --glass-on-ink: #FFFFFF;
+    --glass-blur:   saturate(200%) blur(20px);
+    /* A veil inside the bar, under the tint. Without it a white book plate
+       passing behind washes the bar out and the labels drop under 4.5:1; this
+       caps how bright the backdrop can push it while leaving the shift itself
+       plainly visible. */
+    --glass-veil:   transparent;
+    /* The island carries more veil than the bar: it opens over the statement,
+       and the type under it has to stop reading through. */
+    --island-veil:  rgba(255, 255, 255, 0.74);
+    /* Corner is ~0.2 of the bar's height, per the reference — a soft rounded
+       rectangle, well short of a capsule. */
+    --bar-radius:   0.55rem;
+    --bar-pad:      0.28rem;
+
+    /* Spacing. Eight steps, each roughly 1.5x the last, chosen to match the
+       values already doing most of the work rather than to impose new ones.
+       Reach for a step before inventing a number; if none fits, the layout is
+       usually asking for a different structure rather than a 33rd value. */
+    --s1: 0.35rem;
+    --s2: 0.5rem;
+    --s3: 0.75rem;
+    --s4: 1rem;
+    --s5: 1.5rem;
+    --s6: 2rem;
+    --s7: 3rem;
+    --s8: 4.5rem;
+    /* The page's outer gutter. One value for the top edge and the bottom edge
+       alike, so the island stands off the top by exactly what the nav stands
+       off the bottom. Narrow screens get the smaller end: on a phone the bar
+       belongs near the edge. */
+    --edge: clamp(0.6rem, 2.2vw, 1.6rem);
+
+    --face: "Areal", Arial, sans-serif;
+    /* The mono is for the record around the writing (dates, kinds, years,
+       section labels), never the writing itself. */
+    --mono: "Areal Mono", ui-monospace, Menlo, Consolas, monospace;
+    --rise: cubic-bezier(0.16, 1, 0.3, 1);
+    --invert: 340ms;
+    --leave: 220ms;
+  }
+
+  /* Home is the only white page. Every interior inverts, so the flip means
+     "you have gone inside" rather than being decoration on one screen. */
+  :root.is-dark {
+    --ground: #070707;
+    --ink: #EDEDED;
+    --dim: #85858A;
+    --pill: #1E1E20;
+    --pill-hover: #2A2A2D;
+    --pill-ink: #EDEDED;
+
+    --glass:        rgba(150, 150, 162, 0.20);
+    --glass-hover:  rgba(170, 170, 184, 0.32);
+    --glass-edge:   rgba(255, 255, 255, 0.13);
+    --glass-ink:    #EDEDED;
+    --glass-on:     rgba(238, 238, 238, 0.88);
+    --glass-on-edge: rgba(0, 0, 0, 0.16);
+    --glass-on-ink: #0A0A0A;
+    --glass-veil:   rgba(7, 7, 7, 0.34);
+    --island-veil:  rgba(7, 7, 7, 0.66);
+  }
+
+  /* color-scheme cannot be transitioned — it snaps. Left on .is-dark it flipped
+     the moment the ground *started* moving, so the UA repainted the frame's own
+     canvas and scrollbars a third of a second before the page caught up, which
+     showed as a hard edge at the panel's rounded corners. It rides its own class
+     instead, set once the ground has already arrived, so the snap lands where
+     there is nothing left to see. */
+  :root { color-scheme: light; }
+  :root.scheme-dark { color-scheme: dark; }
+
+  html, body {
+    /* The UA's own 8px on the body was making every page 16px taller than the
+       screen it was on, so a view that fits still offered a scroll. */
+    margin: 0;
+    background: var(--ground);
+    transition: background-color var(--invert) ease;
+    /* No double-tap zoom: two quick taps on the home page's penny, reaching
+       for it, zoomed the page instead, and Safari kept the zoom across
+       reloads. Pinch-to-zoom is untouched. */
+    touch-action: manipulation;
+  }
+
+  .field { position: fixed; inset: 0; z-index: 0; display: block; width: 100%; height: 100%; }
+  #night { opacity: 0; transition: opacity var(--invert) ease; }
+  :root.is-dark #night { opacity: 1; }
+  :root.is-dark #paper { opacity: 0; transition: opacity var(--invert) ease; }
+
+  /* ---- shell ----------------------------------------------------------- */
+
+  .shell {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    font-family: var(--face);
+    color: var(--ink);
+    transition: color var(--invert) ease;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  code, kbd, pre, samp { font-family: var(--mono); }
+
+  .stage { min-height: 0; }
+
+  /* Home centres in the viewport; the reading views run down the page. */
+  /* Symmetric top and bottom: this row centres its content, and unequal
+     padding quietly moved the centre off the middle of the row. */
+  .stage.is-centred {
+    display: grid;
+    place-items: center;
+    padding: clamp(var(--s6), 6vh, var(--s8)) var(--s5);
+  }
+  /* The nav takes a row of the shell; the island is fixed and takes none. So
+     the row this centres in is short at the bottom and full-height at the top,
+     which put the statement above the middle of the space a reader actually
+     sees. Adding the island's own footprint to the top padding moves the
+     centre down by exactly that much — only when there is an island to clear. */
+  body:has(.island) .stage.is-centred {
+    /* island's own height and offset, plus the run-up above the bar, which is
+       part of the nav's row but is empty air rather than something you see. */
+    padding-top: calc(clamp(var(--s6), 6vh, var(--s8)) + var(--edge) + 2.4rem + var(--s7));
+  }
+  .stage.is-flow { padding: clamp(var(--s8), 10vh, 6.5rem) var(--s5) var(--s6); }
+
+  .col { max-width: 40rem; margin: 0 auto; }
+
+  /* ---- home ------------------------------------------------------------ */
+
+  .statement {
+    max-width: 39rem;
+    margin: 0;
+    text-align: center;
+    text-wrap: balance;
+    /* The width term is what a phone actually gets — 3.4vw put the statement on
+       its floor at 16.8px with a third of the screen empty above it and another
+       third below. The height term is the guard: on a laptop, and on a phone
+       held sideways, it is the short axis that decides whether the sentence
+       still fits without scrolling. */
+    font-size: clamp(1.15rem, min(4.4vw, 3.4vh), 1.7rem);
+    line-height: 1.25;
+    letter-spacing: -0.012em;
+    font-weight: 400;
+  }
+  .statement .w {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(0.5em);
+    animation: rise 0.5s var(--rise) forwards;
+    animation-delay: calc(var(--i) * 18ms);
+  }
+
+  /* The statement is the scratch coating: drag across it and the picture
+     underneath comes through. Nothing announces it but the cursor. */
+  .egg { position: relative; display: grid; place-items: center; }
+  .egg-canvas {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    /* A grab hand reads as "rub me"; a crosshair reads as "aim". */
+    cursor: grab;
+    touch-action: none;
+    border-radius: 4px;
+    transition: opacity 320ms ease, transform 320ms var(--rise);
+  }
+
+  /* The credit belongs to the picture, so it only exists once the whole
+     picture does. It sits under the plate, centred on it. */
+  .egg-credit {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 2;
+    transform: translate(-50%, 0);
+    margin-top: 0.85rem;
+    font-size: 0.8rem;
+    color: var(--dim);
+    text-align: center;
+    /* As wide as the plate, and a long title wraps evenly under it. */
+    text-wrap: balance;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 420ms ease, color var(--invert) ease;
+  }
+  /* the artist's name links out, so a credit on show takes taps */
+  .egg-credit.on { opacity: 1; pointer-events: auto; }
+  .egg-canvas:active { cursor: grabbing; }
+
+  /* Act three. The gallery has faded; the statement gives way to a poem set
+     in the same type and place, under the same plate. Words pop in one at a
+     time. Then the critic: a red pen circles words, notes go in the margin in
+     hand, and the poem is revised. */
+  .egg .statement { transition: opacity 700ms ease; }
+  /* gone at once, while the picture still covers it, so it never shows
+     between the picture and the poem; back with a fade once the poem has gone */
+  .egg.is-poem .statement { opacity: 0; pointer-events: none; transition: none; }
+  .poem {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    width: max-content;
+    max-width: min(39rem, calc(100vw - 2rem));
+    transform: translate(-50%, -50%);
+    font-size: clamp(1.15rem, min(4.4vw, 3.4vh), 1.7rem);
+    letter-spacing: -0.012em;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 600ms ease;
+  }
+  .poem.on { opacity: 1; }
+  .poem.out { opacity: 0; transition-duration: 900ms; }
+  .poem-title { margin: 0 0 0.9em; font-style: italic; color: var(--dim); font-size: 0.8em; }
+  /* One size and spacing from the first word to the last: nothing reflows
+     when the critic arrives. Set double-spaced where there is no margin, as a
+     manuscript is, so the notes have a row of their own under each line. */
+  .poem-line { margin: 0; line-height: 1.5; min-height: 1.5em; white-space: nowrap; }
+  .poem.ms .poem-line { padding-bottom: 1.3em; }
+  .poem.ms .poem-title { margin-bottom: 1.4em; }
+  .poem.ms .poem-note { font-size: 0.88em; }
+  .pw {
+    display: inline-block;
+    transition: opacity 260ms ease, transform 420ms var(--rise);
+  }
+  .pw.hid { opacity: 0; transform: scale(0.6) translateY(0.25em); transition: none; }
+  .pw.swap { opacity: 0; transform: translateY(-0.2em); transition: opacity 300ms ease, transform 300ms ease; }
+  .poem-ink { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+  .poem-ink .pen { fill: none; stroke: #d2352b; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: opacity 500ms ease; }
+  .poem-ink .pen.thin { stroke-width: 1.1; opacity: 0.8; }
+  .poem-ink .gone { opacity: 0; }
+  /* the critic's hand, in a ballpoint's red, each letter a little off the line.
+     The same pen as the marks: the same red, and the font's thin line
+     thickened with a stroke of its own colour to the marks' 1.6px. */
+  .poem-note {
+    position: absolute;
+    white-space: pre;
+    font-family: "Critic Hand", "Bradley Hand", "Segoe Print", cursive;
+    font-size: 1.02em;
+    line-height: 1.2;
+    color: #d2352b;
+    -webkit-text-stroke: 0.6px currentColor;
+    letter-spacing: 0.01em;
+    transform: rotate(var(--rot, 0deg));
+    transform-origin: left center;
+    transition: opacity 500ms ease;
+  }
+  .poem-note .c { display: inline-block; transition: opacity 60ms linear; }
+  .poem-note .c.hid { opacity: 0; }
+  .poem-note.gone { opacity: 0; }
+  .poem-note.final { right: 0; bottom: -1.9em; font-size: 1.2em; }
+  /* The second critic's ink: a green felt-tip. */
+  .poem-ink .pen.green { stroke: #1f8a4c; stroke-width: 2.2; }
+  .poem-note.green { color: #1f8a4c; -webkit-text-stroke-width: 1.2px; }
+  .penny-bubble.green { background: #E2F0E6; }
+  .penny-bubble.green::before { background: #E2F0E6; }
+  /* While the poem is up the plate takes no touches, so what sits over it
+     (the log link, "add critic") can be pressed. */
+  .egg.is-poem .egg-canvas { pointer-events: none; }
+  /* "add critic": a plus in the top left, the timer's twin across the
+     page: the same size, the same grey disc. Quiet until the critic is in. */
+  .poem-add {
+    position: fixed;
+    /* the disc drawn in the content box; the padding is a wider reach */
+    top: calc(max(var(--edge), env(safe-area-inset-top, 0px)) + (var(--island-h, 1.75rem) - 1.75rem) / 2 - 0.6rem);
+    left: calc(var(--edge) - 0.6rem);
+    z-index: 30;
+    box-sizing: content-box;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0.6rem;
+    border: 0;
+    border-radius: 50%;
+    background: #E4E4E4;
+    background-clip: content-box;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 500ms ease, background-color 200ms ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .poem-add::before, .poem-add::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0.8rem;
+    height: 2px;
+    border-radius: 1px;
+    background: #fff;
+    transform: translate(-50%, -50%);
+  }
+  .poem-add::after { transform: translate(-50%, -50%) rotate(90deg); }
+  .poem-add.on { opacity: 1; pointer-events: auto; }
+  .poem-add:hover { background-color: #D2D2D2; }
+  .poem-add:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
+  .poem-status { margin: 1.4em 0 0; font-size: 0.7em; color: var(--dim); opacity: 0; transition: opacity 400ms ease; pointer-events: auto; }
+  .poem-status.on { opacity: 1; }
+  .poem-status a { color: inherit; }
+
+  /* Clearing puts the picture back under the coating: it dissolves into the
+     statement waiting underneath, rather than blinking out. */
+  .egg.is-clearing .egg-canvas { opacity: 0; transition: opacity 900ms ease; }
+
+  /* The open plate is a show of three, switched by a page control under
+     the credit: grey dots, the current one stretched into a short ink pill.
+     Each sits in a button far larger than it looks, so a thumb finds it. */
+  .egg-dots {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    transform: translate(-50%, 0);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 420ms ease;
+  }
+  .egg.is-show .egg-dots { opacity: 1; pointer-events: auto; }
+  .egg.is-show .egg-canvas { cursor: pointer; }
+  .egg-dot {
+    display: grid;
+    place-items: center;
+    height: 2.75rem;
+    padding: 0 0.3rem;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .egg-dot::before {
+    content: "";
+    display: block;
+    width: 9px;
+    height: 9px;
+    border-radius: 5px;
+    background: var(--ink);
+    opacity: 0.16;
+    transition: width 320ms var(--rise), opacity 220ms ease;
+  }
+  .egg-dot:hover::before { opacity: 0.32; }
+  .egg-dot[aria-current]::before { width: 26px; opacity: 0.75; }
+  .egg-dot:focus-visible { outline: 2px solid var(--focus); outline-offset: -6px; border-radius: 8px; }
+
+  /* ---- the upcoming island ---------------------------------------------- */
+  /* Home's one piece of news. It only exists when something is actually
+     coming up, so its presence is the message and the count is the detail;
+     tapping it opens the entries in place rather than sending you to the
+     Index. Same glass as the nav and the back button, so it reads as another
+     piece of the site's furniture rather than a banner laid over it. */
+
+  .island {
+    position: fixed;
+    top: max(var(--edge), env(safe-area-inset-top, 0px));
+    left: 50%;
+    /* Above the penny's stage (40), its shavings and its bubble: opened, the
+       capsule is glass over the page, and the coin and its grit pass behind
+       it, blurred, rather than across the entries. */
+    z-index: 45;
+    /* The open size is CSS's, because CSS can know it: it is the column the
+       page gives the capsule. Only the shut size needs measuring — the header
+       is as wide as its own label — and it carries a fallback near enough to
+       hold the shape if the measurement never lands. Nothing about the layout
+       inside waits on a script. */
+    width: var(--shut-w, 12rem);
+    height: var(--shut-h, 2.4rem);
+    max-width: calc(100vw - 2rem);
+    border-radius: 999px;
+    background-color: var(--glass);
+    /* Its own veil, heavier than the nav's: open, the capsule lands over the
+       statement, and the blur alone leaves the sentence legible through the
+       entries. This holds the ghost back without going opaque. */
+    background-image: linear-gradient(var(--island-veil), var(--island-veil));
+    box-shadow: inset 0 0 0 1px var(--glass-edge);
+    -webkit-backdrop-filter: var(--glass-blur);
+            backdrop-filter: var(--glass-blur);
+    color: var(--glass-ink);
+    font-family: var(--face);
+    overflow: hidden;
+    opacity: 0;
+    transform: translate(-50%, 0);
+    /* The delay is set from the statement's own settle time once the words are
+       split; 300ms is the fallback for a page with no statement to wait for,
+       and for reduced motion, where there is no roll to follow. */
+    animation: island-in 520ms var(--rise) var(--island-delay, 300ms) forwards;
+    /* One duration and one curve for both axes: run them apart and the corner
+       arrives before the edge, which is what made the morph look loose. */
+    transition: width 420ms var(--rise), height 420ms var(--rise),
+                border-radius 420ms var(--rise),
+                background-color var(--invert) ease, color var(--invert) ease,
+                box-shadow var(--invert) ease;
+    will-change: width, height;
+  }
+  /* The capsule squares off as it grows, the way the island does. */
+  .island.open {
+    width: min(28rem, calc(100vw - 2rem));
+    height: var(--open-h, auto);
+    border-radius: 1.35rem;
+  }
+  /* More entries than the screen has room for: the capsule stops at the
+     viewport and the list scrolls inside it, rather than running off the
+     bottom edge with no way to reach the rest. */
+  .island.open .island-frame {
+    max-height: 100%;
+    /* Stated, not left to the shorthand: setting only overflow-y turns
+       overflow-x from visible into auto behind your back. */
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  /* Re-measuring must not be a second animation. */
+  .island.no-anim { transition: background-color var(--invert) ease, color var(--invert) ease; }
+
+  /* The one thing that never moves. It is laid out at the open width whatever
+     the capsule is doing, so growing the capsule uncovers type that is already
+     set instead of re-wrapping every line on every frame — the reflow was the
+     glitch. The capsule is a window; this is the picture behind it. */
+  .island-frame { width: min(28rem, calc(100vw - 2rem)); }
+
+  @keyframes island-in {
+    from { opacity: 0; transform: translate(-50%, -0.5rem); }
+    to   { opacity: 1; transform: translate(-50%, 0); }
+  }
+
+  .island-pill {
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+    /* Sized to its own label rather than to the frame, so the shut capsule can
+       be measured without shutting anything, and the label never sits in a
+       wide box waiting to be clipped. */
+    width: max-content;
+    max-width: 100%;
+    /* Tall enough to be a thumb target, not just a label. */
+    /* Left is a touch shorter than right: the dot is visually light, so equal
+       padding makes the content look pushed toward the right edge. */
+    padding: 0.6rem 1.05rem 0.6rem 0.9rem;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    text-align: left;
+    cursor: pointer;
+  }
+  /* The ring belongs around the whole capsule, not around the header inside it
+     — on the open island an inset ring cut a line across the middle. Where
+     :has is unavailable it falls back to ringing the button. */
+  .island-pill:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+  @supports selector(:has(*)) {
+    .island:has(.island-pill:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }
+    .island:has(.island-pill:focus-visible) .island-pill:focus-visible { outline: none; }
+  }
+
+  /* A live indicator, not a bullet: it breathes so the pill reads as current. */
+  .island-dot {
+    flex: 0 0 auto;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 999px;
+    background: currentColor;
+    opacity: 0.55;
+    /* Text centres on its x-height, not its line box, so a box-centred dot
+       reads low. Nudge it up to the optical middle of the lowercase. */
+    margin-top: -0.06rem;
+    animation: island-pulse 2.6s ease-in-out infinite;
+  }
+  @keyframes island-pulse {
+    0%, 100% { opacity: 0.3; transform: scale(0.9); }
+    50%      { opacity: 0.75; transform: scale(1.1); }
+  }
+
+  /* The entries are always laid out; only the window over them moves. Opening,
+     they fade in behind the growing edge; closing, they are gone before the
+     edge reaches them, so nothing is caught mid-shrink. */
+  .island-panel {
+    padding: 0 0.95rem 0.9rem;
+    opacity: 0;
+    transition: opacity 140ms ease;
+  }
+  .island.open .island-panel { opacity: 1; transition: opacity 260ms ease 110ms; }
+
+  .island-event { margin: 0; padding: 0.7rem 0; }
+  .island-event + .island-event { border-top: 1px solid var(--glass-edge); }
+  .island-when {
+    margin: 0 0 0.2rem;
+    font-size: 0.74rem;
+    letter-spacing: 0.01em;
+    opacity: 0.62;
+  }
+  .island-what { margin: 0; font-size: 0.88rem; line-height: 1.5; }
+  .island-more {
+    display: inline-block;
+    margin-top: 0.15rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--glass-edge);
+    width: 100%;
+    font-size: 0.78rem;
+    color: inherit;
+    opacity: 0.72;
+    text-decoration: none;
+  }
+  .island-more:hover { opacity: 1; }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .island { background: var(--pill); color: var(--pill-ink); box-shadow: none; }
+  }
+
+  /* ---- reading views --------------------------------------------------- */
+
+  /* The nav already says which view you are on, so the heading is redundant
+     on screen. It stays in the accessibility tree. */
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* No orphans. `balance` evens out short headings so a single word never
+     drops to its own line; `pretty` does the same job for running prose by
+     pulling a word down rather than leaving one behind. Both degrade to normal
+     wrapping where unsupported, so nothing breaks without them. */
+  h1, h2, h3, .pj-title, .gal-head, .w-title, .up-when, .row-title,
+  .is-prose .m-h2, .is-prose .m-h3 { text-wrap: balance; }
+  p, li, .row-body, .up-body, .pj-desc, .w-blurb, .entry-body { text-wrap: pretty; }
+
+  .row { margin-bottom: clamp(2.75rem, 7vh, 3.75rem); }
+  .row:last-child { margin-bottom: 0; }
+
+  /* Info is one continuous piece of writing, not a list of things. */
+  .is-prose .row { margin-bottom: 1.15rem; }
+
+  /* Its one section break. */
+  .is-prose em { font-style: italic; }
+
+  /* The opening statement carries at a larger size, the way it does on the
+     live site. */
+  .is-prose .m-lead {
+    margin: 0 0 1.4rem;
+    font-size: clamp(1.15rem, 2.6vw, 1.45rem);
+    line-height: 1.42;
+    letter-spacing: -0.012em;
+  }
+
+  .is-prose .m-h2 {
+    margin: 3.25rem 0 1.1rem;
+    font-size: 1.5rem;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+  }
+  /* Sub-heads sit at body size and are set apart by colour, not scale. */
+  .is-prose .m-h3 {
+    margin: 2.1rem 0 0.55rem;
+    font-size: 1.02rem;
+    font-weight: 400;
+    color: var(--dim);
+    transition: color var(--invert) ease;
+  }
+  .is-prose .m-list {
+    margin: var(--s1) 0 1.4rem;
+    padding-left: 1.35rem;
+    font-size: 1.05rem;
+    line-height: 1.62;
+  }
+  .is-prose .m-list li { margin-bottom: 0.7rem; }
+  .is-prose .m-list li:last-child { margin-bottom: 0; }
+  .is-prose .m-list::marker, .is-prose .m-list li::marker { color: var(--dim); }
+
+  /* Recognition and press: stacked lines, not bullets. A record, read down. */
+  .is-prose .m-lines {
+    margin: var(--s1) 0 1.4rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .is-prose .m-lines li { margin-bottom: 0.55rem; }
+  .is-prose .m-lines li:last-child { margin-bottom: 0; }
+
+  /* Writing sits on the Info page as a record, not a feed: venue and year
+     in the dim voice, the title carrying the link. */
+  .w-item { margin: 0 0 1.6rem; }
+  .w-item:last-child { margin-bottom: 0; }
+  .w-meta { margin: 0 0 0.2rem; font-size: 0.82rem; color: var(--dim);
+            transition: color var(--invert) ease; }
+  .w-title { margin: 0 0 var(--s1); font-size: 1.05rem; font-weight: 400;
+             letter-spacing: -0.005em; }
+  .w-blurb { margin: 0; font-size: 0.95rem; line-height: 1.55; color: var(--dim);
+             transition: color var(--invert) ease; }
+
+  .is-prose .m-colophon {
+    margin: 3.25rem 0 0;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--rule);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--dim);
+    transition: color var(--invert) ease, border-color var(--invert) ease;
+  }
+
+  .is-prose .m-sign {
+    margin: var(--s7) 0 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--dim);
+    transition: color var(--invert) ease;
+  }
+
+  .row-meta {
+    margin: 0 0 var(--s2);
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    color: var(--dim);
+    transition: color var(--invert) ease;
+  }
+  /* ---- home timer ------------------------------------------------------ */
+  /* A pie, not a ring: the circle's radius is a quarter of the box and its
+     stroke is half, so the stroke covers the whole disc. pathLength 100 makes
+     the dash maths a percentage. The -90deg turn starts it at twelve, and the
+     offset running from 0 to 100 winds it back like a kitchen timer: what is
+     left always runs clockwise from twelve, and shrinks back towards it. */
+  .timer {
+    position: fixed;
+    /* Level with the upcoming-events capsule: the same top as it, moved down
+       by half the difference in height, so the two share a centre line. With
+       no capsule the difference is nothing and it sits at the edge. */
+    top: calc(max(var(--edge), env(safe-area-inset-top, 0px)) + (var(--island-h, 1.75rem) - 1.75rem) / 2);
+    right: var(--edge);
+    z-index: 30;
+    width: 1.75rem;
+    height: 1.75rem;
+    pointer-events: none;
+    opacity: 0;
+    animation: timer-in 600ms ease forwards;
+    animation-delay: var(--island-delay, 300ms);
+  }
+  .timer svg { display: block; width: 100%; height: 100%; transform: rotate(-90deg); }
+  .timer-pie {
+    fill: none;
+    stroke: #E4E4E4;
+    stroke-width: 16;
+    stroke-dasharray: 100 100;
+    stroke-dashoffset: 0;
+    animation: timer-run 15s linear forwards;
+    animation-delay: var(--island-delay, 300ms);
+  }
+  @keyframes timer-in  { to { opacity: 1; } }
+  @keyframes timer-run { to { stroke-dashoffset: 100; } }
+  /* The loop that takes the timer's place once everything has been seen:
+     its box is the timer's exactly, so the penny comes out of it at the
+     same size; the button's reach is wider than it looks. */
+  .timer-again {
+    position: fixed;
+    top: calc(max(var(--edge), env(safe-area-inset-top, 0px)) + (var(--island-h, 1.75rem) - 1.75rem) / 2);
+    right: var(--edge);
+    z-index: 30;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 500ms ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .timer-again::before { content: ""; position: absolute; inset: -0.6rem; }
+  .timer-again[hidden] { display: none; }
+  .timer-again.on { opacity: 1; }
+  .timer-again svg { display: block; width: 100%; height: 100%; overflow: visible; fill: #E4E4E4; stroke: #E4E4E4; transition: fill 200ms ease, stroke 200ms ease; }
+  .timer-again:hover svg { fill: #D2D2D2; stroke: #D2D2D2; }
+  .timer-again:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; border-radius: 50%; }
+  @media (prefers-reduced-motion: reduce) { .timer, .timer-again { display: none; } }
+
+  /* The penny's stage covers the viewport and catches nothing: the plate under
+     it stays scratchable by hand while the coin works. */
+  .penny-stage,
+  .penny-dust {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    pointer-events: none;
+  }
+  .penny-dust { z-index: 39; }
+  /* The coin's canvas is a small square moved over it, not the screen. */
+  .penny-stage { right: auto; bottom: auto; will-change: transform; }
+  /* The penny's thanks, as a received message: grey, round, a tail curling
+     down at the lower left. The outer element is placed by script; the
+     inner pop runs from the tail, with a little overshoot going in. */
+  .penny-bubble {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 42;
+    pointer-events: none;
+    padding: 0.5rem 0.8rem 0.55rem;
+    border-radius: 1.15rem;
+    background: #E9E9EB;
+    color: #0A0A0A;
+    font-family: var(--face);
+    font-size: 0.95rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    /* lit from above, as the coin is: it floats, so its shadow falls soft
+       and a little away, straight down */
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.18));
+    transform-origin: 0.7rem 100%;
+    animation: bubble-in 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  /* The tail is one shape, cut by a mask, so the shadow follows its real
+     outline rather than a patch painted over it. */
+  .penny-bubble::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: -0.5rem;
+    width: 1.15rem;
+    height: 1.1rem;
+    background: #E9E9EB;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18.4 17.6'%3E%3Cpath d='M0 17.6Q8 17 8 7V0H18.4V5.6Q18.4 17.6 3.6 17.6Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18.4 17.6'%3E%3Cpath d='M0 17.6Q8 17 8 7V0H18.4V5.6Q18.4 17.6 3.6 17.6Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  }
+  .penny-bubble.flip { transform-origin: calc(100% - 0.7rem) 100%; }
+  .penny-bubble.flip::before { left: auto; right: -0.5rem; transform: scaleX(-1); }
+  .penny-bubble.out { animation: bubble-out 300ms cubic-bezier(0.4, 0, 1, 1) both; }
+  @keyframes bubble-in {
+    from { opacity: 0; scale: 0.3; }
+    to   { opacity: 1; scale: 1; }
+  }
+  @keyframes bubble-out {
+    from { opacity: 1; scale: 1; }
+    to   { opacity: 0; scale: 0.4; }
+  }
+
+  /* The pop: a few motes of grey thrown off where the coin was. */
+  .penny-puff { position: fixed; z-index: 41; width: 0; height: 0; pointer-events: none; }
+  .penny-puff span {
+    position: absolute;
+    left: calc(var(--sz) / -2);
+    top: calc(var(--sz) / -2);
+    width: var(--sz);
+    height: var(--sz);
+    border-radius: 50%;
+    background: #D6D6D6;
+    animation: penny-mote 520ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes penny-mote {
+    from { transform: translate(0, 0) scale(1); opacity: 1; }
+    to   { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
+  }
+
+  /* ---- upcoming --------------------------------------------------------- */
+  /* What has not happened yet is the one thing on the index that is not an
+     archive entry, so it gets the opposite ground. Its colours are literal
+     rather than var-driven: the sheet inverts around it and this stays light,
+     which is the whole point of it. */
+  /* The heading stays over the group; each activity is its own card so two
+     unrelated things stop reading as one block of text. Their colours are
+     literal rather than var-driven: the sheet inverts around them and these
+     stay light, which is the whole point of them. */
+  .upcoming { margin: 0 0 clamp(var(--s7), 8vh, var(--s8)); }
+  /* The two halves of the index are each announced the same way. */
+  .up-label, .past-label {
+    margin: 0 0 0.9rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--dim);
+    transition: color var(--invert) ease;
+  }
+  /* .row would give it the list's full bottom margin; the label belongs to the
+     entries under it, not apart from them. */
+  .past-label { margin: 0 0 var(--s5); }
+
+  .up-item {
+    margin: 0 0 var(--s3);
+    padding: clamp(1.15rem, 2.6vw, 1.6rem) clamp(1.2rem, 2.8vw, 1.75rem);
+    border-radius: 0.9rem;
+    background: #F7F7F5;
+    color: #101010;
+  }
+  .up-item:last-child { margin-bottom: 0; }
+  .up-when {
+    margin: 0 0 0.3rem;
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    color: #6E6E72;
+  }
+  .up-body {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  /* Rendered markdown arrives wrapped in its own paragraphs; they should sit
+     flush with the card rather than adding a browser margin on top of the
+     padding. */
+  .up-body > p, .row-body > p { margin: 0; }
+  .up-body > p + p, .row-body > p + p { margin-top: var(--s4); }
+  /* Inside a card the ink is dark whichever way the page has gone, so links
+     cannot inherit the page's colour. */
+  .up-item a { color: #101010; }
+
+  /* ---- the project sheet ------------------------------------------------ */
+  /* A project rides over the wall instead of replacing it. The wall keeps its
+     scroll position, the nav keeps its meaning, and closing is a gesture rather
+     than a navigation. */
+  .sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 6;
+    visibility: hidden;
+  }
+  .sheet.open { visibility: visible; }
+
+  .sheet-scrim {
+    position: absolute;
+    inset: 0;
+    background: rgba(4, 4, 5, 0.55);
+    -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity 320ms ease;
+  }
+  .sheet.open .sheet-scrim { opacity: 1; }
+
+  .sheet-panel {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: min(46rem, 100%);
+    height: min(92vh, 100%);
+    transform: translate(-50%, 100%);
+    background: var(--ground);
+    /* The sheet lives outside .shell, so none of the page's typography reaches
+       it by inheritance — it has to be stated. Without this the prose fell back
+       to the document default, which is a hotter white than the site's ink. */
+    font-family: var(--face);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    border-radius: 0.9rem 0.9rem 0 0;
+    /* No hairline along the top. It drew a hard 1px lid directly above a
+       header whose whole point is that it dissolves, and being a box-shadow
+       it sat outside the border box, so the rounded corners clipped it into a
+       line that stopped short of each end. The scrim already separates the
+       panel from the page behind it.
+
+       This ring is the opposite of that lid: it is the panel's own ground
+       colour, so it is not a line, it is 1px more panel. The panel is centred
+       on a half pixel and sized in vh, which puts its top edge on fractional
+       device pixels — measured at .094, .250 and .406 across ordinary window
+       sizes — and an edge landing there is antialiased, letting the scrim
+       bleed through as a pale seam. The ring follows the radius and fills it. */
+    box-shadow: 0 0 0 1px var(--ground);
+    overflow-y: auto;
+    outline: none;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    transition: transform 460ms var(--rise), background-color var(--invert) ease,
+                color var(--invert) ease;
+    touch-action: pan-y;
+  }
+  .sheet.open .sheet-panel { transform: translate(-50%, 0); }
+  /* While a drag is in progress the panel follows the finger, so it must not
+     also be easing toward a target. */
+  .sheet-panel.dragging { transition: none; }
+
+  /* The grip reads as "this pulls down". */
+  /* The header is a fade, not a lid. A solid bar cut whatever line of text
+     happened to be passing under it clean in half; this lets the text dissolve
+     into the top edge the way it does at the top of a page. The veil carries
+     the gradient, the blur and its own mask, so the handle and the close mark
+     stay sharp on top of it. */
+  .sheet-grip {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    height: 3.6rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: var(--s3);
+    cursor: grab;
+    touch-action: none;
+    /* Sits over the first 3.6rem of content rather than pushing it down. */
+    margin-bottom: -3.6rem;
+  }
+  /* Overscanned past the top of the panel, same reason as .topfade — and here
+     the overscan costs nothing at all, because the panel clips it. */
+  .sheet-veil {
+    position: absolute;
+    left: 0; right: 0; top: -2px;
+    height: calc(5.2rem + 2px);
+    pointer-events: none;
+    background: linear-gradient(to bottom, var(--ground) 34%, transparent);
+    -webkit-backdrop-filter: blur(7px);
+            backdrop-filter: blur(7px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 46%, transparent);
+            mask-image: linear-gradient(to bottom, #000 46%, transparent);
+    transition: background var(--invert) ease;
+  }
+  .sheet-grip:active { cursor: grabbing; }
+  .sheet-grip::before {
+    content: '';
+    position: relative;
+    z-index: 1;
+    width: 2.4rem;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--glass);
+  }
+  /* The same mark as on the home picture: two crossing lines, no chip. */
+  .sheet-close {
+    position: absolute;
+    z-index: 1;
+    top: 0.35rem;
+    right: 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ink);
+    font: inherit;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 180ms ease, transform 180ms ease, color var(--invert) ease;
+  }
+  .sheet-close svg { display: block; }
+
+  /* The panel is its own scroll container, so its edges need the same courtesy
+     the page's do: a plate scrolling under the grip used to stop dead against
+     it. Both bands are sticky, so they ride along when the sheet is dragged. */
+  .sheet-foot {
+    content: '';
+    pointer-events: none;
+  }
+  .sheet-foot {
+    content: '';
+    pointer-events: none;
+  }
+  .sheet-grip::after {
+    position: absolute;
+    left: 0; right: 0; top: 100%;
+    height: 2.4rem;
+    background: linear-gradient(to bottom, var(--ground) 18%, transparent);
+    -webkit-backdrop-filter: blur(3px);
+            backdrop-filter: blur(3px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent);
+            mask-image: linear-gradient(to bottom, #000 30%, transparent);
+  }
+  .sheet-foot {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    display: block;
+    height: 3rem;
+    /* Sticks to the bottom edge without adding to the panel's length. */
+    margin-top: -3rem;
+    background: linear-gradient(to top, var(--ground) 28%, transparent);
+    -webkit-backdrop-filter: blur(3px);
+            backdrop-filter: blur(3px);
+    -webkit-mask-image: linear-gradient(to top, #000 40%, transparent);
+            mask-image: linear-gradient(to top, #000 40%, transparent);
+  }
+  .sheet-close:hover { opacity: 1; transform: scale(1.06); }
+  .sheet-close:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  .sheet-body { padding: 4.2rem var(--s5) clamp(var(--s7), 8vh, 5rem); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sheet-panel, .sheet-scrim { transition: none !important; }
+  }
+
+  /* ---- a single project ------------------------------------------------- */
+  /* Wider than the reading column so the plates can breathe, with the prose
+     still held to a readable measure inside it. */
+  .col.is-project { max-width: 62rem; }
+  .pj-head { max-width: 40rem; margin: 0 auto clamp(2.5rem, 6vh, 4rem); }
+  .pj-year { margin: 0 0 0.4rem; font-family: var(--mono); font-size: 0.76rem; color: var(--dim);
+             transition: color var(--invert) ease; }
+  .pj-title { margin: 0 0 var(--s4); font-size: clamp(1.5rem, 4vw, 2.1rem);
+              font-weight: 400; letter-spacing: -0.015em; }
+  .pj-desc { margin: 0; font-size: 1.05rem; line-height: 1.62; }
+  .pj-desc p { margin: 0 0 var(--s4); }
+  .pj-desc p:last-child { margin-bottom: 0; }
+  .pj-visit { margin: 1.1rem 0 0; font-size: 0.95rem; }
+
+  .pj-shot { margin: 0 0 clamp(var(--s5), 4vh, 2.5rem); text-align: center; }
+  .pj-shot:last-child { margin-bottom: 0; }
+  .pj-shot img { max-width: 100%; height: auto; border-radius: 2px; }
+
+  /* A piece that turns gets to turn. Same measure and same rhythm as a plate,
+     since on this sheet it is one more view of the object. */
+  .pj-video { margin: 0 0 clamp(1.5rem, 4vh, 2.5rem); text-align: center; }
+  .pj-video:last-child { margin-bottom: 0; }
+  .pj-video video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+    border-radius: 2px;
+  }
+
+  /* ---- projects gallery ------------------------------------------------- */
+  /* The studio wall hangs as a set rather than reading as a list, so this view
+     breaks out of the 40rem reading column. */
+  .col.is-gallery { max-width: 96rem; }
+
+  /* The tag under a plate: what it is, and when. Quiet enough to stay a label
+     rather than a caption — it names the work, it does not describe it. The
+     year is tabular so a column of them lines up down the wall. */
+  .gal-tag {
+    display: flex;
+    justify-content: center;
+    gap: 0.5em;
+    margin: 0.9rem 0 0;
+    font-size: 0.78rem;
+    color: var(--dim);
+    /* The label arrives with its picture, a beat after it, not ahead of it:
+       held back until the picture has landed (.is-in on the tile). */
+    opacity: 0;
+    transition: color var(--invert) ease, opacity 900ms cubic-bezier(0.4, 0, 0.2, 1) 350ms;
+  }
+  .gal-link.is-in .gal-tag { opacity: 1; }
+  .gal-kind { text-transform: capitalize; }
+  .gal-kind::after { content: "\00b7"; margin-left: 0.5em; }
+  .gal-year { font-variant-numeric: tabular-nums; }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(var(--s6), 4vw, var(--s7)) clamp(var(--s4), 2.2vw, 1.75rem);
+    margin: 0;
+  }
+
+  /* The grid supplies the rhythm; the cells must not also carry the list's
+     bottom margin. */
+  /* The cell fills its grid row, and so does the link inside it, so the plate
+     can take whatever height is left above the tag. Everything in a row then
+     stands on one baseline and the tags line up across it — the shelf, kept,
+     but drawn per row instead of once for the whole wall. */
+  .gal-cell { display: flex; margin-bottom: 0; }
+
+  /* One band held every plate at a common scale, which was right when the wall
+     was sorted into sets and a shelf of books could be compared like for like.
+     In date order the neighbours are a screenshot, a print and an installation,
+     where relative scale means nothing and a tall band just leaves a hole above
+     anything short. Each plate now takes the height its own image needs, capped
+     so nothing towers, and still stands on the row's baseline. */
+  .plate {
+    display: flex;
+    flex: 1;
+    align-items: flex-end;
+    justify-content: center;
+    margin-bottom: 0;
+  }
+  .plate img {
+    max-width: 100%;
+    max-height: clamp(13rem, 38vh, 24rem);
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 2px;
+    transform-origin: 50% 100%;
+    transition: transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    will-change: transform;
+  }
+  /* A book that turns, in place of a plate. The box is square and holds its
+     space from the first paint. The still is the front cover at the size the
+     model's first frame will draw it; when the model is ready it fades in over
+     the still, which then goes. If it never is, the still is the picture. The
+     book fills about two thirds of its stage. */
+  .plate.is-book { width: 100%; }
+  .gal-book { position: relative; width: 100%; aspect-ratio: 1; margin-bottom: calc(var(--gap) + 0.8rem); }
+  /* A book comes up a little under a pointer, about its own baseline so it
+     stays on the row. Only over the book: the hit area is the cover as it
+     stands face-on, not the box the model is drawn in, which runs wider. It is
+     first in the box so what it hovers can be reached by sibling selectors. */
+  .gal-hit {
+    position: absolute; left: 50%; top: 50%;
+    width: var(--still-w); aspect-ratio: 1 / var(--bh);
+    transform: translate(-50%, -50%);
+    cursor: grab;
+  }
+  .gal-link.is-grabbed .gal-hit { cursor: grabbing; }
+  .gal-stage { transform-origin: 50% calc(100% + var(--gap)); transition: opacity 1600ms cubic-bezier(0.4, 0, 0.2, 1), transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1); will-change: transform; }
+  @media (hover: hover) {
+    .gal-hit:hover ~ .gal-stage, .gal-link.is-grabbed .gal-stage { transform: scale(1.035); }
+    .gal-hit:hover ~ .gal-still, .gal-link.is-grabbed .gal-still { transform: translate(-50%, -50%) scale(1.035); }
+  }
+  /* The stage is transparent, so on the wall it may run wider than its column:
+     a book fills two thirds of its stage, and this brings it up to the height
+     of the photographs beside it. The plate centres it, so it overflows evenly
+     both sides; a negative margin on top of that would push it off its label. */
+  @media (min-width: 38.01rem) {
+    .gal-book { width: 120%; margin-bottom: calc(var(--gap) * 1.2 + 0.8rem); }
+  }
+  .plate .gal-still {
+    position: absolute; left: 50%; top: 50%;
+    width: var(--still-w); height: auto; max-width: none; max-height: none;
+    transform: translate(-50%, -50%);
+    transform-origin: 50% 100%;
+    border-radius: 0;
+    /* its opacity, held at 0 until the picture has arrived, is on .plate img below */
+    transition: transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  /* It fades in as the picture lands, not before and not as a pop. The fade is
+     only for arriving: once settled the opacity is not transitioned, so going
+     back to the still, from a book that has gone to sleep, is instant. */
+  .plate img { opacity: 0; }
+  .plate img.is-arriving { transition: opacity 900ms cubic-bezier(0.4, 0, 0.2, 1), transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1); }
+  .plate img.is-ready { opacity: 1; }
+  .gal-link.has-book { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; }
+  .plate .gal-still { pointer-events: none; -webkit-user-drag: none; user-select: none; }
+  .gal-stage { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+  .gal-book.is-live .gal-stage { opacity: 1; }
+  /* A natural fade, not two layers dimming at once: the still stays solid under
+     the book while the book comes up over it, and only once the book is fully
+     there does the still let go (a 1ms switch after the fade's own length), so
+     the tile never dips and nothing shows through. Going back to sleep is the
+     same the other way: the still is back at once, under the book as it fades. */
+  .gal-book.is-live .gal-still.is-ready { opacity: 0; transition: opacity 1ms linear 1650ms, transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1); }
+  @media (prefers-reduced-motion: reduce) {
+    .gal-still, .gal-stage, .plate img.is-arriving, .gal-book.is-live .gal-still.is-ready, .gal-link .gal-tag { transition: none; }
+  }
+
+  /* A wall with a hole in it reads as broken, so the one project without a
+     picture yet holds its place. */
+  .plate.is-empty {
+    align-items: center;
+    width: 100%;
+    max-width: 13rem;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 1px var(--glass-edge);
+    font-size: 0.9rem;
+    text-align: center;
+    line-height: 1.5;
+    color: var(--dim);
+    transition: box-shadow var(--invert) ease, color var(--invert) ease;
+  }
+  .plate.is-empty small { display: block; font-size: 0.78rem; opacity: 0.75; }
+
+  /* A live site is reachable through its own picture, so the wall needs no
+     "Visit" line to carry the link. */
+  .gal-link {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 200ms ease;
+  }
+  /* Nothing on the wall dims under a pointer: a tile comes up a little, from the
+     row's baseline, so it stays on the row. */
+  @media (hover: hover) {
+    .plate:not(.is-book) img:hover { transform: scale(1.035); }
+  }
+  /* And only the object answers the pointer: the tile around it, the empty
+     part of the plate, is not a target, so nothing moves and nothing opens
+     until the pointer is on the picture, the book or the label. */
+  .gal-link { pointer-events: none; }
+  .gal-link .plate img, .gal-link .plate.is-empty, .gal-link .gal-hit, .gal-link .gal-tag { pointer-events: auto; }
+  .gal-link .plate img.gal-still { pointer-events: none; }
+  .gal-link .plate img:not(.gal-still) { cursor: pointer; }
+  .gal-link .gal-tag { cursor: pointer; }
+  .plate .gal-still { pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { .plate img { transition: none; } }
+  .gal-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 6px; border-radius: 4px; }
+
+  @media (max-width: 62rem) { .gallery { grid-template-columns: repeat(2, 1fr); } }
+  /* One up on a phone. Two columns put every plate in a ~9rem box — a
+     screenshot at that size is a smudge — and a phone only ever has one
+     column's worth of width to give, so the wall gives all of it to one plate
+     at a time.
+     The shared band goes with the second column. Its job was to hold a set at
+     its true relative scale side by side, and there is no side by side here:
+     the column sets the width, the screen caps the height, and each plate comes
+     up as large as the phone can show it. */
+  @media (max-width: 38rem) {
+    .gallery {
+      grid-template-columns: 1fr;
+      gap: clamp(2.5rem, 9vw, 3.5rem);
+    }
+    .plate { height: auto; margin-bottom: 0; }
+    /* A tall picture would otherwise run past the screen it is meant to fit. */
+    .plate img { max-height: 62vh; }
+    .plate.is-empty { height: 9rem; max-width: none; }
+    /* A book comes up as large as its photograph did: the cover gets the
+       column's width, or 62vh of height, whichever runs out first, the same
+       caps as a plate above. The cover is only --still of its stage, so the
+       stage runs wider than the column to get there. It is transparent and
+       the wall clips it at the screen's edge, and the empty bands above and
+       below the book are pulled in so the spacing matches the photographs. */
+    .gal-book {
+      --stage: min(100% / var(--still), 62vh / (var(--still) * var(--bh)));
+      --band: calc(var(--stage) * (1 - var(--still) * var(--bh)) / 2);
+      flex: none;
+      width: var(--stage);
+      margin-top: calc(var(--band) * -1);
+      margin-bottom: calc(var(--band) * -1 + 0.8rem);
+    }
+    .stage.is-flow:has(.gallery) { overflow-x: clip; }
+  }
+
+  .row-title {
+    margin: 0 0 var(--s1);
+    font-size: 1.28rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .row-body {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.62;
+    color: var(--ink);
+    transition: color var(--invert) ease;
+  }
+  .row-body + .row-body { margin-top: var(--s4); }
+
+  /* The Index is a log: every entry is a solid block of three or four lines
+     with a lot of air between entries, where Info is short paragraphs with
+     small breaks. The same leading that reads as generous there reads as tight
+     here, so the log gets its own. */
+  .is-log .row-body { line-height: 1.78; }
+  .is-log .row-meta { margin-bottom: 0.65rem; }
+
+  /* Links carry no colour of their own. They sit at the text's exact weight,
+     size and colour, and the underline is the whole signal. */
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+    transition: text-decoration-thickness 120ms ease;
+  }
+  a:hover { text-decoration-thickness: 2px; }
+  a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  /* ---- back arrow ------------------------------------------------------ */
+
+  .back {
+    position: fixed;
+    top: clamp(1rem, 3vh, 1.75rem);
+    left: clamp(1rem, 3vw, 1.75rem);
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border: 0;
+    /* Same corner family as the bar, so the two read as one set. */
+    border-radius: var(--bar-radius);
+    background-color: var(--glass);
+    background-image: linear-gradient(var(--glass-veil), var(--glass-veil));
+    color: var(--glass-ink);
+    box-shadow: inset 0 0 0 1px var(--glass-edge);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    font-family: var(--face);
+    font-size: 1.05rem;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color var(--invert) ease, color var(--invert) ease;
+  }
+  .back { opacity: 0; visibility: hidden; transition: opacity 260ms ease, visibility 260ms, background-color var(--invert) ease, color var(--invert) ease, box-shadow var(--invert) ease; }
+  :root:not(.at-home) .back { opacity: 1; visibility: visible; }
+  .back:hover { background: var(--glass-hover); }
+  .back:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+  /* Rows dissolve into the edges rather than being cut by them. A flat wash
+     could only fade content toward the ground; this blurs it as well, so what
+     is leaving frame goes out of focus on its way rather than simply dimming.
+     Each layer is a masked backdrop-filter, and because a layer samples what
+     the ones beneath it already produced, three of them read as a ramp rather
+     than three steps. */
+  .fadeband {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    /* No overflow clip. The children are inset: 0, so there was never anything
+       to clip, and clipping a composited backdrop layer is the fragile part —
+       it is what the snapshot is taken against. */
+  }
+  .fadeband > * { position: absolute; inset: 0; display: block; }
+  /* No will-change here. It used to say `backdrop-filter` on all three layers,
+     permanently, which promoted three stacked layers over a scrolling backdrop
+     for the whole life of the page — and nothing about these layers ever
+     animates, so it bought nothing. Safari kept a snapshot of the backdrop for
+     a promoted layer and did not always retake it when the page scrolled back
+     to the top and down again: the band came back holding a stale slice of
+     whatever had been behind it, and grew as the dirty region accumulated. */
+
+  /* The band runs 2px past the top of the screen. A backdrop-filter is
+     sampled and composited on device-pixel boundaries, so when the layer's
+     own edge lands on a fractional one — which it does at any DPR that is not
+     a whole number, and in Safari at 2 as well — the outermost row can come
+     back unfiltered. That row read as a 1–2px hairline of sharp, untinted
+     content above the fade. Starting the band off-screen puts the row that
+     might be dropped where nobody can see it. */
+  .topfade {
+    position: fixed;
+    top: -2px; left: 0; right: 0;
+    height: calc(clamp(4.5rem, 11vh, 7rem) + 2px);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .topfade .fb1 {
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 12%, transparent 34%);
+            mask-image: linear-gradient(to bottom, #000 0%, #000 12%, transparent 34%);
+  }
+  .topfade .fb2 {
+    -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 62%);
+            mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 62%);
+  }
+  .topfade .fb3 {
+    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+            mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+  }
+
+  /* The wash sits over the blur and only tints — light enough that the blurred
+     content stays visible instead of being painted out. Two of them cross-fade
+     on opacity so the scrim never lags the ground. */
+  .wash { transition: opacity var(--invert) ease; }
+  .topfade .wash-light {
+    background: linear-gradient(to bottom,
+      rgba(255,255,255,0.90) 0%, rgba(255,255,255,0.42) 46%, rgba(255,255,255,0) 100%);
+    opacity: 1;
+  }
+  .topfade .wash-dark {
+    background: linear-gradient(to bottom,
+      rgba(7,7,7,0.90) 0%, rgba(7,7,7,0.42) 46%, rgba(7,7,7,0) 100%);
+    opacity: 0;
+  }
+  :root.is-dark .topfade .wash-light { opacity: 0; }
+  :root.is-dark .topfade .wash-dark  { opacity: 1; }
+
+  /* ---- nav ------------------------------------------------------------- */
+
+  .navwrap {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    /* The top figure is the run-up the fade band needs, not an edge. The
+       bottom is the edge, and it matches the island's at the other end. */
+    padding: var(--s7) var(--s4) max(var(--edge), env(safe-area-inset-bottom, 0px));
+    pointer-events: none;
+  }
+  /* Mirror of the top band, overscanned at its own edge for the same reason. */
+  .botfade { z-index: -1; bottom: -2px; }
+  .botfade .fb1 {
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    -webkit-mask-image: linear-gradient(to top, #000 0%, #000 12%, transparent 34%);
+            mask-image: linear-gradient(to top, #000 0%, #000 12%, transparent 34%);
+  }
+  .botfade .fb2 {
+    -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
+    -webkit-mask-image: linear-gradient(to top, #000 0%, #000 30%, transparent 62%);
+            mask-image: linear-gradient(to top, #000 0%, #000 30%, transparent 62%);
+  }
+  .botfade .fb3 {
+    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+    -webkit-mask-image: linear-gradient(to top, #000 0%, #000 55%, transparent 100%);
+            mask-image: linear-gradient(to top, #000 0%, #000 55%, transparent 100%);
+  }
+  .botfade .wash-light {
+    background: linear-gradient(to top,
+      rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.55) 48%, rgba(255,255,255,0) 100%);
+    opacity: 1;
+  }
+  .botfade .wash-dark {
+    background: linear-gradient(to top,
+      rgba(7,7,7,0.92) 0%, rgba(7,7,7,0.55) 48%, rgba(7,7,7,0) 100%);
+    opacity: 0;
+  }
+  :root.is-dark .botfade .wash-light { opacity: 0; }
+  :root.is-dark .botfade .wash-dark  { opacity: 1; }
+  /* One continuous bar rather than three separate pills. The corner is a soft
+     rounded rectangle, not a capsule: measured off the reference at roughly
+     0.2 of the bar's height, which is what keeps it reading as a bar and not
+     a lozenge. Items divide it in equal thirds, so it never wraps and needs no
+     breakpoint. */
+  nav {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: min(34rem, 100%);
+    padding: var(--bar-pad);
+    border-radius: var(--bar-radius);
+    background-color: var(--glass);
+    background-image: linear-gradient(var(--glass-veil), var(--glass-veil));
+    box-shadow: inset 0 0 0 1px var(--glass-edge);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    pointer-events: auto;
+    transition: background-color var(--invert) ease, box-shadow var(--invert) ease;
+  }
+  nav a {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0.55rem 0.4rem;
+    /* Nested radius: outer minus the padding between them, so the inner curve
+       sits concentric with the bar's rather than fighting it. */
+    border-radius: calc(var(--bar-radius) - var(--bar-pad));
+    background: transparent;
+    color: var(--glass-ink);
+    font-size: clamp(0.82rem, 3.4vw, 0.95rem);
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: none;
+    transition: background-color 200ms ease, color var(--invert) ease;
+  }
+  nav a:hover { background: var(--glass-hover); }
+  nav a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  /* Selected is the inversion of the page it is on. The chip is a single
+     element that slides between items rather than a background switching off
+     one link and on at another, so moving between areas reads as one object
+     travelling instead of two blinking. */
+  .nav-thumb {
+    position: absolute;
+    z-index: 0;
+    top: var(--bar-pad);
+    left: 0;
+    height: calc(100% - var(--bar-pad) * 2);
+    width: 0;
+    border-radius: calc(var(--bar-radius) - var(--bar-pad));
+    background: var(--glass-on);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 420ms var(--rise), width 420ms var(--rise),
+                opacity 200ms ease, background-color var(--invert) ease;
+  }
+  .nav-thumb.on { opacity: 1; }
+  /* Placing it for the first time, or after a resize, must not look like a
+     slide from the left edge. */
+  .nav-thumb.no-anim { transition: background-color var(--invert) ease; }
+
+  nav a[aria-current="page"] { color: var(--glass-on-ink); }
+
+  /* Wherever the blur is unavailable the bar falls back to a solid fill, so
+     the nav is never a near-invisible outline. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    nav, .back { background: var(--pill); color: var(--pill-ink); box-shadow: none; }
+    nav a { color: var(--pill-ink); }
+    nav a:hover, .back:hover { background: var(--pill-hover); }
+    .nav-thumb { background: var(--ink); }
+    nav a[aria-current="page"] { color: var(--ground); }
+  }
+
+  /* ---- entering and leaving -------------------------------------------- */
+
+  .rise-in { opacity: 0; animation: rise 0.46s var(--rise) forwards; animation-delay: calc(var(--i, 0) * 34ms); }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .row { opacity: 0; transform: translateY(14px); }
+  .row.in { animation: roll 0.48s var(--rise) forwards; animation-delay: calc(var(--i, 0) * 34ms); }
+  @keyframes roll { to { opacity: 1; transform: none; } }
+
+  :root.is-leaving .row,
+  :root.is-leaving .row.in,
+  :root.is-leaving .statement .w,
+  :root.is-leaving .rise-in {
+    animation: leave var(--leave) ease forwards;
+    animation-delay: calc(var(--o, 0) * 12ms);
+  }
+  @keyframes leave { to { opacity: 0; transform: translateY(-10px); } }
+
+  /* A scratched-open picture has to clear immediately, otherwise it hangs
+     over the transition long after the type has gone. */
+  :root.is-leaving .egg-canvas {
+    animation: fadeOut 160ms ease forwards;
+  }
+  @keyframes fadeOut { to { opacity: 0; } }
+
+  @media (max-width: 30rem) {
+    .navwrap { padding-left: var(--s3); padding-right: var(--s3); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html, body, .shell, .navwrap, .field, nav a, .back, .nav-thumb,
+    .row, .row-body, .row-meta, a { transition: none !important; }
+    .row, .rise-in, .statement .w, .back {
+      animation: none !important; opacity: 1 !important; transform: none !important;
+    }
+    :root.is-leaving .egg-canvas { opacity: 0 !important; animation: none !important; }
+    .island { animation: none !important; opacity: 1 !important; transition: none !important; }
+    .island-dot { animation: none !important; opacity: 0.55 !important; transform: none !important; }
+    .island-panel, .island-frame { transition: none !important; }
+    :root.is-leaving .row,
+    :root.is-leaving .rise-in,
+    :root.is-leaving .statement .w { opacity: 0 !important; }
+  }
+
+/* ---- an essay ----------------------------------------------------------- */
+/* Writing lives on Info; a single piece gets the same reading measure as
+   the prose there, and its images run to the column's full width. */
+.post-title { margin-top: 0; }
+.post-note { margin: -0.4rem 0 var(--s6); }
+.post-body { font-size: 1.05rem; line-height: 1.62; }
+.post-body p { margin: 0 0 1.15rem; }
+.post-body h2, .post-body h3 { margin: 2.4rem 0 0.8rem; font-weight: 400; letter-spacing: -0.012em; }
+.post-body h2 { font-size: 1.4rem; }
+.post-body h3 { font-size: 1.1rem; }
+.post-body figure { margin: var(--s6) 0; }
+.post-body img { max-width: 100%; height: auto; border-radius: 2px; }
+.post-body figcaption { margin-top: var(--s2); font-size: 0.82rem; color: var(--dim); }
+.post-body blockquote {
+  margin: 1.6rem 0;
+  padding-left: 1.1rem;
+  border-left: 1px solid var(--glass-edge);
+  color: var(--dim);
+}
+
+/* ---- the bio ------------------------------------------------------------ */
+/* Adapted from _bio/src/bio.css. Two things changed on the way in:
+   the type is the site's, not Newsreader and IBM Plex Mono; and the palette is
+   derived from the page's own tokens rather than the light paper the block was
+   drawn on. Its variables are namespaced — the source defined --ink on :root,
+   which would have clobbered the site's. */
+.bio-block {
+  --bio-spent:      rgba(237, 237, 237, 0.42);
+  --bio-chip:       rgba(255, 255, 255, 0.10);
+  --bio-chip-hover: rgba(255, 255, 255, 0.18);
+  --bio-flash:      rgba(255, 255, 255, 0.15);
+  --bio-rule:       rgba(255, 255, 255, 0.13);
+  --bio-pill-line:  rgba(255, 255, 255, 0.24);
+}
+.bio-block * { box-sizing: border-box; }
+.bio-block .wrap { max-width: 44rem; margin: 0 auto; }
+
+.bio-block .bio {
+  font-size: clamp(1.05rem, 2.1vw, 1.35rem);
+  line-height: 1.62;
+  letter-spacing: -0.008em;
+  text-wrap: pretty;
+}
+.bio-block .bio p { margin: 0 0 0.9em; }
+.bio-block .bio p:last-child { margin-bottom: 0; }
+
+/* The bio ships fully open — that is what a crawler and a reader without
+   JavaScript get — and enhance() collapses it on load. Between first paint and
+   that swap the page was showing all 3,000px of it against the 490px it settles
+   at, which is the flicker: a wall of text, then a page rearranging itself.
+
+   Clamped to the collapsed bio's shape, first paint already looks like the
+   answer. Same four paragraphs, same opening words, near enough the same
+   height — so when the swap lands it changes words rather than the layout.
+
+   Only where scripting is on. With JS off no swap is coming and the whole bio
+   is the page, which is the point of shipping it open. */
+@media (scripting: enabled) {
+  /* The clamp holds the space; it is not for reading. Shown, it was the second
+     flicker: the static words painted, then enhance() swapped them and each
+     paragraph's rise started from nothing, so the text blinked out and back.
+     Held invisible, the rise is the first thing anyone sees. The 2.5s deadline
+     in about.html adds .is-ready either way, so a bio never stays hidden. */
+  .bio-block:not(.is-ready) .bio { opacity: 0; }
+  /* The lists sit under the bio, so they ride up when it settles. They wait
+     for it, then fade in once the first paragraphs are on their way. */
+  .bio-block .rec { transition: opacity 600ms ease 240ms; }
+  .bio-block:not(.is-ready) .rec { opacity: 0; transition: none; }
+  .bio-block:not(.is-ready) .bio p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    overflow: hidden;
+  }
+  /* The collapsed paragraphs run a line shorter once the measure widens. */
+  @media (min-width: 38rem) {
+    .bio-block:not(.is-ready) .bio p { -webkit-line-clamp: 3; }
+  }
+}
+
+/* a chip: opens in place, one way */
+.bio-block .chip {
+  display: inline;
+  /* Fragmenting is the point — see bio.js. Clone so each fragment draws its
+     own rounded box instead of one long box left open at the line end. */
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  margin: 0;
+  padding: 0.1em 0.16em 0.12em 0.26em;
+  border: 0;
+  border-radius: 3px;
+  background: var(--bio-chip);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.86em;
+  cursor: pointer;
+  transition: background 160ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+/* Holds an element and the punctuation that follows it on the same line. It
+   must not stop the chip inside it from breaking, so only white-space is set
+   — no new box. */
+/* Holds a pill and the punctuation after it together. A pill is inline-block
+   and cannot fragment anyway, so nowrap costs it nothing. A chip must still be
+   able to wrap between its own words, and no longer needs the help: its glyph
+   stopped being an atomic box. */
+.bio-block .knit, .rec .knit { white-space: nowrap; }
+/* nowrap must not reach inside the pill. A long label — LIVING ROOM LIGHT
+   EXCHANGE — then cannot wrap, and one run wider than the screen scales a
+   phone's whole layout down. The pill sets its own wrapping again; the break
+   being closed is the one between the pill's box and the punctuation after
+   it, which the knit still governs. */
+.bio-block .knit .pill, .rec .knit .pill { white-space: normal; }
+
+.bio-block .chip:hover { background: var(--bio-chip-hover); }
+.bio-block .chip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* a spent chip stays where it was, but stops being a target */
+.bio-block .spent {
+  font-size: 0.86em;
+  color: var(--bio-spent);
+  background: transparent;
+  padding: 0.1em 0.16em 0.12em 0.26em;
+  transition: color var(--invert) ease;
+}
+
+/* an outbound link, in the site's face rather than a mono one */
+/* A bubble is one object, so it is one box: inline, it fragmented at the line
+   end and drew a second bubble around whatever was left over — usually the
+   arrow on its own. Inline-block cannot fragment. A pill that does not fit
+   moves down whole; a title too long for any line wraps inside its own border
+   instead of being cut in half by one, and max-width keeps the longest of them
+   inside the column on the narrowest phone. */
+.bio-block .pill,
+.rec .pill {
+  display: inline-block;
+  max-width: 100%;
+  margin: 0 0.12em;
+  /* Measured, not guessed: these give equal ink-to-border space on all four
+     sides for Areal Mono caps. */
+  padding: 0.39em 0.78em 0.27em 0.72em;
+  border: 1px solid var(--bio-pill-line);
+  border-radius: 100px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 0.68em;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-decoration: none;
+  line-height: 1;
+  /* On the baseline, the pill centres on the sentence's lowercase and reads
+     low; level with the capitals (0.14em) it floats. This sits between. */
+  vertical-align: 0.08em;
+  transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+}
+.bio-block .pill:hover,
+.rec .pill:hover { border-color: var(--ink); color: var(--ink); background: var(--bio-chip); }
+.bio-block .pill:focus-visible,
+.rec .pill:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+/* The arrow was an inline-block, and a line is allowed to break before one of
+   those: at the end of a line the label stayed put and the arrow went to the
+   next line inside a second bubble of its own, which is what
+   box-decoration-break: clone draws for a fragment. Inline, there is no break
+   opportunity in front of it, so it cannot be left behind — in the prose or in
+   the lists, whatever the measure. */
+.pill .arw { display: inline; }
+/* The ↗ glyph stays in the markup for its width and its place in the line;
+   what shows is a hairline arrow drawn over it. text-fill clears the glyph
+   without touching color, so currentColor still carries the pill's hover.
+
+   The arrow hangs from the baseline, not the top of the text box: Safari and
+   Chrome size that box differently, and the arrow sat a pixel high on iOS.
+   Every engine agrees on the baseline. Areal Mono caps stand 0.716em, so a
+   0.6em arrow raised 0.116em puts its top on the tops of the letters.
+
+   It is drawn on its own small box after the glyph. Negative tracking equal
+   to the glyph's advance (0.61em) folds the glyph to nothing, so the box takes
+   its place; a negative margin did the same visually but threw off the pill's
+   width and wrapped long labels. nowrap keeps glyph and box together, and the
+   label runs into the glyph with no break opportunity, so the arrow cannot be
+   left on a line of its own. A masked block, unlike a masked inline span,
+   renders the same in WebKit. */
+.pill .arw {
+  margin-left: 0.28em;
+  font-size: 1em;
+  letter-spacing: -0.61em;
+  white-space: nowrap;
+  -webkit-text-fill-color: transparent;
+}
+.pill .arw::after {
+  content: "";
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  vertical-align: 0.116em;
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' fill='none' stroke='%23000' stroke-width='1.3'%3E%3Cpath d='M.65 9.35 9.35.65M3.2.65h6.15V6.8'/%3E%3C/svg%3E");
+          mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' fill='none' stroke='%23000' stroke-width='1.3'%3E%3Cpath d='M.65 9.35 9.35.65M3.2.65h6.15V6.8'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+          mask-size: 100% 100%;
+}
+
+/* Inline, not inline-block, and the drawing lifted out of the flow behind it.
+   An inline-block is atomic, and the layout will happily break a line after an
+   atomic box — which is how a sentence ended up with its full stop alone on the
+   last line. An inline box with padding reserves exactly the same width and
+   opens no break at all, so the punctuation stays put and the chip around it is
+   still free to wrap between its own words. */
+.bio-block .mark {
+  display: inline;
+  position: relative;
+  padding-left: 1.24em;             /* the glyph's width plus the space either side */
+}
+.bio-block .mark svg {
+  position: absolute;
+  left: 0.32em;
+  top: 0.09em;
+  width: 0.82em;
+  height: 0.82em;
+}
+
+/* the run that just opened */
+.bio-block .fresh {
+  display: inline;
+  border-radius: 3px;
+  background: var(--bio-flash);
+  box-shadow: 0 0 0 0.18em var(--bio-flash);
+  animation: cool 1.5s ease-out 0.35s forwards;
+}
+@keyframes cool { to { background: transparent; box-shadow: 0 0 0 0.18em transparent; } }
+
+/* No rule and no counter — the bio does not need to announce how much of
+   itself is left. Only the way back, and only once there is one. */
+.bio-block .foot {
+  display: flex;
+  margin: var(--s6) 0 0;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.bio-block .reset {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease, color 160ms ease;
+}
+.bio-block .reset.on { opacity: 1; pointer-events: auto; }
+.bio-block .reset:hover { color: var(--ink); }
+.bio-block .reset:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bio-block .fresh { animation: none; background: transparent; box-shadow: none; }
+  .bio-block .chip { transition: none; }
+}
+
+/* ---- the record --------------------------------------------------------- */
+/* Lists, not prose: the bio above is the readable version, these are the
+   crawlable one. Year in its own column, tabular so the digits line up. */
+.rec { margin: clamp(var(--s7), 7vh, var(--s8)) 0 0; }
+.rec-head {
+  margin: 0 0 1.25rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dim);
+  transition: color var(--invert) ease;
+}
+.rec-list { margin: 0; padding: 0; list-style: none; }
+.rec-item {
+  padding: 0.9rem 0;
+  border-top: 1px solid var(--bio-rule);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.rec-item:first-child { border-top: 0; }
+/* The year sits over its entry, the way a date sits over an entry on the
+   Index — same size, same dim, same drop to the line below. */
+.rec-year {
+  display: block;
+  margin: 0 0 var(--s2);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.82rem;
+  color: var(--dim);
+  transition: color var(--invert) ease;
+}
+/* Linked or not, a title is a title: same size, same ink. Only the underline
+   and the arrow say one of them leaves. */
+.rec-body > .rec-title { display: inline; color: var(--ink); }
+.rec-link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--bio-pill-line);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color 160ms ease, color var(--invert) ease;
+}
+.rec-link:hover { text-decoration-color: var(--ink); }
+.rec-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 3px; }
+.rec-link .arw {
+  display: inline-block;
+  margin-left: 0.35em;
+  font-size: 0.78em;
+  text-decoration: none;
+  color: var(--dim);
+}
+
+/* A pill carries side margin so it can sit inside a sentence. Leading an
+   entry it should start on the margin, flush with the note beneath it. */
+.rec-body > .pill:first-child { margin-left: 0; }
+.rec-note { display: block; margin-top: 0.25rem; font-size: 0.88rem; color: var(--dim); }
+
+  /* ---- not found -------------------------------------------------------- */
+  /* One statement, centred like home, with the three places to go next
+     underneath. The way back is the same house button every interior page
+     carries — a lost visitor should not need a fourth link to find it. */
+
+  .lost { display: grid; gap: 1.4rem; justify-items: center; text-align: center; }
+  .lost-nav {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--dim);
+    transition: color var(--invert) ease;
+  }
+  .lost-nav a { color: var(--ink); transition: color var(--invert) ease; }
+
+  /* What the work carries — held in, published in, press, scholarship. Short
+     lists under the description, set at the Index's meta size so they read as
+     facts about the work rather than more of its description. */
+  .pj-credits { margin: var(--s5) 0 0; }
+  .pj-cred + .pj-cred { margin-top: var(--s4); }
+  .pj-cred-head {
+    margin: 0 0 var(--s2);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dim);
+    transition: color var(--invert) ease;
+  }
+  .pj-cred ul { margin: 0; padding: 0; list-style: none; }
+  .pj-cred li { margin: 0 0 0.35rem; font-size: 0.9rem; line-height: 1.45; }
+  .pj-cred li:last-child { margin-bottom: 0; }
+  /* The gloss sits on its own line so a wrapped title cannot be mistaken for
+     running into the publisher. */
+  .pj-cred-note {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--dim);
+    transition: color var(--invert) ease;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="topfade fadeband" aria-hidden="true">
+  <span class="fb1"></span><span class="fb2"></span><span class="fb3"></span>
+  <span class="wash wash-light"></span><span class="wash wash-dark"></span>
+</div>
+
+<canvas class="field" id="paper" aria-hidden="true"></canvas>
+<canvas class="field" id="night" aria-hidden="true"></canvas>
+<a class="back" href="/" aria-label="Home">
+  <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none"
+       stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3.2 10.4 12 3.6l8.8 6.8"/>
+    <path d="M5.4 9.6v9.2a1 1 0 0 0 1 1h11.2a1 1 0 0 0 1-1V9.6"/>
+    <path d="M9.8 19.8v-5.4h4.4v5.4"/>
+  </svg>
+</a>
+
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Project">
+  <div class="sheet-scrim" id="sheet-scrim"></div>
+  <div class="sheet-panel" id="sheet-panel" tabindex="-1">
+    <div class="sheet-grip">
+      <span class="sheet-veil" aria-hidden="true"></span>
+      <button class="sheet-close" id="sheet-close" type="button" aria-label="Close project">
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none"
+             stroke="currentColor" stroke-width="1.5" stroke-linecap="square">
+          <path d="M4.5 4.5 19.5 19.5"/><path d="M19.5 4.5 4.5 19.5"/>
+        </svg>
+      </button>
+    </div>
+    <div class="sheet-body" id="sheet-body"></div>
+    <div class="sheet-foot" aria-hidden="true"></div>
+  </div>
+</div>
+
+<div class="shell"><main class="stage is-flow" id="stage">
+    <h1 class="sr-only">Studio</h1>
+<noscript><style>.plate img, .gal-link .gal-tag { opacity: 1; }</style></noscript><div class="col is-gallery">
+  <div class="gallery">
+      <article class="row gal-cell"><a class="gal-link has-book" draggable="false" href="/projects/regender-pride-and-prejudice/"><div class="plate is-book">
+            <div class="gal-book" data-book
+                 data-wrap="/images/book3d/regender-pride-and-prejudice-wrap.webp"
+                 data-h="1.6176" data-d="0.3235"
+                 style="--still-w: 45.76%; --still: 0.4576; --gap: -12.99%; --bh: 1.6176">
+              <span class="gal-hit" aria-hidden="true"></span>
+              <img class="gal-still" draggable="false" src="/images/book3d/regender-pride-and-prejudice-front.webp" width="600" height="971"
+                   alt="Regender: Pride & Prejudice" decoding="async">
+              <div class="gal-stage" aria-hidden="true"></div>
+            </div>
+          </div><p class="gal-tag">
+            <span class="gal-kind">book</span>
+            <span class="gal-year">2026</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link has-book" draggable="false" href="/projects/cable/"><div class="plate is-book">
+            <div class="gal-book" data-book
+                 data-wrap="/images/book3d/cable-wrap.webp"
+                 data-h="1.5472" data-d="0.0151" data-staples="2"
+                 style="--still-w: 44.44%; --still: 0.4444; --gap: -15.62%; --bh: 1.5472">
+              <span class="gal-hit" aria-hidden="true"></span>
+              <img class="gal-still" draggable="false" src="/images/book3d/cable-front.webp" width="600" height="928"
+                   alt="Cable" decoding="async">
+              <div class="gal-stage" aria-hidden="true"></div>
+            </div>
+          </div><p class="gal-tag">
+            <span class="gal-kind">book</span>
+            <span class="gal-year">2026</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link has-book" draggable="false" href="/projects/bad-poetry-one/"><div class="plate is-book">
+            <div class="gal-book" data-book
+                 data-wrap="/images/book3d/bad-poetry-one-wrap.webp"
+                 data-h="1.6176" data-d="0.0118" data-staples="2"
+                 style="--still-w: 44.41%; --still: 0.4441; --gap: -14.08%; --bh: 1.6176">
+              <span class="gal-hit" aria-hidden="true"></span>
+              <img class="gal-still" draggable="false" src="/images/book3d/bad-poetry-one-front.webp" width="600" height="971"
+                   alt="Bad Poetry One" decoding="async">
+              <div class="gal-stage" aria-hidden="true"></div>
+            </div>
+          </div><p class="gal-tag">
+            <span class="gal-kind">book</span>
+            <span class="gal-year">2026</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link" href="https://willhappinessfind.me/" target="_blank" rel="noopener"><div class="plate">
+            <img src="/images/plates/willhappinessfind-me.webp" width="640" height="550"
+                 alt="willhappinessfind.me" loading="lazy" decoding="async">
+          </div><p class="gal-tag">
+            <span class="gal-kind">website</span>
+            <span class="gal-year">2026</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link has-book" draggable="false" href="/projects/autosummarize-second-edition/"><div class="plate is-book">
+            <div class="gal-book" data-book
+                 data-wrap="/images/book3d/autosummarize-second-edition-wrap.webp" data-foil="/images/book3d/autosummarize-second-edition-foil.webp"
+                 data-h="1.5211" data-d="0.0878"
+                 style="--still-w: 44.75%; --still: 0.4475; --gap: -15.97%; --bh: 1.5211">
+              <span class="gal-hit" aria-hidden="true"></span>
+              <img class="gal-still" draggable="false" src="/images/book3d/autosummarize-second-edition-front.webp" width="600" height="913"
+                   alt="AutoSummarize, Second Edition" decoding="async">
+              <div class="gal-stage" aria-hidden="true"></div>
+            </div>
+          </div><p class="gal-tag">
+            <span class="gal-kind">book</span>
+            <span class="gal-year">2023</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link" href="/projects/ows-deal-toy/"><div class="plate">
+            <img src="/images/plates/ows-deal-toy.webp" width="1000" height="1690"
+                 alt="OWS 10th Anniversary Deal Toy" loading="lazy" decoding="async">
+          </div><p class="gal-tag">
+            <span class="gal-kind">sculpture</span>
+            <span class="gal-year">2020</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link has-book" draggable="false" href="/projects/endless-opportunities-book/"><div class="plate is-book">
+            <div class="gal-book" data-book
+                 data-wrap="/images/book3d/endless-opportunities-book-wrap.webp"
+                 data-h="1.3025" data-d="0.144"
+                 style="--still-w: 44.99%; --still: 0.4499; --gap: -20.7%; --bh: 1.3025">
+              <span class="gal-hit" aria-hidden="true"></span>
+              <img class="gal-still" draggable="false" src="/images/book3d/endless-opportunities-book-front.webp" width="600" height="781"
+                   alt="Endless Opportunities" decoding="async">
+              <div class="gal-stage" aria-hidden="true"></div>
+            </div>
+          </div><p class="gal-tag">
+            <span class="gal-kind">book</span>
+            <span class="gal-year">2016</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link" href="http://www.real-beauty.pics" target="_blank" rel="noopener"><div class="plate">
+            <img src="/images/plates/real-beauty-pics.webp" width="640" height="550"
+                 alt="real-beauty.pics" loading="lazy" decoding="async">
+          </div><p class="gal-tag">
+            <span class="gal-kind">website</span>
+            <span class="gal-year">2015</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link" href="http://www.work-life.tips" target="_blank" rel="noopener"><div class="plate">
+            <img src="/images/plates/work-life-tips.webp" width="640" height="550"
+                 alt="work-life.tips" loading="lazy" decoding="async">
+          </div><p class="gal-tag">
+            <span class="gal-kind">website</span>
+            <span class="gal-year">2015</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link" href="/projects/diagrams-v2/"><div class="plate">
+            <img src="/images/plates/diagrams-v2-0.jpg" width="560" height="725"
+                 alt="Diagrams v2.0" loading="lazy" decoding="async">
+          </div><p class="gal-tag">
+            <span class="gal-kind">diagrams</span>
+            <span class="gal-year">2014</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link" href="/projects/endless-opportunities/"><div class="plate">
+            <img src="/images/plates/endless-opportunties.webp" width="1302" height="854"
+                 alt="Endless Opportunities" loading="lazy" decoding="async">
+          </div><p class="gal-tag">
+            <span class="gal-kind">installation</span>
+            <span class="gal-year">2011</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link has-book" draggable="false" href="/projects/best-fight-ever/"><div class="plate is-book">
+            <div class="gal-book" data-book
+                 data-wrap="/images/book3d/best-fight-ever-wrap.webp"
+                 data-h="1.6176" data-d="0.0614"
+                 style="--still-w: 44.62%; --still: 0.4462; --gap: -13.91%; --bh: 1.6176">
+              <span class="gal-hit" aria-hidden="true"></span>
+              <img class="gal-still" draggable="false" src="/images/book3d/best-fight-ever-front.webp" width="600" height="970"
+                   alt="Best Fight Ever / Worst Fight Ever" decoding="async">
+              <div class="gal-stage" aria-hidden="true"></div>
+            </div>
+          </div><p class="gal-tag">
+            <span class="gal-kind">book</span>
+            <span class="gal-year">2011</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link" href="/projects/diagrams/"><div class="plate">
+            <img src="/images/plates/diagrams-v1-0.jpg" width="560" height="866"
+                 alt="Diagrams v1.0" loading="lazy" decoding="async">
+          </div><p class="gal-tag">
+            <span class="gal-kind">diagrams</span>
+            <span class="gal-year">2011</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link has-book" draggable="false" href="/projects/the-story-of-art/"><div class="plate is-book">
+            <div class="gal-book" data-book
+                 data-wrap="/images/book3d/the-story-of-art-wrap.webp"
+                 data-h="1.4081" data-d="0.2512"
+                 style="--still-w: 45.46%; --still: 0.4546; --gap: -18.0%; --bh: 1.4081">
+              <span class="gal-hit" aria-hidden="true"></span>
+              <img class="gal-still" draggable="false" src="/images/book3d/the-story-of-art-front.webp" width="600" height="845"
+                   alt="The Story of Art" decoding="async">
+              <div class="gal-stage" aria-hidden="true"></div>
+            </div>
+          </div><p class="gal-tag">
+            <span class="gal-kind">book</span>
+            <span class="gal-year">2010</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link has-book" draggable="false" href="/projects/autosummarize/"><div class="plate is-book">
+            <div class="gal-book" data-book
+                 data-wrap="/images/book3d/autosummarize-wrap.webp"
+                 data-h="1.5171" data-d="0.0426"
+                 style="--still-w: 44.56%; --still: 0.4456; --gap: -16.2%; --bh: 1.5171">
+              <span class="gal-hit" aria-hidden="true"></span>
+              <img class="gal-still" draggable="false" src="/images/book3d/autosummarize-front.webp" width="600" height="910"
+                   alt="AutoSummarize" decoding="async">
+              <div class="gal-stage" aria-hidden="true"></div>
+            </div>
+          </div><p class="gal-tag">
+            <span class="gal-kind">book</span>
+            <span class="gal-year">2010</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link has-book" draggable="false" href="/projects/american-psycho/"><div class="plate is-book">
+            <div class="gal-book" data-book
+                 data-wrap="/images/book3d/american-psycho-wrap.webp"
+                 data-h="1.5067" data-d="0.1626"
+                 style="--still-w: 45.07%; --still: 0.4507; --gap: -16.05%; --bh: 1.5067">
+              <span class="gal-hit" aria-hidden="true"></span>
+              <img class="gal-still" draggable="false" src="/images/book3d/american-psycho-front.webp" width="600" height="904"
+                   alt="American Psycho" decoding="async">
+              <div class="gal-stage" aria-hidden="true"></div>
+            </div>
+          </div><p class="gal-tag">
+            <span class="gal-kind">book</span>
+            <span class="gal-year">2010</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link" href="/projects/are-we-not-drawn-onward-to-new-era/"><div class="plate">
+            <img src="/images/plates/are-we-not-drawn-onward-to-new-era.webp" width="625" height="203"
+                 alt="Are We Not Drawn Onward to New Era" loading="lazy" decoding="async">
+          </div><p class="gal-tag">
+            <span class="gal-kind">prints</span>
+            <span class="gal-year">2010</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link has-book" draggable="false" href="/projects/the-road-not-taken/"><div class="plate is-book">
+            <div class="gal-book" data-book
+                 data-wrap="/images/book3d/the-road-not-taken-wrap.webp"
+                 data-h="1.5325" data-d="0.0086" data-staples="2"
+                 style="--still-w: 44.42%; --still: 0.4442; --gap: -15.97%; --bh: 1.5325">
+              <span class="gal-hit" aria-hidden="true"></span>
+              <img class="gal-still" draggable="false" src="/images/book3d/the-road-not-taken-front.webp" width="600" height="920"
+                   alt="The Road Not Taken" decoding="async">
+              <div class="gal-stage" aria-hidden="true"></div>
+            </div>
+          </div><p class="gal-tag">
+            <span class="gal-kind">book</span>
+            <span class="gal-year">2010</span>
+          </p>
+        </a>
+      </article>
+      <article class="row gal-cell"><a class="gal-link" href="https://mechanicalturkdiaries.tumblr.com" target="_blank" rel="noopener"><div class="plate">
+            <img src="/images/plates/mechanical-turk-diaries.webp" width="640" height="550"
+                 alt="Mechanical Turk Diaries" loading="lazy" decoding="async">
+          </div><p class="gal-tag">
+            <span class="gal-kind">website</span>
+            <span class="gal-year">2009</span>
+          </p>
+        </a>
+      </article>
+  </div>
+</div>
+
+  </main>
+
+  <div class="navwrap">
+    <div class="botfade fadeband" aria-hidden="true">
+      <span class="fb1"></span><span class="fb2"></span><span class="fb3"></span>
+      <span class="wash wash-light"></span><span class="wash wash-dark"></span>
+    </div>
+    <nav aria-label="Main">
+      <span class="nav-thumb" aria-hidden="true"></span><a href="/studio/"  data-view="studio"  aria-current="page">Studio</a>
+      <a href="/info/"    data-view="info"    >Info</a>
+      <a href="/index/"   data-view="index"   >Index</a>
+    </nav>
+  </div>
+</div>
+
+
+<script src="/js/bg-shader.js" data-manual
+        data-variant="nightfield"
+        data-grain="0.5" defer></script>
+
+<script src="/js/site.js?v=1794384305" data-v="1794384305" defer></script>
+</body>
+</html>
