@@ -189,7 +189,7 @@ export const DOC = [
   " and a BFA in New Media from the ",
   { l:"University of Georgia", h:"https://www.uga.edu" },
   ". He can be reached by ",
-  { l:"email", h:"mailto:jsnhff@gmail.com" },
+  { l:"jsnhff@gmail.com", h:"mailto:jsnhff@gmail.com" },
   " or ",
   { l:"Instagram", h:"https://instagram.com/jsnhff" },
   "."
