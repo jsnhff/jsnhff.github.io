@@ -23,13 +23,14 @@ redirect_from:
   <div class="gallery">
     {%- assign works = site.projects | sort: "date" | reverse -%}
     {%- for p in works %}
+    {%- assign bk = p.book | default: p.browser -%}
       <article class="row gal-cell">
         {%- if p.live_url -%}
-        <a class="gal-link{% if p.book %} has-book{% endif %}"{% if p.book %} draggable="false"{% endif %} href="{{ p.live_url }}" target="_blank" rel="noopener">
+        <a class="gal-link{% if bk %} has-book{% endif %}"{% if bk %} draggable="false"{% endif %} href="{{ p.live_url }}" target="_blank" rel="noopener">
         {%- else -%}
-        <a class="gal-link{% if p.book %} has-book{% endif %}"{% if p.book %} draggable="false"{% endif %} href="{{ p.url }}">
+        <a class="gal-link{% if bk %} has-book{% endif %}"{% if bk %} draggable="false"{% endif %} href="{{ p.url }}">
         {%- endif -%}
-          {%- if p.book -%}
+          {%- if bk -%}
           {%- comment -%}
             A book that turns (see "books that turn" in js/site.js). The still of
             the front cover holds the tile and sits where the model's first frame
@@ -40,9 +41,9 @@ redirect_from:
             so the empty band under it is pulled down out of the way, leaving the
             book itself on the row's baseline.
           {%- endcomment -%}
-          {%- assign bk = p.book -%}
           {%- assign fit = bk.h | divided_by: 1.617 -%}
           {%- if fit < 1 -%}{%- assign fit = 1.0 -%}{%- endif -%}
+          {%- if bk.fit -%}{%- assign fit = bk.fit -%}{%- endif -%}
           {%- assign dist = fit | times: 5.3 -%}
           {%- assign near = bk.d | divided_by: 2.0 -%}
           {%- assign near = dist | minus: near -%}
@@ -53,8 +54,9 @@ redirect_from:
           {%- assign gap = 100 | minus: still_h | divided_by: 2.0 -%}
           <div class="plate is-book">
             <div class="gal-book" data-book
-                 data-wrap="{{ bk.wrap }}"{% if bk.foil %} data-foil="{{ bk.foil }}"{% endif %}
-                 data-h="{{ bk.h }}" data-d="{{ bk.d }}"{% if bk.staples %} data-staples="{{ bk.staples }}"{% endif %}
+                 {%- if p.browser %} data-video="{{ bk.video }}" data-chrome="{{ bk.chrome }}" data-poster="{{ bk.poster }}"{% if bk.fit %} data-fit="{{ bk.fit }}"{% endif %}
+                 {%- else %} data-wrap="{{ bk.wrap }}"{% if bk.foil %} data-foil="{{ bk.foil }}"{% endif %}{% if bk.staples %} data-staples="{{ bk.staples }}"{% endif %}{% endif %}
+                 data-h="{{ bk.h }}" data-d="{{ bk.d }}"
                  style="--still-w: {{ still_w | round: 2 }}%; --gap: -{{ gap | round: 2 }}%; --bh: {{ bk.h }}">
               <span class="gal-hit" aria-hidden="true"></span>
               <img class="gal-still" draggable="false" src="{{ bk.front }}" width="{{ bk.front_w }}" height="{{ bk.front_h }}"
