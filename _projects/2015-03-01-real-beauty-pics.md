@@ -24,7 +24,7 @@ browser:
   front_h: 856
   h: 0.66875   # 856 / 1280: the bar of chrome (56) over the screen (800)
   d: 0.022
-  fit: 0.7       # camera in closer than a book's, so a wide window fills its tile
+  fit: 0.52      # camera in closer than a book's: a window about as wide as the plate it replaced
 section: studio
 dark: true
 live_url: "http://www.real-beauty.pics"

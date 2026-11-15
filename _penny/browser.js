@@ -159,10 +159,18 @@ export function build(opts) {
     const chromeMesh = new Mesh(panel(x0, yS, x1, yT, rf, 0), chromeMat);
     chromeMesh.position.z = zf;
     group.add(chromeMesh);
-    const screenMat = new MeshBasicMaterial({ map: posterTex });
-    const screenMesh = new Mesh(panel(x0, yB, x1, yS, 0, rf), screenMat);
+    // The screen is two layers of the same loop. At the seam one rises over the other, so the loop
+    // is a dissolve the player makes itself, and never a restart or a seek the viewer could catch.
+    const screenGeo = panel(x0, yB, x1, yS, 0, rf);
+    const screenMat = new MeshBasicMaterial({ map: posterTex, transparent: true, depthWrite: false });
+    const screenMesh = new Mesh(screenGeo, screenMat);
     screenMesh.position.z = zf;
     group.add(screenMesh);
+    const screenMatB = new MeshBasicMaterial({ map: posterTex, transparent: true, opacity: 0, depthWrite: false });
+    const screenMeshB = new Mesh(screenGeo, screenMatB);
+    screenMeshB.position.z = zf + 0.0002;
+    screenMeshB.visible = false;
+    group.add(screenMeshB);
 
     // the glass
     const sheenTex = sheen();
@@ -182,27 +190,64 @@ export function build(opts) {
     // The loop. It is paused on its first frame, which is the poster, until the
     // browser is let go; then it plays, and only while the browser is in view.
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const video = document.createElement('video');
-    video.muted = true; video.defaultMuted = true; video.loop = true; video.playsInline = true;
-    video.setAttribute('playsinline', ''); video.setAttribute('muted', '');
-    video.crossOrigin = 'anonymous';
-    video.preload = 'auto';
-    video.src = opts.video;
-    let videoTex = null, playing = false, wantPlay = false;
+    const FADE = 1.4;                                   // seconds the two layers overlap at the seam
+    const mkVideo = () => {
+      const v = document.createElement('video');
+      v.muted = true; v.defaultMuted = true; v.loop = false; v.playsInline = true;
+      v.setAttribute('playsinline', ''); v.setAttribute('muted', '');
+      v.crossOrigin = 'anonymous';
+      v.preload = 'auto';
+      v.src = opts.video;
+      return v;
+    };
+    const vids = [mkVideo(), mkVideo()];                // the second waits at frame one until the seam
+    const vtex = [null, null];
+    const mats = [screenMat, screenMatB], meshes = [screenMesh, screenMeshB];
+    let cur = 0, fading = false, playing = false, wantPlay = false;
     function play() {
       if (reduce || dead) return;
       wantPlay = true;
-      const p = video.play();
+      const a = vids[cur], p = a.play();
       if (p && p.then) {
         p.then(function () {
-          if (dead || !wantPlay) { video.pause(); return; }
-          if (!videoTex) { videoTex = new VideoTexture(video); videoTex.colorSpace = SRGBColorSpace; }
-          screenMat.map = videoTex; screenMat.needsUpdate = true;
+          if (dead || !wantPlay) { a.pause(); return; }
+          for (let i = 0; i < 2; i++) {
+            if (!vtex[i]) { vtex[i] = new VideoTexture(vids[i]); vtex[i].colorSpace = SRGBColorSpace; }
+            mats[i].map = vtex[i]; mats[i].needsUpdate = true;
+          }
+          meshes[cur].visible = true; mats[cur].opacity = 1; meshes[cur].renderOrder = 0;
+          if (!fading) meshes[1 - cur].visible = false;
           playing = true; dirty = true;
         }, function () { /* autoplay refused: the poster stays */ });
       }
     }
-    function pause() { wantPlay = false; playing = false; video.pause(); }
+    function pause() { wantPlay = false; playing = false; vids[0].pause(); vids[1].pause(); }
+    function resume() {
+      vids[cur].play().catch(function () {});
+      if (fading) vids[1 - cur].play().catch(function () {});
+    }
+    // each frame: when the showing layer is FADE seconds from its end, the other starts from the top and
+    // rises over it as it plays its first FADE seconds; when it is fully up, the old layer is put back at
+    // frame one to wait, and they change places
+    function tickLoop() {
+      const a = vids[cur], o = 1 - cur, d = a.duration;
+      if (!isFinite(d) || d < FADE * 3) { a.loop = true; return; }     // too short to dissolve: let the player loop it
+      if (!fading && a.currentTime >= d - FADE) {
+        fading = true;
+        meshes[o].visible = true; meshes[o].renderOrder = 1; mats[o].opacity = 0;
+        meshes[cur].renderOrder = 0; mats[cur].opacity = 1;
+        vids[o].play().catch(function () {});
+      }
+      if (fading) {
+        const k = Math.min(1, Math.max(0, vids[o].currentTime / FADE));
+        mats[o].opacity = k * k * (3 - 2 * k);
+        if (k >= 1 || a.ended) {
+          a.pause(); a.currentTime = 0;
+          meshes[cur].visible = false;
+          cur = o; fading = false; mats[cur].opacity = 1; meshes[cur].renderOrder = 0;
+        }
+      }
+    }
 
     // A browser does not go round: it sways a little either side of its front,
     // very slowly, never swinging through the edge-on views that flatten it to a
@@ -317,12 +362,12 @@ export function build(opts) {
       io = new IntersectionObserver((en) => {
         visible = en[0].isIntersecting;
         // out of sight it stops playing, so a wall of browsers is never decoding video no one can see
-        if (!visible) { if (playing) { video.pause(); } } else if (started && wantPlay) { video.play().catch(function () {}); }
+        if (!visible) { if (playing) { vids[0].pause(); vids[1].pause(); } } else if (started && wantPlay) { resume(); }
       }, { rootMargin: '150px' });
       io.observe(host);
     }
     const onResize = () => size();
-    const onHide = () => { if (document.hidden) video.pause(); else if (started && wantPlay && visible) video.play().catch(function () {}); };
+    const onHide = () => { if (document.hidden) { vids[0].pause(); vids[1].pause(); } else if (started && wantPlay && visible) resume(); };
     window.addEventListener('resize', onResize);
     document.addEventListener('visibilitychange', onHide);
     size();
@@ -350,6 +395,7 @@ export function build(opts) {
         if (Math.abs(offx) < 0.0005) offx = 0;
         ry = swayY() + off; rx = baseX() + offx;
       }
+      if (playing) tickLoop();
       if (reach || settle < 1 || off || offx || vy || vx || dragging || playing) dirty = true;
       if (dirty) render();
     }
@@ -359,11 +405,12 @@ export function build(opts) {
 
     return {
       start() { started = true; play(); },
+      state() { return { cur, fading, playing, d: vids[cur].duration, t: [vids[0].currentTime, vids[1].currentTime], rise: mats[1 - cur].opacity }; },
       destroy() {
         dead = true;
         cancelAnimationFrame(raf);
         pause();
-        video.removeAttribute('src'); video.load();
+        for (const v of vids) { v.removeAttribute('src'); v.load(); }
         window.removeEventListener('resize', onResize);
         document.removeEventListener('visibilitychange', onHide);
         pe.removeEventListener('pointerdown', down);
@@ -375,11 +422,11 @@ export function build(opts) {
         if (drag) { pe.style.touchAction = ''; pe.style.userSelect = pe.style.webkitUserSelect = ''; }
         if (io) io.disconnect();
         tex.forEach((x) => x.dispose());
-        if (videoTex) videoTex.dispose();
+        for (const t of vtex) if (t) t.dispose();
         sheenTex.dispose(); env.dispose();
         slabGeo.dispose(); slabMat.dispose();
-        chromeMesh.geometry.dispose(); screenMesh.geometry.dispose(); sheenMesh.geometry.dispose();
-        chromeMat.dispose(); screenMat.dispose(); sheenMat.dispose();
+        chromeMesh.geometry.dispose(); screenGeo.dispose(); sheenMesh.geometry.dispose();
+        chromeMat.dispose(); screenMat.dispose(); screenMatB.dispose(); sheenMat.dispose();
         renderer.dispose();
         if (renderer.forceContextLoss) renderer.forceContextLoss();
         if (el.parentNode) el.parentNode.removeChild(el);
