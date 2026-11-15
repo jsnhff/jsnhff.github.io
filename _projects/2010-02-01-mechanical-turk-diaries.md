@@ -21,9 +21,9 @@ browser:
   poster: "/images/browser3d/mechanical-turk-diaries-poster.webp"
   front: "/images/browser3d/mechanical-turk-diaries-front.webp"
   front_w: 1280
-  front_h: 880
-  h: 0.6875    # 880 / 1280: the bar of chrome (80) over the screen (800)
-  d: 0.03
+  front_h: 856
+  h: 0.66875   # 856 / 1280: the bar of chrome (56) over the screen (800)
+  d: 0.022
   fit: 0.7       # camera in closer than a book's, so a wide window fills its tile
 section: studio
 dark: true

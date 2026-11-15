@@ -21,6 +21,7 @@ import { join } from 'node:path';
 const CHROME = process.env.CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const OUT = new URL('../images/browser3d/', import.meta.url).pathname;
 const W = 1280, H = 800;
+const BAR = 56; // the window chrome's height at that width; browser.js's CHROME_H is BAR / W
 
 // What to record. `seconds` is the length of the loop that results; `settle` is
 // time given to the page before the recording starts, so a loader is not in it.
@@ -33,7 +34,7 @@ const SITES = {
   'real-beauty-pics': { host: 'real-beauty.pics', url: 'http://www.real-beauty.pics', seconds: 22, settle: 3500, start: 1.8 },
   // gone from the live web: the Internet Archive's copy from when it was last live
   // (May 2022; later copies are a domain-parking page)
-  'mechanical-turk-diaries': { host: 'themechanicalturkdiaries.com', url: 'https://web.archive.org/web/20220506150312if_/http://themechanicalturkdiaries.com/', seconds: 16, settle: 6000, vw: 900, scroll: 1500 },
+  'mechanical-turk-diaries': { host: 'themechanicalturkdiaries.com', url: 'https://web.archive.org/web/20220506150312if_/http://themechanicalturkdiaries.com/', seconds: 34, settle: 6000, vw: 900, scroll: 1500 },
 };
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -167,22 +168,42 @@ export async function record(slug, { probe = false } = {}) {
 // pictures, so flat on to the viewer it is the still, pixel for pixel.
 export async function makeStill(slug) {
   const site = SITES[slug];
+  // A compact Safari toolbar, quietly: traffic lights, the sidebar, back and forward, one soft address
+  // field with its host in the middle, and share and new tab at the far end. Thin strokes, low contrast.
+  const ic = (w, h, body) => `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
   const html = `<!doctype html><meta charset=utf-8><style>
-    html,body{margin:0;background:#1d1d1f}
-    .bar{width:${W}px;height:80px;position:relative;font:500 24px -apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
-    .dots{position:absolute;left:30px;top:33px;display:flex;gap:10px}.dots i{width:14px;height:14px;border-radius:50%}
-    .url{position:absolute;left:50%;top:18px;transform:translateX(-50%);width:600px;height:44px;border-radius:22px;background:#0f0f11;color:#8e8e93;text-align:center;line-height:44px;letter-spacing:.01em}
-  </style><div class=bar><div class=dots><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div><div class=url>${site.host}</div></div>`;
+    html,body{margin:0;background:#2a2a2d}
+    .bar{width:${W}px;height:${BAR}px;position:relative;background:linear-gradient(#333336,#2a2a2d);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 -1px 0 #151517;color:#8e8e95;font:500 15px -apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
+    .bar>*{position:absolute;display:block}
+    .dots{left:22px;top:22px;display:flex;gap:8px}
+    .dots i{width:12px;height:12px;border-radius:50%;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.3)}
+    .side{left:104px;top:20px}
+    .back{left:152px;top:19px;color:#77777e}
+    .fwd{left:182px;top:19px;color:#55555b}
+    .url{left:50%;top:12px;transform:translateX(-50%);width:520px;height:32px;border-radius:8px;background:rgba(255,255,255,.085);color:#e8e8eb;text-align:center;line-height:32px;letter-spacing:.01em}
+    .reload{left:calc(50% + 232px);top:21px}
+    .share{right:78px;top:18px}
+    .plus{right:30px;top:20px}
+  </style><div class=bar>
+    <div class=dots><i style="background:#ee6a5e"></i><i style="background:#f5bf4f"></i><i style="background:#62c655"></i></div>
+    <div class=side>${ic(22, 16, '<rect x="1" y="1" width="20" height="14" rx="3"/><path d="M8 1v14"/>')}</div>
+    <div class=back>${ic(11, 18, '<path d="M9 1.5L2 9l7 7.5"/>')}</div>
+    <div class=fwd>${ic(11, 18, '<path d="M2 1.5L9 9l-7 7.5"/>')}</div>
+    <div class=url>${site.host}</div>
+    <div class=reload>${ic(14, 14, '<path d="M12 7a5 5 0 1 1-1.6-3.7"/><path d="M11 1.2v3h-3"/>')}</div>
+    <div class=share>${ic(16, 20, '<path d="M8 12V2M4.5 5.5L8 2l3.5 3.5"/><path d="M3 8H2v10h12V8h-1"/>')}</div>
+    <div class=plus>${ic(16, 16, '<path d="M8 2v12M2 8h12"/>')}</div>
+  </div>`;
   const work = mkdtempSync(join(tmpdir(), 'chrome-'));
   const port = 9300 + Math.floor(Math.random() * 500);
   const chrome = spawn(CHROME, ['--headless=new', '--disable-gpu', '--hide-scrollbars', `--remote-debugging-port=${port}`, `--user-data-dir=${join(work, 'profile')}`, 'about:blank'], { stdio: 'ignore' });
   try {
     const cdp = await cdpSession(port);
     await cdp.send('Page.enable');
-    await cdp.send('Emulation.setDeviceMetricsOverride', { width: W, height: 80, deviceScaleFactor: 2, mobile: false });
+    await cdp.send('Emulation.setDeviceMetricsOverride', { width: W, height: BAR, deviceScaleFactor: 2, mobile: false });
     await cdp.send('Page.navigate', { url: 'data:text/html;base64,' + Buffer.from(html).toString('base64') });
     await sleep(700);
-    const shot = await cdp.send('Page.captureScreenshot', { format: 'png', clip: { x: 0, y: 0, width: W, height: 80, scale: 1 } }); // device scale 2 already
+    const shot = await cdp.send('Page.captureScreenshot', { format: 'png', clip: { x: 0, y: 0, width: W, height: BAR, scale: 1 } }); // device scale 2 already
     cdp.close();
     mkdirSync(OUT, { recursive: true });
     writeFileSync(join(OUT, slug + '-chrome.png'), Buffer.from(shot.result.data, 'base64'));
@@ -193,7 +214,7 @@ export async function makeStill(slug) {
   }
   if (!existsSync(join(OUT, slug + '-poster.png'))) ffmpeg(['-i', join(OUT, slug + '.mp4'), '-frames:v', '1', join(OUT, slug + '-poster.png')]);
   ffmpeg(['-i', join(OUT, slug + '-chrome.png'), '-i', join(OUT, slug + '-poster.png'),
-    '-filter_complex', `[0:v]scale=${W}:80[c];[c][1:v]vstack`, '-frames:v', '1', '-c:v', 'libwebp', '-quality', '88', join(OUT, slug + '-front.webp')]);
+    '-filter_complex', `[0:v]scale=${W}:${BAR}[c];[c][1:v]vstack`, '-frames:v', '1', '-c:v', 'libwebp', '-quality', '88', join(OUT, slug + '-front.webp')]);
   // the model wears the chrome and the poster as WebP; the PNGs were only a way there
   ffmpeg(['-i', join(OUT, slug + '-chrome.png'), '-c:v', 'libwebp', '-lossless', '1', join(OUT, slug + '-chrome.webp')]);
   ffmpeg(['-i', join(OUT, slug + '-poster.png'), '-c:v', 'libwebp', '-quality', '90', join(OUT, slug + '-poster.webp')]);
