@@ -8,8 +8,11 @@ image_path: "/images/mechanical-turk-diaries/jhuff-mechanical-turk-diaries-"
 # straight out to it. The screenshots are still in /images; nothing renders
 # them. Put a count back here and they return, on the wall and the page both.
 shots: 0
-description: "Stories from Amazon's anonymous workforce. Are crowdsourcing platforms like Amazon's Mechanical Turk as bleak as the company's shipping warehouses?"
-live_url: "https://mechanicalturkdiaries.tumblr.com"
+description: |
+  Stories from Amazon's anonymous workforce. Are crowdsourcing platforms like Amazon's Mechanical Turk as bleak as the company's shipping warehouses?
+
+  Begun on Tumblr in 2009, and since 2026 a static site of its own: all 357 stories at the addresses they always had, [source on GitHub](https://github.com/jsnhff/themechanicalturkdiaries).
+live_url: "https://themechanicalturkdiaries.com"
 plate: "/images/plates/mechanical-turk-diaries.webp"
 plate_w: 640
 plate_h: 550
@@ -27,7 +30,6 @@ browser:
   fit: 0.52      # camera in closer than a book's: a window about as wide as the plate it replaced
 section: studio
 dark: true
-live_url: "https://mechanicalturkdiaries.tumblr.com"
 ---
 {% for num in (1..page.shots) %}
 <div class="row pj-shot">
