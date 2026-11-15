@@ -226,26 +226,37 @@ export function build(opts) {
       vids[cur].play().catch(function () {});
       if (fading) vids[1 - cur].play().catch(function () {});
     }
-    // each frame: when the showing layer is FADE seconds from its end, the other starts from the top and
-    // rises over it as it plays its first FADE seconds; when it is fully up, the old layer is put back at
-    // frame one to wait, and they change places
-    function tickLoop() {
+    // Each frame, with the showing layer a: when it is FADE + LEAD seconds from its end, the other layer o
+    // is started from its first frame, unseen. Starting a video is not instant (a few tenths of a second, and
+    // longer in Safari), so o is given LEAD to be running before anything of it shows. Then o rises over a, and
+    // the rise is tied to how much of a is left, so it reaches full exactly as a runs out: the two layers trade
+    // places with nothing left to jump. (It used to start o with only FADE to spare, and when o was late a ran
+    // out first and the swap popped o from 85% to 100%: the flicker.) If o is not yet drawing frames when its
+    // turn comes, a holds on its last frame, which the clip's own dissolve makes the same picture as o's first,
+    // and o rises over half a second once it is.
+    let fadeK = 0, fadeDone = 0;
+    const LEAD = 0.7, HOLD_RISE = 0.5;
+    function tickLoop(dt) {
       const a = vids[cur], o = 1 - cur, d = a.duration;
-      if (!isFinite(d) || d < FADE * 3) { a.loop = true; return; }     // too short to dissolve: let the player loop it
-      if (!fading && a.currentTime >= d - FADE) {
-        fading = true;
-        meshes[o].visible = true; meshes[o].renderOrder = 1; mats[o].opacity = 0;
-        meshes[cur].renderOrder = 0; mats[cur].opacity = 1;
+      if (!isFinite(d) || d < (FADE + LEAD) * 2) { a.loop = true; return; }    // too short to dissolve: let the player loop it
+      const left = Math.max(0, d - a.currentTime);
+      if (!fading && left <= FADE + LEAD) {
+        fading = true; fadeK = 0; fadeDone = 0;
+        vids[o].currentTime = 0;
         vids[o].play().catch(function () {});
       }
-      if (fading) {
-        const k = Math.min(1, Math.max(0, vids[o].currentTime / FADE));
-        mats[o].opacity = k * k * (3 - 2 * k);
-        if (k >= 1 || a.ended) {
-          a.pause(); a.currentTime = 0;
-          meshes[cur].visible = false;
-          cur = o; fading = false; mats[cur].opacity = 1; meshes[cur].renderOrder = 0;
-        }
+      if (!fading) return;
+      const ready = !vids[o].paused && vids[o].readyState >= 3 && vids[o].currentTime > 0;
+      let k = ready ? Math.min(1, Math.max(0, 1 - left / FADE)) : 0;
+      if (ready && (a.ended || left < 0.02)) fadeDone += dt / HOLD_RISE;            // a is out: finish the rise by the clock
+      fadeK = Math.max(fadeK, k, Math.min(1, fadeDone));
+      meshes[o].visible = true; meshes[o].renderOrder = 1;
+      meshes[cur].renderOrder = 0; mats[cur].opacity = 1;
+      mats[o].opacity = fadeK * fadeK * (3 - 2 * fadeK);
+      if (fadeK >= 1) {
+        a.pause(); a.currentTime = 0;
+        meshes[cur].visible = false;
+        cur = o; fading = false; fadeK = 0; mats[cur].opacity = 1; meshes[cur].renderOrder = 0;
       }
     }
 
@@ -395,7 +406,7 @@ export function build(opts) {
         if (Math.abs(offx) < 0.0005) offx = 0;
         ry = swayY() + off; rx = baseX() + offx;
       }
-      if (playing) tickLoop();
+      if (playing) tickLoop(dt);
       if (reach || settle < 1 || off || offx || vy || vx || dragging || playing) dirty = true;
       if (dirty) render();
     }
@@ -405,7 +416,7 @@ export function build(opts) {
 
     return {
       start() { started = true; play(); },
-      state() { return { cur, fading, playing, d: vids[cur].duration, t: [vids[0].currentTime, vids[1].currentTime], rise: mats[1 - cur].opacity }; },
+      state() { return { cur, fading, playing, d: vids[cur].duration, t: [vids[0].currentTime, vids[1].currentTime], rise: fading ? mats[1 - cur].opacity : 1, k: fadeK }; },
       destroy() {
         dead = true;
         cancelAnimationFrame(raf);
