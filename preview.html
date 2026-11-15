@@ -1359,14 +1359,14 @@
     /* A tall picture would otherwise run past the screen it is meant to fit. */
     .plate img { max-height: 62vh; }
     .plate.is-empty { height: 9rem; max-width: none; }
-    /* A book's cover takes about two thirds of the column's width: the
-       full width and three quarters read too big, under half too small. The cover is only --still
-       of its stage, so the stage runs wider than the column to get there; it
+    /* A book's cover takes a little under two thirds of the column's
+       width: full width read too big, under half too small. The cover
+       is only --still of its stage, so the stage runs wider than the column to get there; it
        is transparent and the wall clips it at the screen's edge. A cover too
        tall for the screen stops at 70vh instead. The empty bands above and
        below the book are pulled in so it sits on its label like a photograph. */
     .gal-book[data-wrap] {
-      --stage: min(65% / var(--still), 70vh / (var(--still) * var(--bh)));
+      --stage: min(58% / var(--still), 70vh / (var(--still) * var(--bh)));
       --band: calc(var(--stage) * (1 - var(--still) * var(--bh)) / 2);
       flex: none;
       width: var(--stage);
@@ -2366,6 +2366,6 @@
         data-variant="nightfield"
         data-grain="0.5" defer></script>
 
-<script src="/js/site.js?v=1794778271" data-v="1794778271" defer></script>
+<script src="/js/site.js?v=1794782906" data-v="1794782906" defer></script>
 </body>
 </html>
