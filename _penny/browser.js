@@ -25,9 +25,9 @@ import {
 } from 'three';
 
 const PI = Math.PI;
-const BS = 0.006;           // the rim: how far the metal shows round the window
-const RADIUS = 0.028;       // the slab's corner, outside
-const CHROME_H = 0.0625;    // the bar across the top: 80 px of a 1280 px window
+const BS = 0.0025;          // the rim: how far the metal shows round the window (a hairline)
+const RADIUS = 0.022;       // the slab's corner, outside
+const CHROME_H = 0.04375;   // the bar across the top: 56 px of a 1280 px window
 
 // A rectangle from (x0, y0) to (x1, y1) with its top and bottom corners rounded
 // by their own amounts, as a flat shape whose UVs run 0..1 across it.
@@ -149,7 +149,7 @@ export function build(opts) {
     const slabGeo = new ExtrudeGeometry(shape, { depth, bevelEnabled: true, bevelThickness: BS, bevelSize: BS, bevelSegments: 3, curveSegments: 12 });
     slabGeo.translate(0, 0, -depth / 2);
     const env = studio(renderer);
-    const slabMat = new MeshStandardMaterial({ color: 0x2c2d31, metalness: 0.85, roughness: 0.36, envMap: env, envMapIntensity: 1.15 });
+    const slabMat = new MeshStandardMaterial({ color: 0x34353a, metalness: 0.3, roughness: 0.55, envMap: env, envMapIntensity: 0.45 });
     group.add(new Mesh(slabGeo, slabMat));
 
     // The window, on the front of the slab: the chrome bar over the screen.
