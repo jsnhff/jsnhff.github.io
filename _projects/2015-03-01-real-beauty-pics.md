@@ -13,6 +13,18 @@ live_url: "http://www.real-beauty.pics"
 plate: "/images/plates/real-beauty-pics.webp"
 plate_w: 640
 plate_h: 550
+# The 3D browser: a loop of the site itself, recorded by _penny/loops.mjs, in a
+# window of the same proportions as the plate. Rebuilt by `node loops.mjs real-beauty-pics`.
+browser:
+  video: "/images/browser3d/real-beauty-pics.mp4"
+  chrome: "/images/browser3d/real-beauty-pics-chrome.webp"
+  poster: "/images/browser3d/real-beauty-pics-poster.webp"
+  front: "/images/browser3d/real-beauty-pics-front.webp"
+  front_w: 1280
+  front_h: 856
+  h: 0.66875   # 856 / 1280: the bar of chrome (56) over the screen (800)
+  d: 0.022
+  fit: 0.52      # camera in closer than a book's: a window about as wide as the plate it replaced
 section: studio
 dark: true
 live_url: "http://www.real-beauty.pics"
