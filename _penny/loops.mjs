@@ -34,7 +34,7 @@ const SITES = {
   'real-beauty-pics': { host: 'real-beauty.pics', url: 'http://www.real-beauty.pics', seconds: 22, settle: 3500, start: 1.8 },
   // gone from the live web: the Internet Archive's copy from when it was last live
   // (May 2022; later copies are a domain-parking page)
-  'mechanical-turk-diaries': { host: 'themechanicalturkdiaries.com', url: 'https://web.archive.org/web/20220506150312if_/http://themechanicalturkdiaries.com/', seconds: 34, settle: 6000, vw: 900, scroll: 1500 },
+  'mechanical-turk-diaries': { host: 'themechanicalturkdiaries.com', url: 'https://web.archive.org/web/20220506150312if_/http://themechanicalturkdiaries.com/', seconds: 50, settle: 6000, vw: 900, scroll: 1500 },
 };
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -168,31 +168,18 @@ export async function record(slug, { probe = false } = {}) {
 // pictures, so flat on to the viewer it is the still, pixel for pixel.
 export async function makeStill(slug) {
   const site = SITES[slug];
-  // A compact Safari toolbar, quietly: traffic lights, the sidebar, back and forward, one soft address
-  // field with its host in the middle, and share and new tab at the far end. Thin strokes, low contrast.
-  const ic = (w, h, body) => `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
+  // A compact Safari toolbar, as quiet as it gets: the traffic lights, and one soft address field with
+  // its host in the middle. Nothing else: no icons.
   const html = `<!doctype html><meta charset=utf-8><style>
     html,body{margin:0;background:#2a2a2d}
     .bar{width:${W}px;height:${BAR}px;position:relative;background:linear-gradient(#333336,#2a2a2d);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 -1px 0 #151517;color:#8e8e95;font:500 15px -apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
     .bar>*{position:absolute;display:block}
     .dots{left:22px;top:22px;display:flex;gap:8px}
     .dots i{width:12px;height:12px;border-radius:50%;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.3)}
-    .side{left:104px;top:20px}
-    .back{left:152px;top:19px;color:#77777e}
-    .fwd{left:182px;top:19px;color:#55555b}
     .url{left:50%;top:12px;transform:translateX(-50%);width:520px;height:32px;border-radius:8px;background:rgba(255,255,255,.085);color:#e8e8eb;text-align:center;line-height:32px;letter-spacing:.01em}
-    .reload{left:calc(50% + 232px);top:21px}
-    .share{right:78px;top:18px}
-    .plus{right:30px;top:20px}
   </style><div class=bar>
     <div class=dots><i style="background:#ee6a5e"></i><i style="background:#f5bf4f"></i><i style="background:#62c655"></i></div>
-    <div class=side>${ic(22, 16, '<rect x="1" y="1" width="20" height="14" rx="3"/><path d="M8 1v14"/>')}</div>
-    <div class=back>${ic(11, 18, '<path d="M9 1.5L2 9l7 7.5"/>')}</div>
-    <div class=fwd>${ic(11, 18, '<path d="M2 1.5L9 9l-7 7.5"/>')}</div>
     <div class=url>${site.host}</div>
-    <div class=reload>${ic(14, 14, '<path d="M12 7a5 5 0 1 1-1.6-3.7"/><path d="M11 1.2v3h-3"/>')}</div>
-    <div class=share>${ic(16, 20, '<path d="M8 12V2M4.5 5.5L8 2l3.5 3.5"/><path d="M3 8H2v10h12V8h-1"/>')}</div>
-    <div class=plus>${ic(16, 16, '<path d="M8 2v12M2 8h12"/>')}</div>
   </div>`;
   const work = mkdtempSync(join(tmpdir(), 'chrome-'));
   const port = 9300 + Math.floor(Math.random() * 500);
