@@ -976,27 +976,35 @@
      content above the fade. Starting the band off-screen puts the row that
      might be dropped where nobody can see it. */
   .topfade {
+    /* --fh is how deep the fade looks, as it always has. --over is how far the band reaches ABOVE the
+       screen, at full strength. Safari, after the page has been pulled past its top and let go, can leave a
+       fixed layer displaced downward by the rubber-band's last offset, and a band that began 2px off-screen
+       then began a few px down the page, with the artwork in front of it sharp and untinted. Reaching 140px
+       above the screen means a displaced band still covers the top of it; the gradients below are anchored
+       to the visible top, so nothing about how the fade looks has changed. */
+    --fh: clamp(4.5rem, 11vh, 7rem);
+    --over: 140px;
     position: fixed;
-    top: -2px; left: 0; right: 0;
-    height: calc(clamp(4.5rem, 11vh, 7rem) + 2px);
+    top: calc(var(--over) * -1); left: 0; right: 0;
+    height: calc(var(--fh) + var(--over));
     z-index: 2;
     pointer-events: none;
   }
 
   .topfade .fb1 {
     -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 12%, transparent 34%);
-            mask-image: linear-gradient(to bottom, #000 0%, #000 12%, transparent 34%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(var(--over) + var(--fh) * 0.12), transparent calc(var(--over) + var(--fh) * 0.34));
+            mask-image: linear-gradient(to bottom, #000 0, #000 calc(var(--over) + var(--fh) * 0.12), transparent calc(var(--over) + var(--fh) * 0.34));
   }
   .topfade .fb2 {
     -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 62%);
-            mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 62%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(var(--over) + var(--fh) * 0.30), transparent calc(var(--over) + var(--fh) * 0.62));
+            mask-image: linear-gradient(to bottom, #000 0, #000 calc(var(--over) + var(--fh) * 0.30), transparent calc(var(--over) + var(--fh) * 0.62));
   }
   .topfade .fb3 {
     -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
-            mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(var(--over) + var(--fh) * 0.55), transparent calc(var(--over) + var(--fh)));
+            mask-image: linear-gradient(to bottom, #000 0, #000 calc(var(--over) + var(--fh) * 0.55), transparent calc(var(--over) + var(--fh)));
   }
 
   /* The wash sits over the blur and only tints — light enough that the blurred
@@ -1005,12 +1013,14 @@
   .wash { transition: opacity var(--invert) ease; }
   .topfade .wash-light {
     background: linear-gradient(to bottom,
-      rgba(255,255,255,0.90) 0%, rgba(255,255,255,0.42) 46%, rgba(255,255,255,0) 100%);
+      rgba(255,255,255,0.90) 0, rgba(255,255,255,0.90) var(--over),
+      rgba(255,255,255,0.42) calc(var(--over) + var(--fh) * 0.46), rgba(255,255,255,0) calc(var(--over) + var(--fh)));
     opacity: 1;
   }
   .topfade .wash-dark {
     background: linear-gradient(to bottom,
-      rgba(7,7,7,0.90) 0%, rgba(7,7,7,0.42) 46%, rgba(7,7,7,0) 100%);
+      rgba(7,7,7,0.90) 0, rgba(7,7,7,0.90) var(--over),
+      rgba(7,7,7,0.42) calc(var(--over) + var(--fh) * 0.46), rgba(7,7,7,0) calc(var(--over) + var(--fh)));
     opacity: 0;
   }
   :root.is-dark .topfade .wash-light { opacity: 0; }
