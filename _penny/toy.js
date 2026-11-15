@@ -13,9 +13,9 @@
 // Bundled with the parts of three.js it uses into /js/toy.js:
 //   cd _penny && npm install && node build.mjs
 import {
-  AmbientLight, BufferAttribute, BufferGeometry, Color, DirectionalLight, DoubleSide, Group, Mesh,
+  AdditiveBlending, AmbientLight, BufferAttribute, BufferGeometry, Color, DirectionalLight, DoubleSide, ExtrudeGeometry, Group, Mesh,
   MeshBasicMaterial, MeshPhysicalMaterial, MeshStandardMaterial, PerspectiveCamera, PlaneGeometry,
-  PMREMGenerator, RepeatWrapping, Scene, SRGBColorSpace, TextureLoader, Vector3, WebGLRenderer
+  PMREMGenerator, RepeatWrapping, Scene, Shape, SRGBColorSpace, TextureLoader, Vector3, WebGLRenderer
 } from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 
@@ -23,27 +23,37 @@ const PI = Math.PI;
 
 // The object, in millimetres, measured from the photographs. y is up; the marble sits on y = 0.
 const MARBLE = { w: 136, h: 118, d: 136 };
-const GLASS = { w: 111, h: 112, d: 111, wall: 6, top: 7 };
-const TOTAL_H = MARBLE.h + GLASS.h;               // 230
+// The acrylic is one solid piece: a block with a single plane sloping up towards the back, the shape of a lean-to
+// roof. Its front is 112 mm tall, its back 164.
+const GLASS = { w: 111, d: 111, front: 112, rise: 52 };
+const TOTAL_H = MARBLE.h + GLASS.front + GLASS.rise;       // 282, to the top of the back edge
 const FIG_LIFT = MARBLE.h + 25.2;                 // the plinth's underside (z = -25.2 in the print file) rests on the stone
 
-// A few light boxes in a dark room: what the gold, the polish and the glass have to reflect.
+// The light boxes. A room of softboxes that the object reflects and the viewer never sees: they exist only in the
+// reflection map the surfaces look at, never in the picture, and the canvas behind the object stays clear. What
+// reads as polish is how crisp their edges are in the surface, so they are large, bright and hard-edged, in a
+// dark room; their placement is what puts a bright plane on the roof, a black one on the sides, a bar of light
+// on a marble edge. Directions: +z is towards the viewer, +y up.
 function studio(renderer) {
   const room = new Scene();
-  room.background = new Color(0x0a0a0c);
+  room.background = new Color(0x050506);
   function box(w, h, x, y, z, r, g, b) {
     const m = new Mesh(new PlaneGeometry(w, h), new MeshBasicMaterial({ color: new Color(r, g, b), side: DoubleSide }));
     m.position.set(x, y, z);
     m.lookAt(0, 0, 0);
     room.add(m);
   }
-  box(18, 5, 0, 10, 2, 11, 10.5, 10);             // overhead softbox
-  box(4, 16, -10, 1, 4, 7, 6.6, 6.2);             // tall strip, left, a touch warm
-  box(4, 16, 10, 2, -2, 6, 6.2, 6.6);             // tall strip, right, a touch cool
-  box(14, 10, 0, 1, 11, 0.5, 0.48, 0.46);         // broad fill behind the viewer: dim, or a polished face mirrors it as grey
-  box(10, 3, 0, -9, 2, 1.3, 1.2, 1.1);            // the floor's bounce
+  // The roof looks up and back (about 27 degrees, tilted as the piece sits), so that is where its light is: one box, no bigger than the roof's
+  // reach. The sides are seen at a grazing angle, where glass mirrors almost perfectly, and look towards the back
+  // of the room, so the back of the room is mostly dark with a pair of narrow strips: a bar down the right-hand
+  // face, a fainter one down the left. Nothing stands to either side of the object.
+  box(24, 8, 0, 5.4, -8.4, 0.85, 0.84, 0.82);       // what the sloped roof reflects: it looks up about 27 degrees at the back once the piece is tilted
+  box(2, 18, 7, 1.5, -9, 4.4, 4.5, 4.8);          // strip, behind right, a touch cool
+  box(2, 18, -8, 1, -8, 1.8, 1.7, 1.6);           // strip, behind left, fainter and warmer
+  box(20, 7, 0, 11, 4, 1.6, 1.55, 1.5);            // a softbox over the viewer: the top of the marble, the gold
+  box(16, 4, 0, -8, 5, 1.2, 1.1, 1.0);            // the floor's bounce
   const pm = new PMREMGenerator(renderer);
-  const tex = pm.fromScene(room, 0.02).texture;
+  const tex = pm.fromScene(room, 0).texture;
   pm.dispose();
   return tex;
 }
@@ -149,27 +159,35 @@ export function build(opts) {
     stoneMesh.position.y = MARBLE.h / 2;
     body.add(stoneMesh);
 
-    // the glass: five panes standing on the stone, with polished rounded edges
-    // Clear acrylic is mostly not there: a faint tint, and what it reflects. (Transmission needs something drawn
-    // behind it to bend; on a transparent canvas there is nothing, and it comes out grey.)
-    const glassMat = new MeshPhysicalMaterial({
-      color: 0xcfe6e0, metalness: 0, roughness: 0.03, transparent: true, opacity: 0.07, ior: 1.5,
-      clearcoat: 1, clearcoatRoughness: 0.02, envMapIntensity: 1.5, specularIntensity: 1, depthWrite: false, side: DoubleSide
+    // The glass: one solid piece. Its profile is a quadrilateral (front edge low, back edge high), extruded the
+    // width of the piece, with its edges rounded where polished acrylic is. Built about its own middle, then turned
+    // so the profile runs front to back.
+    const gw = GLASS.w, bev = 1.6;
+    const prof = new Shape();
+    const u0 = -GLASS.d / 2 + bev, u1 = GLASS.d / 2 - bev, v0 = bev;
+    prof.moveTo(u0, v0);
+    prof.lineTo(u1, v0);
+    prof.lineTo(u1, GLASS.front - bev);                                  // up the front
+    prof.lineTo(u0, GLASS.front + GLASS.rise - bev);                     // along the roof, rising away
+    prof.lineTo(u0, v0);                                                 // down the back
+    const glassGeo = new ExtrudeGeometry(prof, { depth: gw - 2 * bev, bevelEnabled: true, bevelThickness: bev, bevelSize: bev, bevelSegments: 5, curveSegments: 8 });
+    glassGeo.translate(0, 0, -(gw - 2 * bev) / 2);
+    // Acrylic of this thickness is clear but not invisible: it takes a little light out of whatever is behind it
+    // (the tint), and gives back the room (the reflection). Two layers say that: a faint dark veil, and a layer
+    // that adds only what the surface reflects. Reflected light is not scaled by the veil's opacity, which it
+    // would be if both were one material. Back faces are drawn as well, so the far side of the block shows too.
+    const veilMat = new MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.16, depthWrite: false, side: DoubleSide });
+    const sheenMat = new MeshPhysicalMaterial({
+      color: 0x000000, metalness: 0, roughness: 0.015, ior: 1.52, specularIntensity: 1, clearcoat: 1, clearcoatRoughness: 0.01,
+      envMapIntensity: 1.0, transparent: true, blending: AdditiveBlending, depthWrite: false, side: DoubleSide
     });
-    const panes = [];
-    const pane = (w, h, d, x, y, z) => {
-      const g = new RoundedBoxGeometry(w, h, d, 4, 1.4);
-      const m = new Mesh(g, glassMat);
-      m.renderOrder = 2;
-      m.position.set(x, y, z);
-      body.add(m); panes.push(g);
-    };
-    const gy = MARBLE.h, side = GLASS.h - GLASS.top;
-    pane(GLASS.w, GLASS.top, GLASS.d, 0, gy + GLASS.h - GLASS.top / 2, 0);                                   // top
-    pane(GLASS.w, side, GLASS.wall, 0, gy + side / 2, GLASS.d / 2 - GLASS.wall / 2);                          // front
-    pane(GLASS.w, side, GLASS.wall, 0, gy + side / 2, -GLASS.d / 2 + GLASS.wall / 2);                         // back
-    pane(GLASS.wall, side, GLASS.d - 2 * GLASS.wall, GLASS.w / 2 - GLASS.wall / 2, gy + side / 2, 0);        // right
-    pane(GLASS.wall, side, GLASS.d - 2 * GLASS.wall, -GLASS.w / 2 + GLASS.wall / 2, gy + side / 2, 0);       // left
+    const glassGroup = new Group();
+    const veil = new Mesh(glassGeo, veilMat), sheen = new Mesh(glassGeo, sheenMat);
+    veil.renderOrder = 2; sheen.renderOrder = 3;
+    glassGroup.add(veil, sheen);
+    glassGroup.rotation.y = -PI / 2;                                     // the profile's u runs +z, towards the viewer
+    glassGroup.position.y = MARBLE.h;
+    body.add(glassGroup);
 
     // the gold
     const goldMat = new MeshStandardMaterial({ color: 0xe6a47c, metalness: 1, roughness: 0.2, envMapIntensity: 1.55 });
@@ -342,7 +360,7 @@ export function build(opts) {
         if (io) io.disconnect();
         stone.dispose(); front.dispose(); env.dispose();
         stoneMats.forEach((m) => { if (m.map && m.map !== front) m.map.dispose(); m.dispose(); });
-        stoneGeo.dispose(); panes.forEach((g) => g.dispose()); glassMat.dispose();
+        stoneGeo.dispose(); glassGeo.dispose(); veilMat.dispose(); sheenMat.dispose();
         figGeo.dispose(); goldMat.dispose();
         renderer.dispose();
         if (renderer.forceContextLoss) renderer.forceContextLoss();
