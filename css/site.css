@@ -1243,6 +1243,11 @@
   @media (min-width: 38.01rem) {
     .gal-book { width: 120%; margin-bottom: calc(var(--gap) * 1.2 + 0.8rem); }
   }
+  /* A window is short and wide. The 1.2 and the 0.8rem above are tuned by eye for
+     a tall book and would pull a window's label up into it: its label goes
+     exactly under it, at the gap the books' labels have. Later and more
+     specific, so it holds at both widths. */
+  .gal-book[data-video] { margin-bottom: var(--gap); }
   .plate .gal-still {
     position: absolute; left: 50%; top: 50%;
     width: var(--still-w); height: auto; max-width: none; max-height: none;

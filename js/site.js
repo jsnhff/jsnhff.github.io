@@ -291,6 +291,7 @@
   // WebGL contexts. If anything goes wrong, or there is no WebGL, or the
   // visitor has asked to save data, the still simply stays.
   var bookUrl = '/js/book.js?v=' + buildStamp;
+  var browserUrl = '/js/browser.js?v=' + buildStamp;
   var bookIO = null;
   var books = [];
 
@@ -298,25 +299,35 @@
     done = done || function () {};
     if (box._book || box._waking) { done(); return; }
     box._waking = true;
-    import(bookUrl).then(function (m) {
+    // a website's tile is a browser, a book's is a book: both come to life the same way
+    var isBrowser = box.hasAttribute('data-video');
+    import(isBrowser ? browserUrl : bookUrl).then(function (m) {
       if (!box._waking || !box.isConnected) return null;
-      return m.build({
+      var common = {
         el: box.querySelector('.gal-stage'),
-        wrap: box.getAttribute('data-wrap'),
-        foil: box.getAttribute('data-foil') || null,
         h: parseFloat(box.getAttribute('data-h')),
         d: parseFloat(box.getAttribute('data-d')),
-        staples: parseInt(box.getAttribute('data-staples') || '0', 10),
         // still in the cover's own pose until the fade is over, so the two line up
         hold: true,
-        // each book sways in its own way, the same way every time
+        // each one sways in its own way, the same way every time
         seed: (box.closest('a') || box).getAttribute('href'),
-        // the whole tile turns the book. The tile is a link: a drag turns it,
+        // the whole tile turns it. The tile is a link: a drag turns it,
         // a tap opens it (the click after a drag is stopped, below)
         pointerEl: box.closest('a') || undefined,
         // a lost context leaves a dead canvas: put the still back
         onLost: function () { sleepBook(box); }
-      });
+      };
+      if (isBrowser) {
+        common.video = box.getAttribute('data-video');
+        common.chrome = box.getAttribute('data-chrome');
+        common.poster = box.getAttribute('data-poster');
+        common.fit = parseFloat(box.getAttribute('data-fit')) || 0;
+      } else {
+        common.wrap = box.getAttribute('data-wrap');
+        common.foil = box.getAttribute('data-foil') || null;
+        common.staples = parseInt(box.getAttribute('data-staples') || '0', 10);
+      }
+      return m.build(common);
     }).then(function (inst) {
       if (!inst) { done(); return; }
       // sent back to sleep while it was loading: not wanted any more

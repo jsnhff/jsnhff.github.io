@@ -13,6 +13,18 @@ live_url: "https://mechanicalturkdiaries.tumblr.com"
 plate: "/images/plates/mechanical-turk-diaries.webp"
 plate_w: 640
 plate_h: 550
+# The 3D browser: a loop of the site itself, recorded by _penny/loops.mjs, in a
+# window of the same proportions as the plate. Rebuilt by `node loops.mjs mechanical-turk-diaries`.
+browser:
+  video: "/images/browser3d/mechanical-turk-diaries.mp4"
+  chrome: "/images/browser3d/mechanical-turk-diaries-chrome.webp"
+  poster: "/images/browser3d/mechanical-turk-diaries-poster.webp"
+  front: "/images/browser3d/mechanical-turk-diaries-front.webp"
+  front_w: 1280
+  front_h: 880
+  h: 0.6875    # 880 / 1280: the bar of chrome (80) over the screen (800)
+  d: 0.03
+  fit: 0.7       # camera in closer than a book's, so a wide window fills its tile
 section: studio
 dark: true
 live_url: "https://mechanicalturkdiaries.tumblr.com"
