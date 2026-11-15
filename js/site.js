@@ -292,6 +292,7 @@
   // visitor has asked to save data, the still simply stays.
   var bookUrl = '/js/book.js?v=' + buildStamp;
   var browserUrl = '/js/browser.js?v=' + buildStamp;
+  var toyUrl = '/js/toy.js?v=' + buildStamp;
   var bookIO = null;
   var books = [];
 
@@ -300,8 +301,8 @@
     if (box._book || box._waking) { done(); return; }
     box._waking = true;
     // a website's tile is a browser, a book's is a book: both come to life the same way
-    var isBrowser = box.hasAttribute('data-video');
-    import(isBrowser ? browserUrl : bookUrl).then(function (m) {
+    var isBrowser = box.hasAttribute('data-video'), isToy = box.hasAttribute('data-model');
+    import(isToy ? toyUrl : isBrowser ? browserUrl : bookUrl).then(function (m) {
       if (!box._waking || !box.isConnected) return null;
       var common = {
         el: box.querySelector('.gal-stage'),
@@ -317,7 +318,11 @@
         // a lost context leaves a dead canvas: put the still back
         onLost: function () { sleepBook(box); }
       };
-      if (isBrowser) {
+      if (isToy) {
+        common.model = box.getAttribute('data-model');
+        common.marble = box.getAttribute('data-marble');
+        common.front = box.getAttribute('data-engraving');
+      } else if (isBrowser) {
         common.video = box.getAttribute('data-video');
         common.chrome = box.getAttribute('data-chrome');
         common.poster = box.getAttribute('data-poster');

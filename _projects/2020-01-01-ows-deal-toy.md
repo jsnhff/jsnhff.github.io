@@ -31,6 +31,18 @@ description: |
 plate: "/images/plates/ows-deal-toy.webp"
 plate_w: 1000
 plate_h: 1690
+# The 3D object on the wall: the gold from the print file (_penny/toy_prep.py, 200,000 triangles, nearly all of
+# them on the figures), the marble and its engraving (_penny/toy_marble.py), and a still of it face on.
+# 136 mm wide, 230 mm tall, 136 mm deep; the figures are in clear acrylic on a block of black Nero Marquina.
+toy:
+  model: "/images/ows3d/figures.bin.gz"
+  marble: "/images/ows3d/marble.webp"
+  engraving: "/images/ows3d/marble-front.webp"
+  front: "/images/ows3d/front.webp"
+  front_w: 900
+  front_h: 1522
+  h: 1.6912    # 230 / 136
+  d: 1.0       # 136 / 136
 section: studio
 dark: true
 ---
