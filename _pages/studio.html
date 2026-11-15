@@ -23,7 +23,7 @@ redirect_from:
   <div class="gallery">
     {%- assign works = site.projects | sort: "date" | reverse -%}
     {%- for p in works %}
-    {%- assign bk = p.book | default: p.browser -%}
+    {%- assign bk = p.book | default: p.browser | default: p.toy -%}
       <article class="row gal-cell">
         {%- if p.live_url -%}
         <a class="gal-link{% if bk %} has-book{% endif %}"{% if bk %} draggable="false"{% endif %} href="{{ p.live_url }}" target="_blank" rel="noopener">
@@ -54,7 +54,8 @@ redirect_from:
           {%- assign gap = 100 | minus: still_h | divided_by: 2.0 -%}
           <div class="plate is-book">
             <div class="gal-book" data-book
-                 {%- if p.browser %} data-video="{{ bk.video }}" data-chrome="{{ bk.chrome }}" data-poster="{{ bk.poster }}"{% if bk.fit %} data-fit="{{ bk.fit }}"{% endif %}
+                 {%- if p.toy %} data-model="{{ bk.model }}" data-marble="{{ bk.marble }}" data-engraving="{{ bk.engraving }}"
+                 {%- elsif p.browser %} data-video="{{ bk.video }}" data-chrome="{{ bk.chrome }}" data-poster="{{ bk.poster }}"{% if bk.fit %} data-fit="{{ bk.fit }}"{% endif %}
                  {%- else %} data-wrap="{{ bk.wrap }}"{% if bk.foil %} data-foil="{{ bk.foil }}"{% endif %}{% if bk.staples %} data-staples="{{ bk.staples }}"{% endif %}{% endif %}
                  data-h="{{ bk.h }}" data-d="{{ bk.d }}"
                  style="--still-w: {{ still_w | round: 2 }}%; --gap: -{{ gap | round: 2 }}%; --bh: {{ bk.h }}">

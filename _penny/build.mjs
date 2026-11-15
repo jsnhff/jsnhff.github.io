@@ -3,10 +3,10 @@
 // two share a chunk, /js/three-*.js).
 //   cd _penny && npm install && node build.mjs
 import { build } from 'esbuild';
-// book.js and browser.js are loaded together on the studio wall, so they share
+// book.js, browser.js and toy.js are loaded together on the studio wall, so they share
 // one copy of three.js (a chunk) instead of each carrying their own.
 await build({
-  entryPoints: ['book', 'browser'].map((n) => new URL(`./${n}.js`, import.meta.url).pathname),
+  entryPoints: ['book', 'browser', 'toy'].map((n) => new URL(`./${n}.js`, import.meta.url).pathname),
   outdir: new URL('../js/', import.meta.url).pathname,
   bundle: true, format: 'esm', splitting: true, minify: true, target: 'es2019',
   chunkNames: 'three-[hash]', legalComments: 'eof'
