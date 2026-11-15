@@ -32,9 +32,8 @@ const SITES = {
   'willhappinessfind-me': { host: 'willhappinessfind.me', url: 'https://willhappinessfind.me/', seconds: 14, settle: 2500, vw: 640 },
   'work-life-tips': { host: 'work-life.tips', url: 'http://www.work-life.tips', seconds: 12, settle: 2500 },
   'real-beauty-pics': { host: 'real-beauty.pics', url: 'http://www.real-beauty.pics', seconds: 22, settle: 3500, start: 1.8 },
-  // gone from the live web: the Internet Archive's copy from when it was last live
-  // (May 2022; later copies are a domain-parking page)
-  'mechanical-turk-diaries': { host: 'themechanicalturkdiaries.com', url: 'https://web.archive.org/web/20220506150312if_/http://themechanicalturkdiaries.com/', seconds: 50, settle: 6000, vw: 900, scroll: 1500 },
+  // the blog, since 2026 a static site of its own (github.com/jsnhff/themechanicalturkdiaries)
+  'mechanical-turk-diaries': { host: 'themechanicalturkdiaries.com', url: 'https://themechanicalturkdiaries.com/', seconds: 50, settle: 4000, vw: 900, scroll: 1500 },
 };
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
