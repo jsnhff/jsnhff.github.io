@@ -1232,6 +1232,17 @@
     transition: transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1);
     will-change: transform;
   }
+  /* A plate that moves: the same box as a picture, held to the same height. */
+  .plate video {
+    display: block;
+    height: clamp(13rem, 38vh, 24rem);
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 2px;
+    transform-origin: 50% 100%;
+    transition: transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
   /* A book that turns, in place of a plate. The box is square and holds its
      space from the first paint. The still is the front cover at the size the
      model's first frame will draw it; when the model is ready it fades in over
@@ -1327,15 +1338,15 @@
   /* Nothing on the wall dims under a pointer: a tile comes up a little, from the
      row's baseline, so it stays on the row. */
   @media (hover: hover) {
-    .plate:not(.is-book) img:hover { transform: scale(1.035); }
+    .plate:not(.is-book) img:hover, .plate video:hover { transform: scale(1.035); }
   }
   /* And only the object answers the pointer: the tile around it, the empty
      part of the plate, is not a target, so nothing moves and nothing opens
      until the pointer is on the picture, the book or the label. */
   .gal-link { pointer-events: none; }
-  .gal-link .plate img, .gal-link .plate.is-empty, .gal-link .gal-hit, .gal-link .gal-tag { pointer-events: auto; }
+  .gal-link .plate img, .gal-link .plate video, .gal-link .plate.is-empty, .gal-link .gal-hit, .gal-link .gal-tag { pointer-events: auto; }
   .gal-link .plate img.gal-still { pointer-events: none; }
-  .gal-link .plate img:not(.gal-still) { cursor: pointer; }
+  .gal-link .plate img:not(.gal-still), .gal-link .plate video { cursor: pointer; }
   .gal-link .gal-tag { cursor: pointer; }
   .plate .gal-still { pointer-events: none; }
   @media (prefers-reduced-motion: reduce) { .plate img { transition: none; } }
@@ -1358,6 +1369,7 @@
     .plate { height: auto; margin-bottom: 0; }
     /* A tall picture would otherwise run past the screen it is meant to fit. */
     .plate img { max-height: 62vh; }
+    .plate video { height: auto; width: 100%; max-height: 62vh; }
     .plate.is-empty { height: 9rem; max-width: none; }
     /* One size rule for everything on the wall, so a book, a website, the
        Deal Toy and a photograph read as one set. A thing as wide as a browser
@@ -1367,7 +1379,8 @@
        small; equal width made the tall things tower. --ar is height over
        width. Older browsers without pow() keep the sizes they had. */
     @supports (width: calc(pow(2, 0.5) * 1px)) {
-      .plate:not(.is-book) img {
+      .plate:not(.is-book) img, .plate video {
+        height: auto;
         width: calc(min(1, pow(calc(0.669 / var(--ar, 0.669)), 0.65)) * 100%);
         max-width: 100%;
         max-height: 70vh;
@@ -2183,15 +2196,12 @@
             <span class="gal-year">2023</span>
           </p>
         </a>
-      </article><article class="row gal-cell"><a class="gal-link has-book" draggable="false" href="/projects/ows-deal-toy/"><div class="plate is-book">
-            <div class="gal-book" data-book data-model="/images/ows3d/figures.bin.gz" data-marble="/images/ows3d/marble.webp" data-engraving="/images/ows3d/marble-front.webp"
-                 data-h="1.6912" data-d="1.0"
-                 style="--still-w: 46.64%; --still: 0.4664; --gap: -10.56%; --bh: 1.6912">
-              <span class="gal-hit" aria-hidden="true"></span>
-              <img class="gal-still" draggable="false" src="/images/ows3d/front.webp" width="900" height="1522"
-                   alt="OWS 10th Anniversary Deal Toy" decoding="async">
-              <div class="gal-stage" aria-hidden="true"></div>
-            </div>
+      </article><article class="row gal-cell"><a class="gal-link" href="/projects/ows-deal-toy/"><div class="plate">
+            <video src="https://raw.githack.com/jsnhff/jsnhff.github.io/preview-mobile-book-size/ows-deal-toy-loop.mp4" poster="https://raw.githack.com/jsnhff/jsnhff.github.io/preview-mobile-book-size/ows-deal-toy-loop.webp"
+                   width="540" height="900"
+                   style="--ar: 1.6667; aspect-ratio: 540 / 900"
+                   autoplay muted loop playsinline disablepictureinpicture preload="auto"
+                   aria-label="OWS 10th Anniversary Deal Toy"></video>
           </div><p class="gal-tag">
             <span class="gal-kind">sculpture</span>
             <span class="gal-year">2020</span>
@@ -2379,6 +2389,6 @@
         data-variant="nightfield"
         data-grain="0.5" defer></script>
 
-<script src="/js/site.js?v=1795012692" data-v="1795012692" defer></script>
+<script src="/js/site.js?v=1795041965" data-v="1795041965" defer></script>
 </body>
 </html>
