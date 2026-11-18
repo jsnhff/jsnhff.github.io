@@ -67,8 +67,16 @@ redirect_from:
           </div>
           {%- else -%}
           <div class="plate">
+            {%- if p.plate_video %}
+            <video src="{{ p.plate_video }}" poster="{{ p.plate_video_poster }}"
+                   width="{{ p.plate_video_w }}" height="{{ p.plate_video_h }}"
+                   style="--ar: {{ p.plate_video_h | times: 1.0 | divided_by: p.plate_video_w | round: 4 }}; aspect-ratio: {{ p.plate_video_w }} / {{ p.plate_video_h }}"
+                   autoplay muted loop playsinline disablepictureinpicture preload="auto"
+                   aria-label="{{ p.title }}"></video>
+            {%- else %}
             <img src="{{ p.plate }}" width="{{ p.plate_w }}" height="{{ p.plate_h }}" style="--ar: {{ p.plate_h | times: 1.0 | divided_by: p.plate_w | round: 4 }}"
                  alt="{{ p.title }}" loading="lazy" decoding="async">
+            {%- endif %}
           </div>
           {%- endif -%}
           <p class="gal-tag">

@@ -442,6 +442,12 @@
 
   function initBooks(scope) {
     [].forEach.call(scope.querySelectorAll('.plate img'), arrive);
+    // a plate that moves holds still, on its first frame, for anyone who has
+    // asked for less motion
+    if (reduce) [].forEach.call(scope.querySelectorAll('.plate video'), function (v) {
+      v.autoplay = false;
+      v.pause();
+    });
     // a tile with no picture to wait for has its label straight away
     [].forEach.call(scope.querySelectorAll('a.gal-link'), function (a) {
       if (!a.querySelector('.plate img')) a.classList.add('is-in');
