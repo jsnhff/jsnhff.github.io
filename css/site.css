@@ -1340,19 +1340,32 @@
     /* A tall picture would otherwise run past the screen it is meant to fit. */
     .plate img { max-height: 62vh; }
     .plate.is-empty { height: 9rem; max-width: none; }
-    /* A book's cover takes about three quarters of the column's width: the
-       full width read too big, under half too small. The cover is only --still
-       of its stage, so the stage runs wider than the column to get there; it
-       is transparent and the wall clips it at the screen's edge. A cover too
-       tall for the screen stops at 70vh instead. The empty bands above and
-       below the book are pulled in so it sits on its label like a photograph. */
-    .gal-book[data-wrap] {
-      --stage: min(73% / var(--still), 70vh / (var(--still) * var(--bh)));
-      --band: calc(var(--stage) * (1 - var(--still) * var(--bh)) / 2);
-      flex: none;
-      width: var(--stage);
-      margin-top: calc(var(--band) * -1);
-      margin-bottom: calc(var(--band) * -1 + 0.8rem);
+    /* One size rule for everything on the wall, so a book, a website, the
+       Deal Toy and a photograph read as one set. A thing as wide as a browser
+       window fills the column; anything taller gets narrower, by its shape to
+       the power 0.65, so a book takes a little under two thirds of the column
+       and a tall photograph the same. Equal area made the wide things read
+       small; equal width made the tall things tower. --ar is height over
+       width. Older browsers without pow() keep the sizes they had. */
+    @supports (width: calc(pow(2, 0.5) * 1px)) {
+      .plate:not(.is-book) img {
+        width: calc(min(1, pow(calc(0.669 / var(--ar, 0.669)), 0.65)) * 100%);
+        max-width: 100%;
+        max-height: 70vh;
+      }
+      /* A 3D object's face is only --still of its stage, so the stage runs
+         wider than the column to bring the face to its size; it is transparent
+         and the wall clips it at the screen's edge. The empty bands above and
+         below the face are pulled in so it sits on its label like a picture. */
+      .plate.is-book .gal-book {
+        --fit: min(1, pow(calc(0.669 / var(--bh)), 0.65));
+        --stage: min(var(--fit) * 100% / var(--still), 70vh / (var(--still) * var(--bh)));
+        --band: calc(var(--stage) * (1 - var(--still) * var(--bh)) / 2);
+        flex: none;
+        width: var(--stage);
+        margin-top: calc(var(--band) * -1);
+        margin-bottom: calc(var(--band) * -1 + 0.8rem);
+      }
     }
     .stage.is-flow:has(.gallery) { overflow-x: clip; }
   }

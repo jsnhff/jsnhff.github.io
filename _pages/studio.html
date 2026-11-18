@@ -67,7 +67,7 @@ redirect_from:
           </div>
           {%- else -%}
           <div class="plate">
-            <img src="{{ p.plate }}" width="{{ p.plate_w }}" height="{{ p.plate_h }}"
+            <img src="{{ p.plate }}" width="{{ p.plate_w }}" height="{{ p.plate_h }}" style="--ar: {{ p.plate_h | times: 1.0 | divided_by: p.plate_w | round: 4 }}"
                  alt="{{ p.title }}" loading="lazy" decoding="async">
           </div>
           {%- endif -%}
