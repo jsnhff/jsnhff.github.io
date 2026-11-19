@@ -131,14 +131,15 @@
   time, clockwise from twelve, until there is nothing left on the white. Drawn
   as the stroke of a circle half the radius it looks: a stroke as wide as the
   circle is across fills it like a pie, and the dash offset eats it.
-  site.js fires `home-timer-done` on the document when it runs out.
+  site.js fires `home-timer-done` on the document when it runs out. Tapped,
+  it runs out at once and the next act starts.
 {%- endcomment -%}
 {% if page.home %}
-<div class="timer" id="timer" aria-hidden="true">
-  <svg viewBox="0 0 32 32" width="32" height="32">
+<button class="timer" id="timer" type="button" aria-label="Skip ahead">
+  <svg viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
     <circle class="timer-pie" cx="16" cy="16" r="8" pathLength="100"/>
   </svg>
-</div>
+</button>
 {%- comment -%}
   When it has all been seen once, the timer's spot holds this instead: the
   same grey, the same round, a loop to send the penny out again.

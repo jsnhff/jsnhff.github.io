@@ -256,6 +256,18 @@
       if (!reduce) setTimeout(rewind, 600);
     });
     timerPie.addEventListener('animationend', timerDone);
+    // Tapping the pie ends the wait: whatever it is counting down to starts
+    // now. Not while the poem has it, since the poem ends itself, and not
+    // once it has already run out.
+    timer.addEventListener('click', function () {
+      if (acting === 'poem') return;
+      var going = (run ? [run] : timerPie.getAnimations()).filter(function (a) {
+        return a.playState === 'running' || a.playState === 'paused';
+      });
+      if (!going.length) return;
+      timer.getAnimations().forEach(function (a) { if (a.playState === 'running') a.finish(); });
+      going.forEach(function (a) { a.finish(); });
+    });
     function timerDone() {
       if (acting === 'poem') return;
       document.dispatchEvent(new CustomEvent('home-timer-done'));
