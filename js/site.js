@@ -442,12 +442,40 @@
 
   function initBooks(scope) {
     [].forEach.call(scope.querySelectorAll('.plate img'), arrive);
-    // a plate that moves holds still, on its first frame, for anyone who has
-    // asked for less motion
-    if (reduce) [].forEach.call(scope.querySelectorAll('.plate video'), function (v) {
-      v.autoplay = false;
-      v.pause();
-    });
+    // Plates that move. On a wide screen, for anyone who has not asked for
+    // less motion, the loop loads out of sight and takes the photograph's
+    // place only once it is really playing. A phone keeps the photograph, and
+    // so does any browser that holds the video back, so no play button shows.
+    if (!reduce && !window.matchMedia('(max-width: 38rem)').matches) {
+      [].forEach.call(scope.querySelectorAll('.plate img[data-loop]'), function (img) {
+        var v = document.createElement('video');
+        v.muted = true;
+        v.loop = true;
+        v.playsInline = true;
+        v.setAttribute('muted', '');
+        v.setAttribute('playsinline', '');
+        v.setAttribute('disablepictureinpicture', '');
+        v.setAttribute('aria-label', img.alt);
+        v.width = +img.dataset.loopW;
+        v.height = +img.dataset.loopH;
+        v.style.cssText = '--ar: ' + (img.dataset.loopH / img.dataset.loopW) +
+          '; aspect-ratio: ' + img.dataset.loopW + ' / ' + img.dataset.loopH;
+        v.className = 'is-pending';
+        v.preload = 'auto';
+        v.poster = img.dataset.loopPoster;
+        v.src = img.dataset.loop;
+        v.addEventListener('playing', function () {
+          if (!img.parentNode) return;
+          v.className = '';
+          img.parentNode.replaceChild(v, img);
+          var tile = v.closest('a.gal-link');
+          if (tile) tile.classList.add('is-in');
+        }, { once: true });
+        img.parentNode.appendChild(v);
+        var p = v.play();
+        if (p && p.catch) p.catch(function () { if (v.parentNode && img.parentNode) v.remove(); });
+      });
+    }
     // a tile with no picture to wait for has its label straight away
     [].forEach.call(scope.querySelectorAll('a.gal-link'), function (a) {
       if (!a.querySelector('.plate img')) a.classList.add('is-in');

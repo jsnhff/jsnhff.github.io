@@ -67,16 +67,15 @@ redirect_from:
           </div>
           {%- else -%}
           <div class="plate">
-            {%- if p.plate_video %}
-            <video src="{{ p.plate_video }}" poster="{{ p.plate_video_poster }}"
-                   width="{{ p.plate_video_w }}" height="{{ p.plate_video_h }}"
-                   style="--ar: {{ p.plate_video_h | times: 1.0 | divided_by: p.plate_video_w | round: 4 }}; aspect-ratio: {{ p.plate_video_w }} / {{ p.plate_video_h }}"
-                   autoplay muted loop playsinline disablepictureinpicture preload="auto"
-                   aria-label="{{ p.title }}"></video>
-            {%- else %}
+            {%- comment -%}
+              A plate that moves keeps its photograph in the markup. On a wide
+              screen the loop takes its place once it is actually playing; on a
+              phone, or wherever a browser holds a video back, the photograph
+              stays, so no play button ever shows (js/site.js, "plates that move").
+            {%- endcomment -%}
             <img src="{{ p.plate }}" width="{{ p.plate_w }}" height="{{ p.plate_h }}" style="--ar: {{ p.plate_h | times: 1.0 | divided_by: p.plate_w | round: 4 }}"
-                 alt="{{ p.title }}" loading="lazy" decoding="async">
-            {%- endif %}
+                 alt="{{ p.title }}" loading="lazy" decoding="async"
+                 {%- if p.plate_video %} data-loop="{{ p.plate_video }}" data-loop-poster="{{ p.plate_video_poster }}" data-loop-w="{{ p.plate_video_w }}" data-loop-h="{{ p.plate_video_h }}"{% endif %}>
           </div>
           {%- endif -%}
           <p class="gal-tag">

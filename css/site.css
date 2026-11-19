@@ -1213,7 +1213,9 @@
     transition: transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1);
     will-change: transform;
   }
-  /* A plate that moves: the same box as a picture, held to the same height. */
+  /* A plate that moves: the same box as a picture, held to the same height.
+     While it loads it waits out of sight, behind the photograph. */
+  .plate video.is-pending { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
   .plate video {
     display: block;
     height: clamp(13rem, 38vh, 24rem);
@@ -1350,7 +1352,6 @@
     .plate { height: auto; margin-bottom: 0; }
     /* A tall picture would otherwise run past the screen it is meant to fit. */
     .plate img { max-height: 62vh; }
-    .plate video { height: auto; width: 100%; max-height: 62vh; }
     .plate.is-empty { height: 9rem; max-width: none; }
     /* One size rule for everything on the wall, so a book, a website, the
        Deal Toy and a photograph read as one set. A thing as wide as a browser
@@ -1360,8 +1361,7 @@
        small; equal width made the tall things tower. --ar is height over
        width. Older browsers without pow() keep the sizes they had. */
     @supports (width: calc(pow(2, 0.5) * 1px)) {
-      .plate:not(.is-book) img, .plate video {
-        height: auto;
+      .plate:not(.is-book) img {
         width: calc(min(1, pow(calc(0.669 / var(--ar, 0.669)), 0.65)) * 100%);
         max-width: 100%;
         max-height: 70vh;
