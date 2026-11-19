@@ -292,18 +292,36 @@ export function build(opts) {
       dirty = false;
     }
 
-    let moved = 0;
+    // A mouse grabs the moment it is pressed. A finger is let decide first,
+    // because on a phone most fingers on a book are on their way down the page:
+    // until it has gone a little way sideways, more sideways than up or down,
+    // the page has it, and the book is not touched. Once the page has started
+    // scrolling the browser cancels the pointer, and a cancelled touch is
+    // dropped, not thrown, so a scroll never sets a book spinning.
+    let moved = 0, pending = false;
+    const SLOP = 8;
     function noDrag(e) { e.preventDefault(); }
-    function down(e) {
-      if (e.pointerType === 'mouse' && e.button !== 0) return;
+    function grab(e) {
       started = true;
-      dragging = true; moved = 0; sx = e.clientX; sy = e.clientY; by = ry; bx = rx; vy = 0; vx = 0;
+      dragging = true; pending = false; sx = e.clientX; sy = e.clientY; by = ry; bx = rx; vy = 0; vx = 0;
       lastT = e.timeStamp || performance.now();
-      pe.dataset.dragged = '';
       pe.classList.add('is-grabbed');
       try { pe.setPointerCapture(e.pointerId); } catch (err) { /* not capturable */ }
     }
+    function down(e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      moved = 0;
+      pe.dataset.dragged = '';
+      if (e.pointerType === 'touch') { pending = true; sx = e.clientX; sy = e.clientY; return; }
+      grab(e);
+    }
     function move(e) {
+      if (pending) {
+        const ax = Math.abs(e.clientX - sx), ay = Math.abs(e.clientY - sy);
+        if (ay > SLOP && ay >= ax) { pending = false; return; }   // a scroll: leave it to the page
+        if (ax > SLOP && ax > ay * 1.2) { grab(e); moved = 6; }  // a turn: from here, with no jump
+        return;
+      }
       if (!dragging) return;
       const dx = e.clientX - sx, dy = e.clientY - sy;
       moved = Math.max(moved, Math.abs(dx) + Math.abs(dy));
@@ -318,9 +336,12 @@ export function build(opts) {
       lastT = now; ry = nry; rx = nrx; dirty = true;
     }
     function up(e) {
+      pending = false;
       if (!dragging) return;
       dragging = false;
       pe.classList.remove('is-grabbed');
+      // taken away by the browser: let it lie where it is, with no throw
+      if (e.type === 'pointercancel') { vy = 0; vx = 0; }
       // the click that follows a drag is not a tap: whoever listens for clicks
       // on the tile reads this and lets it go
       if (moved >= 6) {
