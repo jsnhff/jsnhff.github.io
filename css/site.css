@@ -794,6 +794,12 @@
     animation: timer-run 15s linear forwards;
     animation-delay: var(--island-delay, 300ms);
   }
+  /* With an events pill up, the pie waits for it: it comes in once the pill
+     has landed, and only then starts to run. */
+  body:has(.island) .timer,
+  body:has(.island) .timer-pie {
+    animation-delay: calc(var(--island-delay, 300ms) + 520ms);
+  }
   @keyframes timer-in  { to { opacity: 1; } }
   @keyframes timer-run { to { stroke-dashoffset: 100; } }
   /* The loop that takes the timer's place once everything has been seen:
