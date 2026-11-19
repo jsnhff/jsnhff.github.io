@@ -2,6 +2,8 @@
 # cent (source/us-mint-cent.png). Writes colour, normal and roughness maps for
 # each face into the current directory; run from images/penny/:
 #   python3 ../../_penny/maps.py ../../_penny/source/us-mint-cent.png
+# The obverse in use is dated 1981, made by redate.py
+# (source/us-mint-cent-1981.png); only obverse-*.webp come from that one.
 #
 # Colour keeps the coin but flattens half the studio lighting baked into the
 # render, so the scene's own light does the shading. Relief is the fine detail
