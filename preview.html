@@ -1232,9 +1232,7 @@
     transition: transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1);
     will-change: transform;
   }
-  /* A plate that moves: the same box as a picture, held to the same height.
-     While it loads it waits out of sight, behind the photograph. */
-  .plate video.is-pending { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  /* A plate that moves: the same box as a picture, held to the same height. */
   .plate video {
     display: block;
     height: clamp(13rem, 38vh, 24rem);
@@ -1296,6 +1294,10 @@
   .plate img.is-arriving { transition: opacity 900ms cubic-bezier(0.4, 0, 0.2, 1), transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1); }
   .plate img.is-ready { opacity: 1; }
   .gal-link.has-book { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; }
+  /* A finger on a link gets the phone's own grey tap highlight over the whole
+     tile, and a long press its link preview: on a book being turned, both read
+     as the picture flashing. The tile answers by turning instead. */
+  .gal-link.has-book { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
   .plate .gal-still { pointer-events: none; -webkit-user-drag: none; user-select: none; }
   .gal-stage { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
   .gal-book.is-live .gal-stage { opacity: 1; }
@@ -1371,6 +1373,7 @@
     .plate { height: auto; margin-bottom: 0; }
     /* A tall picture would otherwise run past the screen it is meant to fit. */
     .plate img { max-height: 62vh; }
+    .plate video { height: auto; width: 100%; max-height: 62vh; }
     .plate.is-empty { height: 9rem; max-width: none; }
     /* One size rule for everything on the wall, so a book, a website, the
        Deal Toy and a photograph read as one set. A thing as wide as a browser
@@ -1380,7 +1383,8 @@
        small; equal width made the tall things tower. --ar is height over
        width. Older browsers without pow() keep the sizes they had. */
     @supports (width: calc(pow(2, 0.5) * 1px)) {
-      .plate:not(.is-book) img {
+      .plate:not(.is-book) img, .plate video {
+        height: auto;
         width: calc(min(1, pow(calc(0.669 / var(--ar, 0.669)), 0.65)) * 100%);
         max-width: 100%;
         max-height: 70vh;
@@ -2196,8 +2200,12 @@
             <span class="gal-year">2023</span>
           </p>
         </a>
-      </article><article class="row gal-cell"><a class="gal-link" href="/projects/ows-deal-toy/"><div class="plate"><img src="/images/plates/ows-deal-toy.webp" width="1000" height="1690" style="--ar: 1.69"
-                 alt="OWS 10th Anniversary Deal Toy" loading="lazy" decoding="async" data-loop="/images/plates/ows-deal-toy-loop.mp4" data-loop-poster="/images/plates/ows-deal-toy-loop.webp" data-loop-w="540" data-loop-h="900">
+      </article><article class="row gal-cell"><a class="gal-link" href="/projects/ows-deal-toy/"><div class="plate">
+            <video src="/images/plates/ows-deal-toy-loop.mp4" poster="/images/plates/ows-deal-toy-loop.webp"
+                   width="540" height="900"
+                   style="--ar: 1.6667; aspect-ratio: 540 / 900"
+                   autoplay muted loop playsinline disablepictureinpicture preload="auto"
+                   aria-label="OWS 10th Anniversary Deal Toy"></video>
           </div><p class="gal-tag">
             <span class="gal-kind">sculpture</span>
             <span class="gal-year">2020</span>
@@ -2245,14 +2253,16 @@
             <span class="gal-year">2015</span>
           </p>
         </a>
-      </article><article class="row gal-cell"><a class="gal-link" href="/projects/diagrams-v2/"><div class="plate"><img src="/images/plates/diagrams-v2-0.jpg" width="560" height="725" style="--ar: 1.2946"
+      </article><article class="row gal-cell"><a class="gal-link" href="/projects/diagrams-v2/"><div class="plate">
+            <img src="/images/plates/diagrams-v2-0.jpg" width="560" height="725" style="--ar: 1.2946"
                  alt="Diagrams v2.0" loading="lazy" decoding="async">
           </div><p class="gal-tag">
             <span class="gal-kind">diagrams</span>
             <span class="gal-year">2014</span>
           </p>
         </a>
-      </article><article class="row gal-cell"><a class="gal-link" href="/projects/endless-opportunities/"><div class="plate"><img src="/images/plates/endless-opportunties.webp" width="1302" height="854" style="--ar: 0.6559"
+      </article><article class="row gal-cell"><a class="gal-link" href="/projects/endless-opportunities/"><div class="plate">
+            <img src="/images/plates/endless-opportunties.webp" width="1302" height="854" style="--ar: 0.6559"
                  alt="Endless Opportunities" loading="lazy" decoding="async">
           </div><p class="gal-tag">
             <span class="gal-kind">installation</span>
@@ -2273,7 +2283,8 @@
             <span class="gal-year">2011</span>
           </p>
         </a>
-      </article><article class="row gal-cell"><a class="gal-link" href="/projects/diagrams/"><div class="plate"><img src="/images/plates/diagrams-v1-0.jpg" width="560" height="866" style="--ar: 1.5464"
+      </article><article class="row gal-cell"><a class="gal-link" href="/projects/diagrams/"><div class="plate">
+            <img src="/images/plates/diagrams-v1-0.jpg" width="560" height="866" style="--ar: 1.5464"
                  alt="Diagrams v1.0" loading="lazy" decoding="async">
           </div><p class="gal-tag">
             <span class="gal-kind">diagrams</span>
@@ -2322,7 +2333,8 @@
             <span class="gal-year">2010</span>
           </p>
         </a>
-      </article><article class="row gal-cell"><a class="gal-link" href="/projects/are-we-not-drawn-onward-to-new-era/"><div class="plate"><img src="/images/plates/are-we-not-drawn-onward-to-new-era.webp" width="625" height="203" style="--ar: 0.3248"
+      </article><article class="row gal-cell"><a class="gal-link" href="/projects/are-we-not-drawn-onward-to-new-era/"><div class="plate">
+            <img src="/images/plates/are-we-not-drawn-onward-to-new-era.webp" width="625" height="203" style="--ar: 0.3248"
                  alt="Are We Not Drawn Onward to New Era" loading="lazy" decoding="async">
           </div><p class="gal-tag">
             <span class="gal-kind">prints</span>
@@ -2381,7 +2393,7 @@
         data-variant="nightfield"
         data-grain="0.5" defer></script>
 
-<script data-v="1795055907" defer>
+<script data-v="1795057083">
 /**
  * jason-huff.com
  *
@@ -2674,9 +2686,9 @@
   // is put back to its still, so a long wall never holds more than a few
   // WebGL contexts. If anything goes wrong, or there is no WebGL, or the
   // visitor has asked to save data, the still simply stays.
-  var bookUrl = '/js/book.js?v=' + buildStamp;
-  var browserUrl = '/js/browser.js?v=' + buildStamp;
-  var toyUrl = '/js/toy.js?v=' + buildStamp;
+  var bookUrl = 'https://raw.githack.com/jsnhff/jsnhff.github.io/4a2a714cdc567bc17b7a5bd3b967081343d63da1/js/book.js?v=' + buildStamp;
+  var browserUrl = 'https://raw.githack.com/jsnhff/jsnhff.github.io/4a2a714cdc567bc17b7a5bd3b967081343d63da1/js/browser.js?v=' + buildStamp;
+  var toyUrl = 'https://raw.githack.com/jsnhff/jsnhff.github.io/4a2a714cdc567bc17b7a5bd3b967081343d63da1/js/toy.js?v=' + buildStamp;
   var bookIO = null;
   var books = [];
 
@@ -2826,40 +2838,12 @@
 
   function initBooks(scope) {
     [].forEach.call(scope.querySelectorAll('.plate img'), arrive);
-    // Plates that move. On a wide screen, for anyone who has not asked for
-    // less motion, the loop loads out of sight and takes the photograph's
-    // place only once it is really playing. A phone keeps the photograph, and
-    // so does any browser that holds the video back, so no play button shows.
-    if (!reduce && !window.matchMedia('(max-width: 38rem)').matches) {
-      [].forEach.call(scope.querySelectorAll('.plate img[data-loop]'), function (img) {
-        var v = document.createElement('video');
-        v.muted = true;
-        v.loop = true;
-        v.playsInline = true;
-        v.setAttribute('muted', '');
-        v.setAttribute('playsinline', '');
-        v.setAttribute('disablepictureinpicture', '');
-        v.setAttribute('aria-label', img.alt);
-        v.width = +img.dataset.loopW;
-        v.height = +img.dataset.loopH;
-        v.style.cssText = '--ar: ' + (img.dataset.loopH / img.dataset.loopW) +
-          '; aspect-ratio: ' + img.dataset.loopW + ' / ' + img.dataset.loopH;
-        v.className = 'is-pending';
-        v.preload = 'auto';
-        v.poster = img.dataset.loopPoster;
-        v.src = img.dataset.loop;
-        v.addEventListener('playing', function () {
-          if (!img.parentNode) return;
-          v.className = '';
-          img.parentNode.replaceChild(v, img);
-          var tile = v.closest('a.gal-link');
-          if (tile) tile.classList.add('is-in');
-        }, { once: true });
-        img.parentNode.appendChild(v);
-        var p = v.play();
-        if (p && p.catch) p.catch(function () { if (v.parentNode && img.parentNode) v.remove(); });
-      });
-    }
+    // a plate that moves holds still, on its first frame, for anyone who has
+    // asked for less motion
+    if (reduce) [].forEach.call(scope.querySelectorAll('.plate video'), function (v) {
+      v.autoplay = false;
+      v.pause();
+    });
     // a tile with no picture to wait for has its label straight away
     [].forEach.call(scope.querySelectorAll('a.gal-link'), function (a) {
       if (!a.querySelector('.plate img')) a.classList.add('is-in');
