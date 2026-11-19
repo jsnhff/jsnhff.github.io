@@ -1284,12 +1284,14 @@
     var pad = function (n) { return (n < 10 ? '0' : '') + n; };
     var today = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
     var events = island.querySelectorAll('.island-event');
-    var live = 0, here = 0;
+    var live = 0, here = 0, noun = 'event';
     Array.prototype.forEach.call(events, function (el) {
       var day = el.getAttribute('data-day');
       var label = el.querySelector('.island-day');
       if (day < today) { el.remove(); return; }
       el.hidden = false;
+      // one entry is named by its own kind; the layout decides the word
+      if (!live) noun = el.getAttribute('data-noun') || 'event';
       live++;
       if (day === today) { here++; label.textContent = 'Today'; }
       else label.textContent = label.getAttribute('data-later');
@@ -1297,9 +1299,9 @@
     if (!live) { island.remove(); return false; }
     island.querySelector('.island-label').textContent = here
       ? (here === live
-          ? here + ' event' + (here > 1 ? 's' : '') + ' today'
+          ? (here > 1 ? here + ' events' : '1 ' + noun) + ' today'
           : here + ' today \u00b7 ' + (live - here) + ' upcoming')
-      : live + ' upcoming event' + (live > 1 ? 's' : '');
+      : (live > 1 ? live + ' upcoming events' : '1 upcoming ' + noun);
     return true;
   }
 

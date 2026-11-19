@@ -88,6 +88,16 @@
   {% assign live = "" | split: "" %}
   {% assign here = 0 %}
   {% for u in ahead %}{% assign day = u.date | date: "%Y-%m-%d" %}{% if day >= today %}{% assign live = live | push: u %}{% endif %}{% if day == today %}{% assign here = here | plus: 1 %}{% endif %}{% endfor %}
+  {%- comment -%}
+    One entry is named by its own kind ("1 upcoming interview"); two or more
+    are just events. A kind that is not a thing you go to (a book published,
+    some press) reads as an event. site.js repeats this from data-noun once
+    the reader's own day has pruned the list.
+  {%- endcomment -%}
+  {% assign nouns = "" | split: "" %}
+  {% for u in ahead %}{% assign t = u.update-type | default: "Event" | downcase %}{% if t == "published" or t == "press" or t == "writing" or t == "citation" or t == "collection" or t == "book" %}{% assign t = "event" %}{% endif %}{% assign nouns = nouns | push: t %}{% endfor %}
+  {% assign one = "event" %}
+  {% for u in ahead %}{% assign day = u.date | date: "%Y-%m-%d" %}{% if day >= today %}{% assign one = nouns[forloop.index0] %}{% break %}{% endif %}{% endfor %}
   {% if ahead.size > 0 %}
 <div class="island" id="island">
   {%- comment -%}
@@ -99,12 +109,12 @@
     <button class="island-pill" id="island-pill" type="button"
             aria-expanded="false" aria-controls="island-panel">
       <span class="island-dot" aria-hidden="true"></span>
-      <span class="island-label">{% if here > 0 %}{% if here == live.size %}{{ here }} event{% if here > 1 %}s{% endif %} today{% else %}{{ here }} today &middot; {{ live.size | minus: here }} upcoming{% endif %}{% else %}{{ live.size }} upcoming event{% if live.size > 1 %}s{% endif %}{% endif %}</span>
+      <span class="island-label">{% if here > 0 %}{% if here == live.size %}{% if here > 1 %}{{ here }} events{% else %}1 {{ one }}{% endif %} today{% else %}{{ here }} today &middot; {{ live.size | minus: here }} upcoming{% endif %}{% else %}{% if live.size > 1 %}{{ live.size }} upcoming events{% else %}1 upcoming {{ one }}{% endif %}{% endif %}</span>
     </button>
     <div class="island-panel" id="island-panel" inert>
       {%- for u in ahead %}
       {%- assign day = u.date | date: "%Y-%m-%d" %}
-      <article class="island-event" data-day="{{ day }}"{% if day < today %} hidden{% endif %}>
+      <article class="island-event" data-day="{{ day }}" data-noun="{{ nouns[forloop.index0] }}"{% if day < today %} hidden{% endif %}>
         <p class="island-when">{{ u.update-type | default: "Update" }} &middot; <span class="island-day" data-later="{% if u.when %}{{ u.when }}{% else %}{{ u.date | date: "%B %-d, %Y" }}{% endif %}">{% if day == today %}Today{% elsif u.when %}{{ u.when }}{% else %}{{ u.date | date: "%B %-d, %Y" }}{% endif %}</span></p>
         <p class="island-what">{{ u.short | default: u.content | strip_html | strip_newlines | truncate: 160 }}</p>
       </article>
