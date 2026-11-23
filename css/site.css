@@ -1313,8 +1313,46 @@
      the tile never dips and nothing shows through. Going back to sleep is the
      same the other way: the still is back at once, under the book as it fades. */
   .gal-book.is-live .gal-still.is-ready { opacity: 0; transition: opacity 1ms linear 1650ms, transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1); }
+  /* Standing up (js/site.js, "standing up"): the first time a book is seen it
+     arrives as the books on regender.xyz do. Three moves start together and
+     finish apart: the book is there first, has finished rising a little after,
+     and comes into focus last, the way someone gets up from a chair and then
+     looks at you. The 20 degree lean is turned inside the scene by book.js;
+     this is the stage around it. The rise is 7% of the book's own height, as
+     on the store. The fills are `backwards`, so nothing stays on the stage once
+     it has arrived and the hover lift works as before; the stage's own opacity
+     fade is off while this runs, so the two never stack. */
+  @keyframes book-show { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes book-rise {
+    from { transform: translateY(calc(7% * var(--still) * var(--bh))); }
+    to { transform: translateY(0); }
+  }
+  @keyframes book-focus { from { filter: blur(10px); } to { filter: blur(0); } }
+  .gal-book.is-entering .gal-stage {
+    transition: transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    animation:
+      book-show 450ms cubic-bezier(0.33, 1, 0.68, 1) backwards,
+      book-rise 1000ms cubic-bezier(0.16, 1, 0.3, 1) backwards,
+      book-focus 1200ms cubic-bezier(0.25, 1, 0.5, 1) backwards;
+    animation-delay: var(--enter-delay, 0ms);
+  }
+  /* When the model can't come, the cover's still stands up in its place. A
+     flat picture can't turn in a scene, so it leans back in CSS instead, about
+     its foot, which is where the book's own lean turns it. */
+  @keyframes still-rise {
+    from { transform: translate(-50%, -50%) translateY(7%) perspective(1200px) rotateX(20deg); }
+    to { transform: translate(-50%, -50%); }
+  }
+  .plate .gal-still.is-standing {
+    animation:
+      book-show 450ms cubic-bezier(0.33, 1, 0.68, 1) backwards,
+      still-rise 1000ms cubic-bezier(0.16, 1, 0.3, 1) backwards,
+      book-focus 1200ms cubic-bezier(0.25, 1, 0.5, 1) backwards;
+    animation-delay: var(--enter-delay, 0ms);
+  }
   @media (prefers-reduced-motion: reduce) {
     .gal-still, .gal-stage, .plate img.is-arriving, .gal-book.is-live .gal-still.is-ready, .gal-link .gal-tag { transition: none; }
+    .gal-book.is-entering .gal-stage, .plate .gal-still.is-standing { animation: none; }
   }
 
   /* A wall with a hole in it reads as broken, so the one project without a

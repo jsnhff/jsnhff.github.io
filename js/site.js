@@ -343,6 +343,8 @@
         common.wrap = box.getAttribute('data-wrap');
         common.foil = box.getAttribute('data-foil') || null;
         common.staples = parseInt(box.getAttribute('data-staples') || '0', 10);
+        // the first time it is seen it stands up (below, "standing up")
+        common.enter = box.hasAttribute('data-enter');
       }
       return m.build(common);
     }).then(function (inst) {
@@ -351,6 +353,14 @@
       if (!box._waking) { inst.destroy(); done(); return; }
       box._waking = false;
       box._book = inst;
+      // A book that has not been seen yet waits, leaning back and out of
+      // sight, to stand up once it is (below). The same two frames' grace.
+      if (box.hasAttribute('data-enter')) {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { standUp(box); done(); });
+        });
+        return;
+      }
       // Building it (shaders, textures, the first frame) is a long job on this
       // thread, and a fade's clock runs through it: begin the fade only once
       // the page has drawn a couple of frames again, so it is seen from the
@@ -370,8 +380,70 @@
       });
     }).catch(function () {
       box._waking = false;
+      // no book after all: the cover stands up in its place
+      if (box.hasAttribute('data-enter')) { box._failed = true; standUp(box); }
       done();
     });
+  }
+
+  // ---- standing up ----------------------------------------------------------
+  // The first time a book is seen it arrives the way the books on regender.xyz
+  // do, after the Twombly motion study: it stands up into place like someone
+  // getting up from a chair and coming into focus. The stage fades, lifts and
+  // de-blurs (css, .is-entering) while the book itself tips up from 20 degrees
+  // inside the scene (book.js, arrive). Nothing stands in for it while it
+  // loads: a placeholder would fight the entrance, so a slow connection waits.
+  // It waits until the book is at least a fifth in view and its model has
+  // drawn; books that are ready together come in 140ms apart. If the model has
+  // not come six seconds after the book was seen, or cannot come at all, the
+  // cover's still stands up the same way instead, and the model crossfades
+  // over it later as it always has. Only once: a book woken again after
+  // scrolling away comes back over its still.
+  var enterIO = null, nextEnterAt = 0;
+  function enterDelay() {
+    var now = performance.now(), at = Math.max(now + 120, nextEnterAt);
+    nextEnterAt = at + 140;
+    return Math.round(at - now);
+  }
+  function standUp(box) {
+    if (!box.hasAttribute('data-enter') || !box._seen) return;
+    if (box._book) {
+      var inst = box._book, delay = enterDelay();
+      var still = box.querySelector('.gal-still'), tile = box.closest('a.gal-link');
+      box.removeAttribute('data-enter');
+      box.style.setProperty('--enter-delay', delay + 'ms');
+      // the still goes under the book unseen, ready for when it sleeps
+      if (still) still.classList.add('is-ready');
+      box.classList.add('is-entering', 'is-live');
+      inst.arrive(delay);
+      setTimeout(function () {
+        if (tile) tile.classList.add('is-in');
+        if (box._book === inst) inst.start();
+      }, delay);
+      setTimeout(function () { box.classList.remove('is-entering'); }, delay + 1400);
+    } else if (box._failed || box._late) {
+      standStill(box);
+    }
+  }
+  function standStill(box) {
+    box.removeAttribute('data-enter');
+    var still = box.querySelector('.gal-still'), tile = box.closest('a.gal-link');
+    if (!still) { if (tile) tile.classList.add('is-in'); return; }
+    var shown = false;
+    function show() {
+      if (shown || still.classList.contains('is-ready')) return;
+      shown = true;
+      var delay = enterDelay();
+      still.style.setProperty('--enter-delay', delay + 'ms');
+      still.classList.add('is-standing', 'is-ready');
+      setTimeout(function () { if (tile) tile.classList.add('is-in'); }, delay);
+      setTimeout(function () { still.classList.remove('is-standing'); }, delay + 1400);
+    }
+    if (still.complete && still.naturalWidth) (still.decode ? still.decode() : Promise.resolve()).then(show, show);
+    else {
+      still.addEventListener('load', function () { (still.decode ? still.decode() : Promise.resolve()).then(show, show); }, { once: true });
+      still.addEventListener('error', show, { once: true });
+    }
   }
 
   // Books wake one at a time. All at once, each one's building would stall the
@@ -394,7 +466,8 @@
     var next = null;
     for (var i = 0; i < wakeQueue.length; i++) {
       var still = wakeQueue[i].querySelector('.gal-still');
-      if (!still || still.classList.contains('is-ready')) { next = wakeQueue.splice(i, 1)[0]; break; }
+      // a book still to stand up has no still to wait for: it is the book
+      if (!still || still.classList.contains('is-ready') || wakeQueue[i].hasAttribute('data-enter')) { next = wakeQueue.splice(i, 1)[0]; break; }
     }
     if (!next) { setTimeout(pump, 150); return; }
     next._queued = false;
@@ -412,7 +485,7 @@
     var at = wakeQueue.indexOf(box);
     if (at >= 0) wakeQueue.splice(at, 1);
     if (box._book) { box._book.destroy(); box._book = null; }
-    box.classList.remove('is-live');
+    box.classList.remove('is-live', 'is-entering');
   }
 
   // Watches every book on the page afresh: the ones in view wake, the rest
@@ -453,7 +526,20 @@
   }
 
   function initBooks(scope) {
-    [].forEach.call(scope.querySelectorAll('.plate img'), arrive);
+    // Books (not the websites or the toy) stand up the first time they are
+    // seen, where there is motion, WebGL's way of loading and data to spend;
+    // their stills are not shown first. Everywhere else the still arrives as
+    // any picture does.
+    var save = navigator.connection && navigator.connection.saveData;
+    var standing = !reduce && !save && !!window.IntersectionObserver && !!window.Promise;
+    if (standing) {
+      [].forEach.call(scope.querySelectorAll('[data-book][data-wrap]'), function (box) {
+        box.setAttribute('data-enter', '');
+      });
+    }
+    [].forEach.call(scope.querySelectorAll('.plate img'), function (img) {
+      if (!img.closest('[data-enter]')) arrive(img);
+    });
     // Plates that move. On a wide screen, for anyone who has not asked for
     // less motion, the loop loads out of sight and takes the photograph's
     // place only once it is really playing. A phone keeps the photograph, and
@@ -494,8 +580,20 @@
     });
     books = [].slice.call(scope.querySelectorAll('[data-book]'));
     if (!books.length) return;
-    var save = navigator.connection && navigator.connection.saveData;
     if (save || !window.IntersectionObserver) return;
+    if (standing) {
+      enterIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          var box = e.target;
+          enterIO.unobserve(box);
+          box._seen = true;
+          setTimeout(function () { box._late = true; standUp(box); }, 6000);
+          standUp(box);
+        });
+      }, { threshold: 0.2 });
+      [].forEach.call(scope.querySelectorAll('[data-enter]'), function (box) { enterIO.observe(box); });
+    }
     // Capture phase, so it runs before the wall's own click handler and before
     // the link itself: a click that ends a drag is not a tap.
     document.addEventListener('click', function (e) {
