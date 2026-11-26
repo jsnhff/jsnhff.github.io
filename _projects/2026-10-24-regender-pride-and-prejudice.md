@@ -6,21 +6,36 @@ category: book
 image_path: "/images/regender/jhuff-regender-"
 shots: 8
 description: |
-  Jane Austen's 1813 novel in four editions: Swapped, All Female, All Male and
-  Non-Binary. In Swapped, shown here, every character's gender is reversed. The
-  men become women, the women become men, and the marriage plot runs its
-  course with the roles exchanged.
+  [regender.xyz](https://regender.xyz) is free and open source software I
+  created that changes the gender and name of every character in a public
+  domain book. It's also a set of print on demand books.
 
-  Rewritten by [regender.xyz](https://regender.xyz). Names, honorifics,
-  pronouns, gendered words, and the grammar that follows them are transformed
-  throughout; Austen's sentences are otherwise untouched.
+  The first set is Jane Austen's *Pride and Prejudice* (1813) in four
+  versions: [swapped](https://regender.xyz/products/pride-prejudice-swapped),
+  [all male](https://regender.xyz/products/pride-prejudice-all-male),
+  [all female](https://regender.xyz/products/pride-prejudice-all-female) and
+  [nonbinary](https://regender.xyz/products/pride-prejudice-non-binary). In the
+  swapped edition, shown here, the men become women, the women become men,
+  and the marriage plot runs its course with the roles exchanged. The books
+  launched at the Cleveland Art Book Fair in October 2026.
+
+  I first tried to make this in 2015. Find and replace broke on the first
+  "her," which can mean "him" or "his." Now a language model reads each
+  passage in context and works out who every "he," "her" and "they" belongs
+  to. You can use Claude, an OpenAI model or an open model running on your
+  own computer. This edition used Claude. A set of fixed rules goes over the
+  result to catch what the model missed, and a quality check reads every
+  chapter.
+
+  Everything else in Austen's sentences stays as she wrote it. When only the
+  gender moves, you can see what the story was asking gender to do.
 
   Illustration: [Raman Djafari](https://ramandjafari.com/)  
   Design: [Matthew Bucknall](https://www.matthewbucknall.com)  
   Engineering: William Barnes  
-  Code: [Regender on GitHub](https://github.com/jsnhff/regender-xyz)  
+  Code: [regender.xyz on GitHub](https://github.com/jsnhff/regender-xyz)  
   Type: [*BBB Baskervvol*](https://typo-inclusive.net/inventaire/bbb-baskervvol/) and [*BBB Herthey Futural*](https://typo-inclusive.net/inventaire/bbb-herthey-futural/) ([Bye Bye Binary](https://typotheque.byebyebinary.space); Clara Sambot, Laure Giletti), [*PicNic*](https://typo-inclusive.net/inventaire/picnic/) (Mariel Nils)  
-  Text: Transformed by claude-opus-4-5-20251101, September 13, 2026  
+  Text: Jane Austen, 1813. Transformed with regender.xyz and claude-opus-4-5-20251101, September 13, 2026  
   Format: 4.25 × 6.875 in · perfect bound, printed on demand
 plate: "/images/plates/regender-pride-and-prejudice.webp"
 plate_w: 1100
