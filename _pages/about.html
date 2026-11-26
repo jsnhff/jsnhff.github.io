@@ -26,6 +26,19 @@ description: "Jason Huff (b. 1981) is an artist, writer, and designer living and
     </div>
 
     {% include bio-lists.html %}
+
+    {%- comment -%}
+      Not in lists.data.js with the others: those sections are a record of
+      where the work has landed, and this is the one thing on the page a
+      reader can act on. It borrows their markup so it sits in the same
+      column, in the same type, without a second set of styles.
+    {%- endcomment -%}
+    <section class="rec" id="newsletter">
+      <h2 class="rec-head">Newsletter</h2>
+      <ul class="rec-list">
+        <li class="rec-item"><span class="rec-body"><a class="rec-title rec-link" href="https://buttondown.com/jasonhuff" target="_blank" rel="noopener">Subscribe<span class="arw" aria-hidden="true">↗</span></a><span class="rec-note">Occasional notes on books, software, and other things I've made. A few times a year, unpredictable intervals.</span></span></li>
+      </ul>
+    </section>
   </div>
 </section>
 
