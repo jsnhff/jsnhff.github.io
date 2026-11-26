@@ -14,9 +14,10 @@
     in them. Dropped raw into an attribute, the first quote closed it and the
     first <p> ended the head, which pushed two copies of the description into
     the body as unstyled text above the shell. Here it is flattened to one
-    plain line, as a meta description has to be.
+    plain line, as a meta description has to be. Markdown links become plain
+    text, and line breaks become spaces so wrapped words don't run together.
   {%- endcomment -%}
-  {%- assign meta_desc = page.description | default: site.description | strip_html | strip_newlines | normalize_whitespace | strip | truncate: 200 | escape -%}
+  {%- assign meta_desc = page.description | default: site.description | markdownify | strip_html | replace: "&amp;", "&" | normalize_whitespace | strip | truncate: 200 | escape -%}
   <meta name="description" content="{{ meta_desc }}">
 
   <link rel="canonical" href="{{ page.url | absolute_url }}">
