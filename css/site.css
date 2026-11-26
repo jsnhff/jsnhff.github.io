@@ -1156,6 +1156,27 @@
   .pj-desc p:last-child { margin-bottom: 0; }
   .pj-visit { margin: 1.1rem 0 0; font-size: 0.95rem; }
 
+  /* The colophon: label over value on a phone, label beside value when there
+     is room. Set at the credits' size so it reads as facts about the work. */
+  .pj-colophon { margin: var(--s5) 0 0; }
+  .pj-colophon > div { margin: 0 0 0.85rem; }
+  .pj-colophon > div:last-child { margin-bottom: 0; }
+  .pj-colophon dt {
+    margin: 0 0 0.15rem;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dim);
+    transition: color var(--invert) ease;
+  }
+  .pj-colophon dd { margin: 0; font-size: 0.95rem; line-height: 1.5; }
+  .pj-colophon .nw { white-space: nowrap; }
+  @media (min-width: 40rem) {
+    .pj-colophon > div { display: grid; grid-template-columns: 8.5rem 1fr; column-gap: var(--s4); margin-bottom: 0.55rem; }
+    .pj-colophon dt { margin: 0; line-height: 1.5rem; padding-top: 0.08rem; }
+  }
+
   .pj-shot { margin: 0 0 clamp(var(--s5), 4vh, 2.5rem); text-align: center; }
   .pj-shot:last-child { margin-bottom: 0; }
   .pj-shot img { max-width: 100%; height: auto; border-radius: 2px; }

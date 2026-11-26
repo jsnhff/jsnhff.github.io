@@ -29,14 +29,21 @@ description: |
 
   Everything else in Austen's sentences stays as she wrote it. When only the
   gender moves, you can see what the story was asking gender to do.
-
-  Illustration: [Raman Djafari](https://ramandjafari.com/)  
-  Design: [Matthew Bucknall](https://www.matthewbucknall.com)  
-  Engineering: William Barnes  
-  Code: [regender.xyz on GitHub](https://github.com/jsnhff/regender-xyz)  
-  Type: [*BBB Baskervvol*](https://typo-inclusive.net/inventaire/bbb-baskervvol/) and [*BBB Herthey Futural*](https://typo-inclusive.net/inventaire/bbb-herthey-futural/) ([Bye Bye Binary](https://typotheque.byebyebinary.space); Clara Sambot, Laure Giletti), [*PicNic*](https://typo-inclusive.net/inventaire/picnic/) (Mariel Nils)  
-  Text: Jane Austen, 1813. Transformed with regender.xyz and claude-opus-4-5-20251101, September 13, 2026  
-  Format: 4.25 × 6.875 in · perfect bound, printed on demand
+colophon:
+  - label: Illustration
+    text: "[Raman Djafari](https://ramandjafari.com/)"
+  - label: Design
+    text: "[Matthew Bucknall](https://www.matthewbucknall.com)"
+  - label: Engineering
+    text: "William Barnes"
+  - label: Code
+    text: "[regender.xyz on GitHub](https://github.com/jsnhff/regender-xyz)"
+  - label: Type
+    text: "[*BBB Baskervvol*](https://typo-inclusive.net/inventaire/bbb-baskervvol/) and [*BBB Herthey Futural*](https://typo-inclusive.net/inventaire/bbb-herthey-futural/) ([Bye Bye Binary](https://typotheque.byebyebinary.space); Clara Sambot, Laure Giletti), [*PicNic*](https://typo-inclusive.net/inventaire/picnic/) (Mariel Nils)"
+  - label: Text
+    text: "Jane Austen, 1813. Transformed with regender.xyz and <span class=\"nw\">claude-opus-4-5-20251101</span>, September 13, 2026"
+  - label: Format
+    text: "4.25 × 6.875 in · perfect bound, printed on demand"
 plate: "/images/plates/regender-pride-and-prejudice.webp"
 plate_w: 1100
 plate_h: 1779
